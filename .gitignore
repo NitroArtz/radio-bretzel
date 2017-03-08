@@ -1,7 +1,6 @@
 server/node_modules/
 server/npm-debug.log
 server/upload/
-audio/*
-!audio/test/
+audio/playlists
 log/
 
