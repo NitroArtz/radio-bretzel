@@ -1,11 +1,7 @@
 #!/usr/bin/liquidsoap
 
-#				/!\/!\
-#		Use Only absolute pathes
-#				/!\/!\
-
 # Log settings
-set("log.file.path","../radiobretzel.log")
+set("log.file.path","../.radiobretzel.log")
 #Comment this line for prod
 set("log.stdout", true)
 
@@ -21,10 +17,10 @@ mountpoint = "radiobretzel"
 
 
 #Playlist Handler
-pl=playlist("../source", reload=1, reload_mode="watch")
+pl=single("../audio/test/test.mp3")
 
 #security file 
-fail=single("../fail")
+fail=single("../audio/fail.mp3")
 #Making source unfaillible
 radio=fallback(track_sensitive=false, [pl, fail])
 
