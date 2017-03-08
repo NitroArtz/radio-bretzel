@@ -1,19 +1,19 @@
 #!/usr/bin/liquidsoap
 
 # Log settings
-set("log.file.path","../.radiobretzel.log")
+set("log.file.path","../.test.log")
 #Comment this line for prod
 set("log.stdout", true)
 
 #Icecast Param
-host = "192.168.56.70"
+host = "localhost"
 port = 8000
 name = "Papy Bretzel Radio Project"
 desc = "Radio test"
-genre = "Multi"
-url = "http://192.168.56.70/radiobretzel"
+genre = "test"
+url = "http://localhost:8000/radiobretzel"
 passwd = "sourcepass"
-mountpoint = "radiobretzel"
+mountpoint = "test"
 
 
 #Playlist Handler
