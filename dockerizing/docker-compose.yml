@@ -20,6 +20,8 @@ services:
       dockerfile: Dockerfile
     image: liquidsoap-bretzel
     hostname: liquidsoap.bretzel
+    depends_on:
+      - "icecast"
     networks:
       radiobretzel:
         aliases:

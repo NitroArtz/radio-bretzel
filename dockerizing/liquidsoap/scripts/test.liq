@@ -1,7 +1,7 @@
 #!/usr/bin/liquidsoap
 
 # Log settings
-set("log.file.path","../.test.log")
+set("log.file.path","/ls/test.log")
 #Comment this line for prod
 set("log.stdout", true)
 
@@ -17,12 +17,12 @@ mountpoint = "test"
 
 
 #Playlist Handler
-pl=single("/audio/test.mp3")
+radio=mksafe(single("/ls/audio/test.mp3"))
 
 #security file 
-fail=single("/audio/fail.mp3")
-#Making source unfaillible
-radio=fallback(track_sensitive=false, [pl, fail])
+#fail=single("/ls/audio/fail.mp3")
+##Making source unfaillible
+#radio=fallback(track_sensitive=false, [pl, fail])
 
 #Streaaaamin out !
 output.icecast(%vorbis,

@@ -6,12 +6,18 @@ RUN apt-get update -y && \
 	liquidsoap-plugin-pulseaudio liquidsoap-plugin-samplerate liquidsoap-plugin-taglib \
 	liquidsoap-plugin-voaacenc liquidsoap-plugin-vorbis liquidsoap-plugin-xmlplaylist
 
-RUN mkdir /audio
+RUN mkdir -p /ls/audio && \
+	useradd liquy -d /ls -s /bin/bash && \
+	chown -R liquy:liquy /ls
 
-COPY ./audio/fail.mp3 /audio/fail.mp3
+COPY ./ls/audio/fail.mp3 /ls/audio/fail.mp3
 
-COPY ./audio/test/test.mp3 /audio/test.mp3
+COPY ./ls/audio/test/test.mp3 /ls/audio/test.mp3
 
 COPY ./scripts/test.liq /test.liq
 
-ENTRYPOINT /test.liq
+COPY ./scripts/runstream /runstream
+
+WORKDIR /
+
+ENTRYPOINT ./runstream
