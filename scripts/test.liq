@@ -1,0 +1,37 @@
+#!/usr/bin/liquidsoap
+
+#				/!\/!\
+#		Use Only absolute pathes
+#				/!\/!\
+
+# Log settings
+set("log.file.path","../radiobretzel.log")
+#Comment this line for prod
+set("log.stdout", true)
+
+#Icecast Param
+host = "192.168.56.70"
+port = 8000
+name = "Papy Bretzel Radio Project"
+desc = "Radio test"
+genre = "Multi"
+url = "http://192.168.56.70/radiobretzel"
+passwd = "sourcepass"
+mountpoint = "radiobretzel"
+
+
+#Playlist Handler
+pl=playlist("../source", reload=1, reload_mode="watch")
+
+#security file 
+fail=single("../fail")
+#Making source unfaillible
+radio=fallback(track_sensitive=false, [pl, fail])
+
+#Streaaaamin out !
+output.icecast(%vorbis,
+host = host, port = port,
+name = name, description = desc, genre = genre, url = url,
+password = passwd,
+mount = mountpoint,
+radio)
