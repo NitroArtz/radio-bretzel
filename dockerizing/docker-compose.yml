@@ -1,0 +1,34 @@
+version: '2'  
+services:  
+  icecast:
+    build:
+      context: ./icecast/
+      dockerfile: Dockerfile
+    image: icecast-bretzel
+    ports: 
+      - "8000:8000"
+    hostname: icecast.bretzel
+    networks:
+      radiobretzel:
+        aliases:
+          - icecast
+          - icecast.bretzel
+
+  liquidsoap:
+    build:
+      context: ./liquidsoap/
+      dockerfile: Dockerfile
+    image: liquidsoap-bretzel
+    hostname: liquidsoap.bretzel
+    networks:
+      radiobretzel:
+        aliases:
+          - liquidsoap
+          - liquidsoap.bretzel
+
+networks:
+  radiobretzel:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 18.18.18.0/24 
