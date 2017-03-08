@@ -1,7 +1,7 @@
 server/node_modules
 server/npm-debug.log
 server/upload
-music/
+music/*
 log/
 radiobretzel.log
 
