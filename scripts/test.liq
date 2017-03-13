@@ -11,18 +11,18 @@ port = 8000
 name = "Papy Bretzel Radio Project"
 desc = "Radio test"
 genre = "test"
-url = "http://localhost:8000/radiobretzel"
+url = "http://192.168.56.70:8000/test"
 passwd = "sourcepass"
 mountpoint = "test"
 
 
 #Playlist Handler
-pl=single("../audio/test/test.mp3")
+radio=mksafe(single("../audio/test/test.mp3"))
 
-#security file 
-fail=single("../audio/fail.mp3")
-#Making source unfaillible
-radio=fallback(track_sensitive=false, [pl, fail])
+##security file 
+#fail=single("../audio/fail.mp3")
+##Making source unfaillible
+#radio=fallback(track_sensitive=false, [pl, fail])
 
 #Streaaaamin out !
 output.icecast(%vorbis,
