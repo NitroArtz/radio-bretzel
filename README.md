@@ -17,7 +17,7 @@ Think about the storage and network resources. The needed amount will depend on 
 * Restart Icecast service
 * Run script/test.liq to see if it's working !
 
-### Clients
+# Clients
 * Any compatible webradio-compatible player (Clementine, VLC, etc). Your web browser (tested with Chromium and Firefox) should do the work !
 
 
