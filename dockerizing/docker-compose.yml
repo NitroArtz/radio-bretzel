@@ -4,6 +4,9 @@ services:
     build:
       context: ./icecast/
       dockerfile: Dockerfile
+    volumes:
+            - ./icecast/config:/etc/config
+      - ./icecast/runIcecast:/runIcecast
     image: icecast-bretzel
     ports: 
       - "8000:8000"
@@ -18,6 +21,11 @@ services:
     build:
       context: ./liquidsoap/
       dockerfile: Dockerfile
+    volumes:
+      - ./liquidsoap/ls/audio/fail.mp3:/ls/audio/fail.mp3
+      - ./liquidsoap/ls/audio/test/test.mp3:/ls/audio/test.mp3
+      - ./liquidsoap/scripts/test.liq:/test.liq
+      - ./liquidsoap/scripts/runstream:/runstream
     image: liquidsoap-bretzel
     hostname: liquidsoap.bretzel
     depends_on:
