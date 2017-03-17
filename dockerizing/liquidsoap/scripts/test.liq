@@ -1,7 +1,7 @@
 #!/usr/bin/liquidsoap
 
 # Log settings
-set("log.file.path","/ls/test.log")
+set("log.file.path","/home/liquy/test.log")
 #Comment this line for prod
 set("log.stdout", true)
 
@@ -11,18 +11,12 @@ port = 8000
 name = "Papy Bretzel Radio Project"
 desc = "Radio test"
 genre = "test"
-url = "http://icecast.bretzel:8000/radiobretzel"
+url = "http://icecast.bretzel:8000/test"
 passwd = "sourcepass"
 mountpoint = "test"
 
-
 #Playlist Handler
-radio=mksafe(single("/ls/audio/test.mp3"))
-
-#security file 
-#fail=single("/ls/audio/fail.mp3")
-##Making source unfaillible
-#radio=fallback(track_sensitive=false, [pl, fail])
+radio=mksafe(single("/home/liquy/audio/test/test.mp3"))
 
 #Streaaaamin out !
 output.icecast(%vorbis,

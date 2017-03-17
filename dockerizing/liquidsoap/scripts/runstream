@@ -1,6 +1,0 @@
-#!/bin/bash
-
-APP_USER="liquy"
-SCRIPT="/test.liq"
-
-su - $APP_USER -c "$SCRIPT"

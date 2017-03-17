@@ -1,6 +1,5 @@
-server/node_modules/
-server/npm-debug.log
-server/upload/
-audio/playlists
-.test.log
-log/
+/server/node_modules/
+/server/npm-debug.log
+/server/upload/
+/dockerizing/liquidsoap/test.log
+
