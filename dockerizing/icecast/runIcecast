@@ -1,6 +1,0 @@
-#!/bin/bash
-
-APPUSER="icecast2"
-CONFIG_FILE="/etc/icecast2/icecast.xml"
-
-su - $APPUSER -c "icecast2 -c $CONFIG_FILE"

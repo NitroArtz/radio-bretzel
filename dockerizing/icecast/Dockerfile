@@ -6,6 +6,6 @@ RUN apt-get update -y && \
 
 COPY ./config /etc/icecast2
 
-COPY ./runIcecast /
+USER icecast2
 
-ENTRYPOINT /runIcecast
+ENTRYPOINT ["icecast2", "-c", "/etc/icecast2/icecast.xml"]

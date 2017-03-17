@@ -16,8 +16,6 @@ COPY ./audio /home/liquy/audio
 
 COPY ./scripts /home/liquy/scripts
 
-COPY ./runstream /home/liquy/runstream
-
 USER liquy
 
-ENTRYPOINT ./scripts/test.liq
+ENTRYPOINT ["./scripts/test.liq"]
