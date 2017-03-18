@@ -1,3 +1,2 @@
 add .dockerignore
-finish node's dockerfile
-move node's scripts
+fix authent call from icecast + find a way to not cache the request
