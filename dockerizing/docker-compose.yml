@@ -32,6 +32,22 @@ services:
           - liquidsoap
           - liquidsoap.bretzel
 
+  node:
+    build:
+      context: ./node/
+      dockerfile: Dockerfile
+    volumes:
+      - ./node:/home/nody
+    image: node-bretzel
+    ports:
+      - "80:8082"
+    hostname: node.bretzel
+    networks:
+      radiobretzel:
+        aliases:
+          - node
+          - node.bretzel
+
 networks:
   radiobretzel:
     driver: bridge

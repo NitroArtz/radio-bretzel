@@ -1,0 +1,3 @@
+add .dockerignore
+finish node's dockerfile
+move node's scripts
