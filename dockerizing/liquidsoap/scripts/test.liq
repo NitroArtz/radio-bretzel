@@ -19,7 +19,7 @@ mountpoint = "test"
 radio=mksafe(single("/home/liquy/audio/test/test.mp3"))
 
 #Streaaaamin out !
-output.icecast(%vorbis,
+output.icecast(%mp3mp3mp3,
 host = host, port = port,
 name = name, description = desc, genre = genre, url = url,
 password = passwd,

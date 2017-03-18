@@ -120,6 +120,13 @@
     </mount>
 
     -->
+	<mount>
+		<mount-name>/test</mount-name>
+		<authentication type="url">
+			<option name="listener_add" value="http://node.bretzel:8082/auth/check"/>
+			<option name="auth_header" value="icecast-auth-test: 1"/>
+		</authentication>
+	</mount>
 
     <fileserve>1</fileserve>
 
