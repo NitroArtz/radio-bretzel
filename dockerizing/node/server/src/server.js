@@ -1,17 +1,30 @@
 // Core Application
 
-const ROOT_DIR="/srv/Lab/Radio-Bretzel/";
+// TEMPORARY CONF LOCATION
+/*	Host usual information	*/
+const HOSTNAME = "";
+const DOMAIN = "";
+const FQDN = "localhost";	//localhost here for dev
+const LOCAL_IP = "127.0.0.1";	//127.0.0.1 here for dev
+const PUBLIC_IP = "";
 
+
+//APPLICATION STARTS HERE
+//imports
 var fs = require('fs');
 var express = require('express');
-var multer = require('multer');	
+var multer = require('multer');
 var app = express();
 var port = 8082;
 
+//routes
+//	index
 app.get('/', (req,res) =>{
-	res.send('<html><body><h3>Hello You. It works. :O</h3><ul><a href="/upload"><li>Upload</li></a><ul><h3>Stream test</h3><audio controls><source src="http://icecast.bretzel:8000/test" type="audio/mpeg">AudioTag</audio></body></html>').end();
+	res.send('<html><body><h3>Hello You. It works. :O for </h3><ul><a href="/upload"><li>Upload</li></a><a href="/stream/test"><li>Test Stream</li></a></ul></body></html>').end();
 });
 
+
+//	upload
 app.get('/upload', (req, res) => {
 	res.send('<html><body><form action="/upload" method="post" enctype="multipart/form-data"><input type="file" name="file"/><input type="submit"/></form></body></html>')
 });
@@ -21,15 +34,22 @@ app.post('/upload', multer({dest: './upload/'}).single('file'), function (req, r
 });
 
 
+// 	stream
+app.get('/stream/test', (req,res) =>{
+	res.send('<html><body><h3>Stream Test</h3><div><audio src="http://'+FQDN+':8000/test" controls>Marche plus ? :(</audio></div></body></html>').end();
+});
 
 
-
+//	auth
 app.post('/auth/check', (req,res) =>{
 	res.setHeader('icecast-auth-test', 1);
 	res.send().end();
 	console.log('/auth/check');
 });
 
+
+
 app.listen(port, () => {
 	console.log('Serveur sur port : '+port);
+	console.log('Redirection vers port 80 (Merci la Baleine !)')
 });
