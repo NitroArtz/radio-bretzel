@@ -37,4 +37,4 @@ This represents a non-exhaustive list of possible features we would like to inte
 ## Flow Diagrams
 
 (More incomming ...)
-* [File Upload](https://github.com/Clement-Ruiz/radio-bretzel/tree/papyDocker/documentation/Flow Diagram - File Upload.pdf)
+* [File Upload](https://github.com/Clement-Ruiz/radio-bretzel/tree/papyDocker/documentation/Flow-Diagram-File-Upload.pdf)
