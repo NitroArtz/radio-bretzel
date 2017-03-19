@@ -1,8 +1,9 @@
 # Radio bretzel
 
 This project is used to setup your own private and collaborative webradio instance.  
-Invite friends, chat, upload music, and listen !
+Invite friends, chat, upload music, and listen to it !
 
+Find more information about this project on the DOC.md file !
 # Server
 ## Requirements
 * [Docker](https://www.docker.com/ "Docker Official Website") : docker-engine and docker-compose binaries
@@ -18,7 +19,7 @@ Think about the storage and network resources. The needed amount will depend on 
 
 # Client
 
-* Your web browser (tested with Chromium and Firefox) should do the work ! 
+* Your web browser (tested with Chromium and Firefox) should do the work !
 
 
 # Roadmap
@@ -30,7 +31,3 @@ Think about the storage and network resources. The needed amount will depend on 
 * elementary monitoring (storage/network)
 * storage
 * containerizing environment (ease bootstrap and app lifecycle management)
-
-## Future features
-* chattyRadio timeline
-* guests users
