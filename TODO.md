@@ -1,6 +1,6 @@
 # To do
 ## next steps 
- * add documentation on the project ... =|
+ * Keep on wrinting documentation on the project and Flow Diagrams
 
  * create storage and database containers
  * maybe a nodejs-sails container for backend dialog with database ?
