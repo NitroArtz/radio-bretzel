@@ -1,8 +1,7 @@
 #!/usr/bin/liquidsoap
 
 # Log settings
-set("log.file.path","/home/liquy/test.log")
-#Comment this line for prod
+set("log.file", false)
 set("log.stdout", true)
 
 #Icecast Param
@@ -16,7 +15,7 @@ passwd = "sourcepass"
 mountpoint = "test"
 
 #Playlist Handler
-radio=mksafe(single("/home/liquy/audio/test/test.mp3"))
+radio=single("/home/liquy/audio/test/test.mp3")
 
 #Streaaaamin out !
 output.icecast(%mp3,
