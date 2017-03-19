@@ -2,6 +2,7 @@
 
 This project is used to setup your own private and collaborative webradio instance.  
 Invite friends, chat, upload music, and listen !
+More information are available on the DOC.md file
 
 # Server
 ## Requirements
@@ -30,8 +31,6 @@ Think about the storage and network resources. The needed amount will depend on 
 * authentication backend
 * elementary monitoring (storage/network)
 * storage
-* containerizing environment (ease bootstrap and app lifecycle management)
 
-## Future features
-* chattyRadio timeline
-* guests users
+## Dockerizing
+Go checkout the [papyDocker branch](https://github.com/Clement-Ruiz/radio-bretzel/tree/papyDocker "RadioBretzel - papyDocker branch") for our containerised version of the app
