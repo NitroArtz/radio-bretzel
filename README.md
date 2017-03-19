@@ -14,6 +14,7 @@ Think about the storage and network resources. The needed amount will depend on 
 ## Installation
 
 * `git clone https://github.com/Clement-Ruiz/radio-bretzel.git`
+* `git checkout papyDocker`
 * `cd dockerizing`
 * `docker-compose up -d`
 
