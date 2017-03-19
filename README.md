@@ -20,6 +20,7 @@ Think about the storage and network resources. The needed amount will depend on 
 # Client
 
 * Your web browser (tested with Chromium and Firefox) should do the work !
+* http://localhost !
 
 
 # Roadmap
