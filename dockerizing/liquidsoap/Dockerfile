@@ -7,15 +7,15 @@ RUN apt-get update -y && \
 	liquidsoap-plugin-voaacenc liquidsoap-plugin-vorbis liquidsoap-plugin-xmlplaylist
 
 RUN useradd -m -s /usr/bin/liquidsoap liquy && \
-	mkdir /home/liquy/audio && \
+	mkdir -p /home/liquy/audio && \
 	mkdir /home/liquy/scripts
 
 WORKDIR /home/liquy
 
-COPY ./audio /home/liquy/audio
-
-COPY ./scripts /home/liquy/scripts
+COPY ./test /home/liquy
+COPY ./conf.liq /home/liquy/conf.liq
+COPY ./fail.mp3 /home/liquy/audio/fail.mp3
 
 USER liquy
 
-ENTRYPOINT ["./scripts/test.liq"]
+ENTRYPOINT ["./script.liq"]

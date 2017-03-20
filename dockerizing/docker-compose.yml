@@ -1,5 +1,5 @@
-version: '2'  
-services:  
+version: '2'
+services:
   icecast:
     build:
       context: ./icecast/
@@ -7,7 +7,7 @@ services:
     volumes:
       - ./icecast/config:/etc/icecast2
     image: icecast-bretzel
-    ports: 
+    ports:
       - "8000:8000"
     hostname: icecast.bretzel
     networks:
@@ -16,12 +16,14 @@ services:
           - icecast
           - icecast.bretzel
 
-  liquidsoap:
+  liquidsoap_test:
     build:
       context: ./liquidsoap/
       dockerfile: Dockerfile
     volumes:
-      - ./liquidsoap:/home/liquy
+      - ./liquidsoap/test/audio:/home/liquy/audio
+      - ./liquidsoap/conf.liq:/home/liquy/conf.liq
+      - ./liquidsoap/fail.mp3:/home/liquy/audio/fail.mp3
     image: liquidsoap-bretzel
     hostname: liquidsoap.bretzel
     depends_on:
@@ -29,8 +31,8 @@ services:
     networks:
       radiobretzel:
         aliases:
-          - liquidsoap
-          - liquidsoap.bretzel
+          - liquidsoap_test
+          - liquidsoap_test.bretzel
 
   node:
     build:
@@ -53,4 +55,4 @@ networks:
     driver: bridge
     ipam:
       config:
-      - subnet: 18.18.18.0/24 
+      - subnet: 18.18.18.0/24
