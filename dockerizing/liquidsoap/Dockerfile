@@ -14,7 +14,8 @@ WORKDIR /home/liquy
 
 COPY ./test /home/liquy
 COPY ./conf.liq /home/liquy/conf.liq
-COPY ./fail.mp3 /home/liquy/audio/fail.mp3
+COPY ./fail.mp3 /home/liquy/fail.mp3
+COPY ./script.liq /home/liquy/script.liq
 
 USER liquy
 

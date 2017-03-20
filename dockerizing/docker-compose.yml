@@ -21,9 +21,7 @@ services:
       context: ./liquidsoap/
       dockerfile: Dockerfile
     volumes:
-      - ./liquidsoap/test/audio:/home/liquy/audio
-      - ./liquidsoap/conf.liq:/home/liquy/conf.liq
-      - ./liquidsoap/fail.mp3:/home/liquy/audio/fail.mp3
+      - ./liquidsoap/test:/home/liquy/var
     image: liquidsoap-bretzel
     hostname: liquidsoap.bretzel
     depends_on:

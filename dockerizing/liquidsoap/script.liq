@@ -5,11 +5,11 @@ set("log.file", false)
 set("log.stdout", true)
 
 %include "~/conf.liq"
-%include "~/infos.liq"
+%include "~/var/infos.liq"
 
 #Playlist Handler
-pl=playlist("~/audio/playlist.m3u")
-security=single("~/audio/fail.mp3")
+pl=playlist("~/var/playlist.m3u")
+security=single("~/fail.mp3")
 radio=fallback([pl, security])
 
 #Streaaaamin out !
