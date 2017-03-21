@@ -12,7 +12,7 @@
 # Liquidsoap Files
 # White Listing files
 
-/dockerizing/liquidsoap/test.log
+/dockerizing/liquidsoap/
 !/dockerizing/liquidsoap/test/
 !/dockerizing/liquidsoap/Dockerfile
 !/dockerizing/liquidsoap/script.liq
