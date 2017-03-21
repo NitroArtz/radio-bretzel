@@ -1,4 +1,28 @@
+# Git Ignore File
+
+
+# Node files
+
 /dockerizing/node/server/node_modules/
 /dockerizing/node/server/npm-debug.log
 /dockerizing/node/server/upload/
+
+
+
+# Liquidsoap Files
+# White Listing files
+
 /dockerizing/liquidsoap/test.log
+!/dockerizing/liquidsoap/test/
+!/dockerizing/liquidsoap/Dockerfile
+!/dockerizing/liquidsoap/script.liq
+!/dockerizing/liquidsoap/conf.liq
+!/dockerizing/liquidsoap/fail.mp3
+!/dockerizing/liquidsoap/template/
+
+
+
+# Icecast Files
+
+/dockerizing/icecast/config/admin/
+/dockerizing/icecast/config/web/
