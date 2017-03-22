@@ -58,6 +58,7 @@ networks:
     ipam:
       config:
         - subnet: 18.18.19.0/30
+        - gateway: 18.18.19.1
   radiobretzel:
     driver: bridge
     ipam:

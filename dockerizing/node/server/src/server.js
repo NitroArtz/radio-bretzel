@@ -39,6 +39,15 @@ app.get('/stream/test', (req,res) =>{
 	res.send('<html><body><h3>Stream Test</h3><div><audio src="http://'+FQDN+':8000/test" controls>Marche plus ? :(</audio></div></body></html>').end();
 });
 
+// CREATING NEW STREAM TEST
+app.get('/stream/test2', (req,res) =>{
+	res.send('<html><body><h3>Stream Test 2</h3><div><audio src="http://'+FQDN+':8000/test" controls>Marche plus ? :(</audio></div></body></html>').end();
+});
+app.get('/stream/generate', (req,res) =>{
+
+	res.send('<html>bo</html>').end();
+});
+
 
 //	auth
 app.post('/auth/check', (req,res) =>{
