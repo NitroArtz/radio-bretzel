@@ -3,7 +3,7 @@
 This project is used to setup your own private and collaborative webradio instance.  
 Invite friends, chat, upload music, and listen to it !
 
-Find more information about this project on the DOC.md file !
+Find more information about this project on the [DOC.md file](https://github.com/Clement-Ruiz/radio-bretzel/blob/papyDocker/documentation/DOC.md) !
 # Server
 ## Requirements
 * [Docker](https://www.docker.com/ "Docker Official Website") : docker, dockerd and docker-compose v2 binaries
