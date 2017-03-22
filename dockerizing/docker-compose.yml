@@ -47,8 +47,17 @@ services:
         aliases:
           - node
           - node.bretzel
+      nodetohost:
+        aliases:
+          - dockerhost
+        ipv4_address: 18.18.19.2
 
 networks:
+  nodetohost:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 18.18.19.0/30
   radiobretzel:
     driver: bridge
     ipam:

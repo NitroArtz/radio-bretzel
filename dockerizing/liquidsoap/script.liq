@@ -8,7 +8,7 @@ set("log.stdout", true)
 %include "~/var/infos.liq"
 
 #Playlist Handler
-pl=playlist("~/var/playlist.m3u")
+pl=playlist(reload=1, reload_mode="rounds", mode="normal", "~/var/playlist.m3u")
 security=single("~/fail.mp3")
 radio=fallback([pl, security])
 

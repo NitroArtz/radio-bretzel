@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine
 
 RUN mkdir -p /usr/src/app/upload
 
@@ -11,5 +11,6 @@ RUN npm install
 COPY ./server/app.js /usr/src/app/
 COPY ./server/src /usr/src/app/src
 
+USER node
 
 CMD ["node", "app.js"]
