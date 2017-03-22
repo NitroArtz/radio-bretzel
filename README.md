@@ -6,7 +6,7 @@ Invite friends, chat, upload music, and listen to it !
 Find more information about this project on the DOC.md file !
 # Server
 ## Requirements
-* [Docker](https://www.docker.com/ "Docker Official Website") : docker-engine and docker-compose binaries
+* [Docker](https://www.docker.com/ "Docker Official Website") : docker, dockerd and docker-compose v2 binaries
 * Any web browser. Test feedbacks are welcome :)
 
 Think about the storage and network resources. The needed amount will depend on how much clients you'll got.
