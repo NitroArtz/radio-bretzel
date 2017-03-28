@@ -7,6 +7,7 @@ const DOMAIN = "";
 const FQDN = "localhost";	//localhost here for dev
 const LOCAL_IP = "127.0.0.1";	//127.0.0.1 here for dev
 const PUBLIC_IP = "";
+const port = 8082;
 
 
 //APPLICATION STARTS HERE
@@ -15,7 +16,7 @@ var fs = require('fs');
 var express = require('express');
 var multer = require('multer');
 var app = express();
-var port = 8082;
+var container=require('dockerode');
 
 //routes
 //	index
@@ -44,6 +45,11 @@ app.get('/stream/test2', (req,res) =>{
 	res.send('<html><body><h3>Stream Test 2</h3><div><audio src="http://'+FQDN+':8000/test" controls>Marche plus ? :(</audio></div></body></html>').end();
 });
 app.get('/stream/generate', (req,res) =>{
+	//Do files exist ?
+
+
+	//Run CT
+//	docker.run('liquidsoap-bretzel', ["./string.liq"] , )
 
 	res.send('<html>bo</html>').end();
 });
