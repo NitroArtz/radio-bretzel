@@ -68,8 +68,8 @@ services:
     # We choose for dev to mount source code. By this, we can see our changing just by restarting this signle container. Of course, this line should be removed for prod.
     volumes:
       - ./node/server/src:/usr/src/app/src
-    image: node-bretzel
-    hostname: node.bretzel
+    image: frontend-bretzel
+    hostname: frontend.bretzel
     # We bind port 80 of host to port 8082 of the container. Feel free to bind the host's port of your choice, but make sure it's not already used !
     ports:
       - "80:8082"
