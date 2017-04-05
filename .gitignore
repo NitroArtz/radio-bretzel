@@ -21,8 +21,6 @@
 !/dockerizing/liquidsoap/template/
 
 
+# Design and Doc
 
-# Icecast Files
-
-/dockerizing/icecast/config/admin/
-/dockerizing/icecast/config/web/
+illustrator/

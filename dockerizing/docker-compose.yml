@@ -4,8 +4,6 @@ services:
     build:
       context: ./icecast/
       dockerfile: Dockerfile
-    volumes:
-      - ./icecast/config:/etc/icecast2
     image: icecast-bretzel
     ports:
       - "8000:8000"
