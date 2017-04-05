@@ -18,7 +18,7 @@ The following are hierarchy levels of rights and application layers. Every entit
 
 * (3) - **_Stream_** : a _Stream_ denotes a icecast server mount point which requires authentication to allow a user to listen to the _Stream_, preventing unwanted users on your bandwidth.
 
-#### User Levels (Level)
+#### Role Levels (Level)
 * (1) - **_Admin_** : The _Admin_ of the app have every possible rights. He can monitor each logic elements of the app (storage, networking, app configuration, etc...). He regulates physical resources of the hosting machine by restricting for example Disc Usage and CPU for each _Team_. The _Admin_ has the possibility to invite somebody by mail in order to create a new _Team_, and consequently a new _Pool_ entity and a _User_ account promoted after _Admin_ validation as a _Chief_.
 
 * (2) - **_Chief_** : The _Chief_ denotes the "_Team_ admin". He has all rights in it, except for the restrictions set by the _Admin_ (f.e. number of _Channels_, of _Users_, storage limit, bandwidth, etc...). The _Chief_ can invite and accept request for creating new _Users_ and manage them, create new _Channel_, manage the _Pool_, edit meta-datas, remove tracks, and manage _Stream_ behaviours.
@@ -37,4 +37,7 @@ This represents a non-exhaustive list of possible features we would like to inte
 ## Flow Diagrams
 
 (More incomming ...)
-* [File Upload](https://github.com/Clement-Ruiz/radio-bretzel/tree/papyDocker/documentation/Flow-Diagram-File-Upload.pdf)
+* [File Upload](https://github.com/Clement-Ruiz/radio-bretzel/tree/papyDocker/documentation/flow_diagrams/Flow-Diagram-File-Upload.pdf)
+* [Team Creation](https://github.com/Clement-Ruiz/radio-bretzel/blob/dockerizing/documentation/flow_diagrams/Flow-Diagram-Team-Creation.pdf)
+* [User Creation](https://github.com/Clement-Ruiz/radio-bretzel/blob/dockerizing/documentation/flow_diagrams/Flow-Diagram-User-Creation.pdf)
+* [Stream Creation](https://github.com/Clement-Ruiz/radio-bretzel/blob/dockerizing/documentation/flow_diagrams/Flow-Diagram-Stream-Creation.pdf)
