@@ -28,10 +28,3 @@ You'll find more about it on the [Wiki](https://github.com/Clement-Ruiz/radio-br
 
 * Your web browser (tested with Chromium and Firefox) should do the work !
 * http://localhost !
-
-
-## Infrastructure
-* authentication backend
-* elementary monitoring (storage/network)
-* storage
-* containerizing environment (ease bootstrap and app lifecycle management)
