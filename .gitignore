@@ -8,10 +8,13 @@
 
 
 # Liquidsoap Files
-# White Listing files
 
 /liquidsoap/
+
+# White Listing files
+
 !/liquidsoap/test/
+!/liquidsoap/pool/
 !/liquidsoap/Dockerfile
 !/liquidsoap/script.liq
 !/liquidsoap/conf.liq

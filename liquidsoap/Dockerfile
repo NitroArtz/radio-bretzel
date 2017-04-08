@@ -12,14 +12,14 @@ RUN apt-get update -y && \
 
 # Creating a workspace and a user with restricted shell
 RUN useradd -m -s /usr/bin/liquidsoap liquy && \
-	mkdir -p /home/liquy/audio && \
-	mkdir /home/liquy/scripts
+	mkdir -p /home/liquy/audio
 WORKDIR /home/liquy
 
 # Copying the main liquidsoap script, conf, and few audio test files.
-COPY ./test /home/liquy
+COPY ./test /home/liquy/var
 COPY ./conf.liq /home/liquy/conf.liq
 COPY ./fail.mp3 /home/liquy/fail.mp3
+COPY ./test.mp3 /home/liquy/test.mp3
 COPY ./script.liq /home/liquy/script.liq
 
 # Running Container as restricted shell user

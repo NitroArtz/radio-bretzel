@@ -21,7 +21,7 @@ var container=require('dockerode');
 //routes
 //	index
 app.get('/', (req,res) =>{
-	res.send('<html><body><h3>Hello You. It works. :O for </h3><ul><a href="/upload"><li>Upload</li></a><a href="/stream/test"><li>Test Stream</li></a></ul></body></html>').end();
+	res.send('<html><body><h3>Hello You. It works. :O</h3><ul><a href="/upload"><li>Upload</li></a><a href="/stream/test"><li>Test Stream</li></a><a href="/stream/pool"><li>All Pool Stream</li></a></ul></body></html>').end();
 });
 
 
@@ -41,8 +41,8 @@ app.get('/stream/test', (req,res) =>{
 });
 
 // CREATING NEW STREAM TEST
-app.get('/stream/test2', (req,res) =>{
-	res.send('<html><body><h3>Stream Test 2</h3><div><audio src="http://'+FQDN+':8000/test" controls>Marche plus ? :(</audio></div></body></html>').end();
+app.get('/stream/pool', (req,res) =>{
+	res.send('<html><body><h3>Stream Pool</h3><div><audio src="http://'+FQDN+':8000/pool" controls>Marche plus ? :(</audio></div></body></html>').end();
 });
 app.get('/stream/generate', (req,res) =>{
 	//Do files exist ?
