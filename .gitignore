@@ -8,15 +8,3 @@
 
 
 # Liquidsoap Files
-
-/liquidsoap/
-
-# White Listing files
-
-!/liquidsoap/test/
-!/liquidsoap/pool/
-!/liquidsoap/Dockerfile
-!/liquidsoap/script.liq
-!/liquidsoap/conf.liq
-!/liquidsoap/fail.mp3
-!/liquidsoap/template/
