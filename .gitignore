@@ -17,3 +17,9 @@
 !/liquidsoap/conf.liq
 !/liquidsoap/fail.mp3
 !/liquidsoap/template/
+
+
+# Documentation files
+
+#mwb backup
+/documentation/database/radio-bretzel-database-model.mwb.bak
