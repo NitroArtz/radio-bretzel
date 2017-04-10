@@ -6,5 +6,5 @@ name = "Pool"
 desc = "Entire Local Pool"
 # Source genre
 genre = "Mixed"
-# Source mount point name. This is the last part of stream's URL : http://icecast.serv/mountpoint
+# Source mount point name. This is the last part of stream's URL : http://icecast.server/mountpoint
 mountpoint = "pool"

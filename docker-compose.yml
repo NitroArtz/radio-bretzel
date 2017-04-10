@@ -10,13 +10,14 @@ networks:
         config:
           # Here we use a /24 mask, permitting ~ 250 free IP for new source containers. The IP and the mask can be addapted, allowing a large or less large number of containers.
         - subnet: 18.18.18.0/24
-  # This second network allows the backend container to call docker's API through a TCP socket.
-  tohost:
-    driver: bridge
-    ipam:
-      config:
-        # Here, we use a /30 mask to allow only 2 effectives IP on the network, once for the backend container and the other for the host.
-        - subnet: 18.18.19.0/30
+  # This second network allows the backend container to call docker's API through a TCP socket. We don't need it now, that's why it's commented
+  # tohost:
+  #   driver: bridge
+  #   ipam:
+  #     config:
+  #       # Here, we use a /30 mask to allow only 2 effectives IP on the network, once for the backend container and the other for the host.
+  #       - subnet: 18.18.19.0/30
+
 # Feel free to change any network's IP, but make sure "tohost"'s network have a /30 mask.
 
 # Now, the services.
@@ -42,28 +43,28 @@ services:
           - source-test
           - source-test.bretzel
 
-  # Another source container
-  source-pool:
-    build:
-      context: ./liquidsoap/
-      dockerfile: Dockerfile
-    volumes:
-      # mounting local music. Place your own local music path here.
-      - /home/papy/Musique/Music/Pendulum:/home/liquy/audio
-      # mounting project files for development. This line will be removed for prod
-      - ./liquidsoap/pool:/home/liquy/var
-    # naming the image
-    image: source-bretzel
-    hostname: source-pool.bretzel
-    # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
-    depends_on:
-      - "icecast"
-    # We include the sourcetest in the main network.
-    networks:
-      main:
-        aliases:
-          - source-pool
-          - source-pool.bretzel
+  # Another source container. Also commented. (as you can see)
+  # source-pool:
+  #   build:
+  #     context: ./liquidsoap/
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     # mounting local music. Place your own local music path here.
+  #     - /home/papy/Musique/Music/Pendulum:/home/liquy/audio
+  #     # mounting project files for development. This line will be removed for prod
+  #     - ./liquidsoap/pool:/home/liquy/var
+  #   # naming the image
+  #   image: source-bretzel
+  #   hostname: source-pool.bretzel
+  #   # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
+  #   depends_on:
+  #     - "icecast"
+  #   # We include the sourcetest in the main network.
+  #   networks:
+  #     main:
+  #       aliases:
+  #         - source-pool
+  #         - source-pool.bretzel
 
   # Second, the streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
   icecast:
@@ -104,9 +105,9 @@ services:
           - frontend
           - frontend.bretzel
       # For now, we use this frontend server as backend too. Backend must be able to communicate with the docker API of the host. We include it to the "tohost" network and force his IP address.
-      tohost:
-        aliases:
-          - appbackend
-          - appbackend.tohost
-        # We force its IP address in order to whitelist it from the host. If you changed this address, make sure to put the same in your dockerd conf file !
-        ipv4_address: 18.18.19.2
+      # tohost:
+      #   aliases:
+      #     - appbackend
+      #     - appbackend.tohost
+      #   # We force its IP address in order to whitelist it from the host. If you changed this address, make sure to put the same in your dockerd conf file !
+      #   ipv4_address: 18.18.19.2

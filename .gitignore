@@ -8,3 +8,6 @@
 
 
 # Liquidsoap Files
+/liquidsoap/pool/
+
+#Trying to whitelist files
