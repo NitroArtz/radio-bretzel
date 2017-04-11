@@ -1,15 +1,20 @@
 #!/bin/bash
 #     -- This script is a streaming creation tunnel. Its allows you to pop a new stream on your app in a second, using your local files.
-#        It MUST be run by root (for now)
+#        It MUST be run by root (for now) and from the radiobretzel directory
 #
 #       To Do :
 #         - Handle every variable through argument.
 #         - add a usage() function binded to -h
 # Any PR is welcome :)
 
+if [[ $EUID != 0 ]]; then
+   echo "This script must be run as root from its directory." 1>&2
+   exit 1
+fi
+
 readonly WORK_DIR=$(pwd)                                      # Working Directory Path.
 declare INSTANCE_ID="1"                                       # This one will be dynamically handled later. Notify the quotes
-declare SOURCE_PATH                                           # Contains the path of the music folder given as source
+declare SOURCE_PATH                                           # Contains the path of the music directory given as source
 declare MOUNTPOINT                                            # Icecast mountpoint
 declare MOUNTPOINT_PATH                                       # Full path of the config file created for the new mountpoint
 declare NAME                                                  # Stream name (infos.liq)
@@ -19,20 +24,24 @@ declare AUTH_URL="http://frontend.bretzel:8082/auth/check"    # Contains the URL
 declare BACKUP=0                                              # If this variable is set to 1, we create a backup file (user might override a mountpoint)
 
 
-echo "  -- Welcome to this (very) simple script. It'll allow you to make one of your local folder a streaming source named \"pool\"  --"
-echo "First, paste here the path of the folder music you want to use as streaming source. (absolute path is needed)"
+echo "  -- Welcome to this (very) simple script. It'll allow you to make one of your local directory a streaming source named \"pool\"  --"
+echo "First, paste here the path of the music directory you want to use as streaming source. (absolute path is needed)"
 
-# Setting the Music folder path
+# Setting the Music directory path
 #  --> Might be handled by an argument to the script (later)
 until [[ -d ${SOURCE_PATH} ]] ; do
   read SOURCE_PATH
-  # we verify the folder exists
-  [[ -d ${SOURCE_PATH} ]] && echo "[  OK  ]  Your folder has been successfully registered." || echo "[ !ERR ]  Please, verify you input."
+  # HERE WE NEED TO ESCAPE POTENTIAL CHARACTERS (following were testing and erro showed up):
+  #   - "
+  #   - $
+
+  # we verify the directory exists
+  [[ -d ${SOURCE_PATH} ]] && echo "[  OK  ]  Your directory has been successfully registered." || echo "[ !ERR ]  Please, verify you input."
 done
 # adding a "/" if not already present
 [[ ${SOURCE_PATH: -1} == / ]] || SOURCE_PATH="${SOURCE_PATH}/"
 
-# Here we choose a mountpoint for Icecast. This will also be the name of the folder containing the new source container configuration.
+# Here we choose a mountpoint for Icecast. This will also be the name of the directory containing the new source container configuration.
 echo "Finally, you have to choose a mountpoint for Icecast Server. It must be unique on the Icecast Server, and only contain letters (lowercase) or digits."
 OK=0
 until [[ ${OK} = 1 ]]; do
@@ -48,7 +57,7 @@ until [[ ${OK} = 1 ]]; do
       read OVERRIDE
       if [[ ${OVERRIDE} =~ ^[yn]{1}$ ]]; then
         if [[ ${OVERRIDE} == y ]]; then
-          # If folder already exists, we make a backup copy. :|
+          # If directory already exists, we make a backup copy. :|
           cp -r "${MOUNTPOINT_PATH}" "${MOUNTPOINT_PATH}.bak"
           BACKUP=1
           OK=1
@@ -99,7 +108,7 @@ fi
 # We create the forlder and exit if it fails.
 if [[ ${BACKUP} == 0 ]]; then
   mkdir "${MOUNTPOINT_PATH}" 2> /dev/null
-  [[ $? != 0 ]] && echo "[ FATAL ]  Something wrong happened during the mountpoint folder creation. Exiting ..." && exit 1
+  [[ $? != 0 ]] && echo "[ FATAL ]  Something wrong happened during the mountpoint directory creation. Exiting ..." && exit 1
 fi
 # We create the infos.liq file
 echo -e "name = \"${NAME}\"\n desc = \"${DESC}\"\n genre = \"${GENRE}\"\n mountpoint = \"${MOUNTPOINT}\"" > "${MOUNTPOINT_PATH}/infos.liq"
@@ -113,13 +122,13 @@ if [[ ! -f "${MOUNTPOINT_PATH}/infos.liq" ]]; then
 else echo "[  OK  ]  File \"${MOUNTPOINT_PATH}/infos.liq\" have been successfully created."
 fi
 
-# now we fill the playlist.m3u with all the files found in our SOURCE_PATH folder
+# now we fill the playlist.m3u with all the files found in our SOURCE_PATH directory
 SOURCE_LIST=$(find "${SOURCE_PATH}" -type f)
 REPLACEMENT="~/audio/"
 # Asking to override or append
 if [[ -f "${MOUNTPOINT_PATH}/playlist.m3u" ]]; then
   APPEND=o
-  echo "[ WARN ]  The file ${MOUNTPOINT_PATH}/playlist.m3u already exists. Do you want to append it or override it ? Type 'a' to append, selse to override"
+  echo "[ WARN ]  The file ${MOUNTPOINT_PATH}/playlist.m3u already exists. Do you want to append it or override it ? Type 'a' to append, else to override"
   read APPEND
   if [[ ${APPEND} == a ]]; then
     echo -e "\n${SOURCE_LIST//${SOURCE_PATH}/${REPLACEMENT}}" >> "${MOUNTPOINT_PATH}/playlist.m3u"
@@ -170,10 +179,11 @@ if [[ ${BACKUP} == 1 ]]; then
     if [[ ${STOP} =~ ^[yn]{1}$ ]]; then
       # Don't ask about settings if answered "no"
       if [[ ${STOP} == y ]]; then
-        docker contaier rm -f "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}"
+        docker container rm -f "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}"
         if [[ $? != 0 ]]; then
           echo "[ FATAL ]  Container radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID} was too powerful and couldn't be stopped.. He did conquire the entire world and galaxy, and now, we all live under his reign of suffering and despair ... Exiting ..."
           rm -rf "${MOUNTPOINT_PATH}.bak"
+          exit 1
         else
           sed "/radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}/d" ./system/${INSTANCE_ID}/source_ct_list > /dev/null 2>&1
           OK=1
@@ -201,7 +211,7 @@ docker_output=$(docker run -v "${MOUNTPOINT_PATH}/:/home/liquy/var/" \
 
 # Checking container is running
 # If not, throw error and exit script
-if [[ $? == 0 ]]; then
+if [[ $? != 0 ]]; then
   echo "[ FATAL ]  Container creation failed. docker return status : ${DOCKER_RETURN_STATUS}. Error output :"
   echo -e ${docker_output}
   echo "Aborting ..."
