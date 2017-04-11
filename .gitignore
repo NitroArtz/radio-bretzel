@@ -2,9 +2,9 @@
 
 # Node files
 
-node/server/node_modules/
+node/server/node_modules/*
 node/server/npm-debug.log
-node/server/upload/
+node/server/upload/*
 
 
 # Liquidsoap Files
