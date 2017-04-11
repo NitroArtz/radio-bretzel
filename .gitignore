@@ -2,12 +2,17 @@
 
 # Node files
 
-/node/server/node_modules/
-/node/server/npm-debug.log
-/node/server/upload/
+node/server/node_modules/
+node/server/npm-debug.log
+node/server/upload/
 
 
 # Liquidsoap Files
-/liquidsoap/pool/
+liquidsoap/*/
+!liquidsoap/test/
+!liquidsoap/template/
 
-#Trying to whitelist files
+
+
+# System Files
+system/
