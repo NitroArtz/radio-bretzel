@@ -5,12 +5,15 @@
 #       To Do :
 #         - Handle every variable through argument.
 #         - add a usage() function binded to -h
+#         - escape characters at input ()
 # Any PR is welcome :)
 
 if [[ $EUID != 0 ]]; then
-   echo "This script must be run as root from its directory." 1>&2
+   echo "[ !ERR ]  This script must be run as root and from this script's directory." 1>&2
    exit 1
 fi
+
+
 
 readonly WORK_DIR=$(pwd)                                      # Working Directory Path.
 declare INSTANCE_ID="1"                                       # This one will be dynamically handled later. Notify the quotes
@@ -31,9 +34,10 @@ echo "First, paste here the path of the music directory you want to use as strea
 #  --> Might be handled by an argument to the script (later)
 until [[ -d ${SOURCE_PATH} ]] ; do
   read SOURCE_PATH
-  # HERE WE NEED TO ESCAPE POTENTIAL CHARACTERS (following were testing and erro showed up):
+  # HERE WE NEED TO ESCAPE POTENTIAL CHARACTERS (following were tested and error showed up):
   #   - "
   #   - $
+  #   - \
 
   # we verify the directory exists
   [[ -d ${SOURCE_PATH} ]] && echo "[  OK  ]  Your directory has been successfully registered." || echo "[ !ERR ]  Please, verify you input."
@@ -42,7 +46,7 @@ done
 [[ ${SOURCE_PATH: -1} == / ]] || SOURCE_PATH="${SOURCE_PATH}/"
 
 # Here we choose a mountpoint for Icecast. This will also be the name of the directory containing the new source container configuration.
-echo "Finally, you have to choose a mountpoint for Icecast Server. It must be unique on the Icecast Server, and only contain letters (lowercase) or digits."
+echo "First of all, you have to choose a mountpoint for Icecast Server. It must be unique on the Icecast Server, and only contain letters (lowercase) or digits."
 OK=0
 until [[ ${OK} = 1 ]]; do
   read MOUNTPOINT
@@ -230,6 +234,7 @@ else
   if [[ ${BACKUP} == 1 ]]; then
     rm -rf "${MOUNTPOINT_PATH}.bak"
     echo "Removing backup files ...";
+  # Adding the container to the list file if not already present
   else echo -e "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}\n" >> ./system/${INSTANCE_ID}/source_ct_list
   fi
   echo "Thank you, come again ! =|"
