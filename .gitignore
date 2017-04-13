@@ -12,7 +12,7 @@ liquidsoap/*
 !liquidsoap/test/
 !liquidsoap/template/
 !liquidsoap/conf.liq
-!liquidsoap/DockerFile
+!liquidsoap/Dockerfile
 !liquidsoap/fail.mp3
 !liquidsoap/script.liq
 !liquidsoap/test.mp3
