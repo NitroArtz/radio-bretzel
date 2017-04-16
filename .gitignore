@@ -1,5 +1,8 @@
 # Git Ignore File
 
+# Icecast files
+icecast/icecast.xml
+
 # Node files
 
 node/server/node_modules/*
