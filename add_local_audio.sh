@@ -8,14 +8,29 @@
 #         - escape characters at input ()
 # Any PR is welcome :)
 
-if [[ $EUID != 0 ]]; then
+# This function is called everytime a fatal error occurs. It restore backup files if they exists and
+garbageClean() {
+  if [[ $1 == 1 ]]; then
+    # If backup enabled, we reset the files
+    mv "${MOUNTPOINT_PATH}.bak" "${MOUNTPOINT_PATH}"
+  else
+    rm -rf "${MOUNTPOINT_PATH}"
+  fi
+  [[ $? == 0 ]] && echo "[  OK  ]  Source files were restored correctly." || echo "[ FATAL ]  Couldn't restore or remove the files."
+  if [[ -f "${WORK_DIR}/icecast/icecast.xml.bak" ]]; then
+    mv "${WORK_DIR}/icecast/icecast.xml.bak" "${WORK_DIR}/icecast/icecast.xml"
+    [[ $? == 0 ]] && echo "[  OK  ]  Icecast files were restored correctly." || echo "[ FATAL ]  Couldn't restore or remove the files."
+  fi
+}
+
+# This line checks if user is root privileged and if the script is run in the radio-bretzel directory
+readonly WORK_DIR=$(pwd)                                      # Working Directory Path.
+if [[ ! "${WORK_DIR}" =~ \/radio-bretzel$ ]] || [[ $EUID != 0 ]]; then
    echo "[ !ERR ]  This script must be run as root and from this script's directory." 1>&2
    exit 1
 fi
 
-
-
-readonly WORK_DIR=$(pwd)                                      # Working Directory Path.
+# Declaring our Variables
 declare INSTANCE_ID="1"                                       # This one will be dynamically handled later. Notify the quotes
 declare SOURCE_PATH                                           # Contains the path of the music directory given as source
 declare MOUNTPOINT                                            # Icecast mountpoint
@@ -38,9 +53,15 @@ until [[ -d ${SOURCE_PATH} ]] ; do
   #   - "
   #   - $
   #   - \
+  #   - ~
 
+  # Here we exit the script if one of theses character is found in the path.
+  if [[ "${SOURCE_PATH}" =~ [\\\~\"\$] ]];then
+    echo "[ !ERR ]  Sorry, your local music path can't contain (yet) \", \\, $ nor ~. Rename the folder or create a symbolic link to it. Exiting ..."
+    exit 1
   # we verify the directory exists
-  [[ -d ${SOURCE_PATH} ]] && echo "[  OK  ]  Your directory has been successfully registered." || echo "[ !ERR ]  Please, verify you input."
+  else [[ -d ${SOURCE_PATH} ]] && echo "[  OK  ]  Your directory has been successfully registered." || echo "[ !ERR ]  Please, verify you input."
+  fi
 done
 # adding a "/" if not already present
 [[ ${SOURCE_PATH: -1} == / ]] || SOURCE_PATH="${SOURCE_PATH}/"
@@ -120,8 +141,7 @@ echo -e "name = \"${NAME}\"\n desc = \"${DESC}\"\n genre = \"${GENRE}\"\n mountp
 if [[ ! -f "${MOUNTPOINT_PATH}/infos.liq" ]]; then
   # If file doesn't exists, we restore backup and exit
   echo "[ FATAL ]  Something Wrong happened creating the source information file. Exiting..."
-  rm -rf "${MOUNTPOINT_PATH}"
-  [[ ${BACKUP} == 1 ]] && rm -rf "${MOUNTPOINT_PATH}.bak"
+  garbageClean ${BACKUP}
   exit 1
 else echo "[  OK  ]  File \"${MOUNTPOINT_PATH}/infos.liq\" have been successfully created."
 fi
@@ -142,36 +162,43 @@ else echo -e "#EXTM3U \n${SOURCE_LIST//${SOURCE_PATH}/${REPLACEMENT}}" > "${MOUN
 fi
 # Checking file ...
 if [[ ! -f "${MOUNTPOINT_PATH}/playlist.m3u" ]]; then
-  echo "[ FATAL ]  Something Wrong happened creating the playlist file."
+  echo "[ FATAL ]  Something Wrong happened creating the playlist file. Exiting ..."
   # Checking for backup file
-  rm -rf "${MOUNTPOINT_PATH}"
-  if [[ ${BACKUP} == 1 ]];then
-     echo "[ WARN ]  Restoring infos and playlist backups..."
-     mv "${MOUNTPOINT_PATH}.bak" "${MOUNTPOINT_PATH}"
-     echo "[  OK  ]  Backup successfully restored."
-   fi
-  echo "Exiting ..."
+  garbageClean ${BACKUP}
   exit 1
-
-  else echo "[  OK  ]  Playlist file is ready."
+else echo "[  OK  ]  Playlist file is ready."
 fi
 
-# --------------- INSERT HERE ICECAST CONFIGURATION TREATMENT ---------
-# As  explicited above, we must add a little piece of code in our radiobretzel/icecast/icecast.xml file.
-# in order to be sure our new stream listenners are authenticated  to the app
-# to connect to the icecast server.
-# might look like this :
-# <mount>
-#   <mount-name>/${MOUNTPOINT}</mount-name>
-#   <authentication type="url">
-#     <option name="listener_add" value="${AUTH_URL}"/>
-#     <option name="auth_header" value="icecast-auth-test: 1"/>
-#   </authentication>
-# </mount>
 
+# Testing if sed is installed
+if [[ ! $(which sed) ]]; then
+  echo "[ FATAL ]  \"sed\" binary not found. You need to install it or add it to your \$PATH environment variable. Exiting ..."
+  garbageClean ${BACKUP}
+  exit 1
+else
+  # Making Backup file for icecast conf
+  cp "${WORK_DIR}/icecast/icecast.xml" "${WORK_DIR}/icecast/icecast.xml.bak"
+  # Inserting lines in icecast conf for new stream
+
+  sed  '/<fileserve>/ i \
+  <mount>\
+    <mount-name>/'"${MOUNTPOINT}"'</mount-name>\
+    <authentication type=\"url\">\
+      <option name=\"listener_add\" value=\"'"${AUTH_URL}"'\"/>\
+      <option name=\"auth_header\" value=\"icecast-auth-test: 1\"/>\
+    </authentication>\
+  </mount>\
+  \
+  ' "${WORK_DIR}/icecast/icecast.xml" > "${WORK_DIR}/icecast/icecast.xml"
+  # If somthing wrong happened, we restore icecast backup conf
+  if [[ $? != 0 ]] ; then
+    echo "[ FATAL ]  An error occured configuring Icecast Server... Exiting..."
+    garbageClean ${BACKUP}
+    exit 1
+  fi
 # Don't forget to reload the icecast server configuration :
-# docker container restart "radiobretzel_icecast_${INSTANCE_ID}"
-
+  docker restart "radiobretzel_icecast_${INSTANCE_ID}"
+fi
 
 # If the mountpoint already exists, we must stop its container.
 if [[ ${BACKUP} == 1 ]]; then
@@ -183,10 +210,10 @@ if [[ ${BACKUP} == 1 ]]; then
     if [[ ${STOP} =~ ^[yn]{1}$ ]]; then
       # Don't ask about settings if answered "no"
       if [[ ${STOP} == y ]]; then
-        docker container rm -f "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}"
+        docker rm -f "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}"
         if [[ $? != 0 ]]; then
           echo "[ FATAL ]  Container radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID} was too powerful and couldn't be stopped.. He did conquire the entire world and galaxy, and now, we all live under his reign of suffering and despair ... Exiting ..."
-          rm -rf "${MOUNTPOINT_PATH}.bak"
+          garbageClean ${BACKUP}
           exit 1
         else
           sed "/radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}/d" ./system/${INSTANCE_ID}/source_ct_list > /dev/null 2>&1
@@ -194,7 +221,7 @@ if [[ ${BACKUP} == 1 ]]; then
         fi
       else
         echo "[ FATAL ]  You refused to stop previous named '${MOUNTPOINT}' mountpoint. Exiting ..."
-        rm -rf "${MOUNTPOINT_PATH}.bak"
+        garbageClean ${BACKUP}
         exit 1
       fi
     else echo "[ !ERR ]  I didn't understand your choice (y or n ?))"
@@ -218,14 +245,8 @@ docker_output=$(docker run -v "${MOUNTPOINT_PATH}/:/home/liquy/var/" \
 if [[ $? != 0 ]]; then
   echo "[ FATAL ]  Container creation failed. docker return status : ${DOCKER_RETURN_STATUS}. Error output :"
   echo -e ${docker_output}
-  echo "Aborting ..."
   # Checking for backup files ...
-  if [[ ${BACKUP} == 1 ]]; then
-     rm -rf "${MOUNTPOINT_PATH}"
-     echo "[ WARN ]  Restoring infos and playlist backups..."
-     mv "${MOUNTPOINT_PATH}.bak" "${MOUNTPOINT_PATH}"
-     echo "[  OK  ]  Backup successfully restored."
-   fi
+  garbageClean ${BACKUP}
   echo "Exiting ..."
   exit 1
 else
@@ -233,6 +254,7 @@ else
   mkdir -p ./system/${INSTANCE_ID}/ 2> /dev/null
   if [[ ${BACKUP} == 1 ]]; then
     rm -rf "${MOUNTPOINT_PATH}.bak"
+    rm -r "${WORK_DIR}/icecast/icecast.xml.bak"
     echo "Removing backup files ...";
   # Adding the container to the list file if not already present
   else echo -e "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}\n" >> ./system/${INSTANCE_ID}/source_ct_list
