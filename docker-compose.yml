@@ -43,28 +43,6 @@ services:
           - source-test
           - source-test.bretzel
 
-  # Another source container. Also commented. (as you can see)
-  # source-pool:
-  #   build:
-  #     context: ./liquidsoap/
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     # mounting local music. Place your own local music path here.
-  #     - /home/papy/Musique/Music/Pendulum:/home/liquy/audio
-  #     # mounting project files for development. This line will be removed for prod
-  #     - ./liquidsoap/pool:/home/liquy/var
-  #   # naming the image
-  #   image: source-bretzel
-  #   hostname: source-pool.bretzel
-  #   # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
-  #   depends_on:
-  #     - "icecast"
-  #   # We include the sourcetest in the main network.
-  #   networks:
-  #     main:
-  #       aliases:
-  #         - source-pool
-  #         - source-pool.bretzel
 
   # Second, the streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
   icecast:
@@ -75,6 +53,8 @@ services:
     # In a security concern, we should take a look at making it work without exposing another port of the host (for example using main network)
     ports:
       - "8000:8000"
+    volumes:
+      - ./icecast/icecast.xml:/etc/icecast/icecast.xml
     image: icecast-bretzel
     hostname: icecast.bretzel
     # Adding to the main network
