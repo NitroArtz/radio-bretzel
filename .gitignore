@@ -2,6 +2,7 @@
 
 # Icecast files
 icecast/icecast.xml
+icecast/icecast.xml.bak
 
 # Node files
 
