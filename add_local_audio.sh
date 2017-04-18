@@ -177,27 +177,34 @@ if [[ ! $(which sed) ]]; then
   exit 1
 else
   # Making Backup file for icecast conf
-  cp "${WORK_DIR}/icecast/icecast.xml" "${WORK_DIR}/icecast/icecast.xml.bak"
+  # cp "${WORK_DIR}/icecast/icecast.xml" "${WORK_DIR}/icecast/icecast.xml.bak"
   # Inserting lines in icecast conf for new stream
 
-  sed  '/<fileserve>/ i \
-  <mount>\
-    <mount-name>/'"${MOUNTPOINT}"'</mount-name>\
-    <authentication type=\"url\">\
-      <option name=\"listener_add\" value=\"'"${AUTH_URL}"'\"/>\
-      <option name=\"auth_header\" value=\"icecast-auth-test: 1\"/>\
-    </authentication>\
-  </mount>\
-  \
-  ' "${WORK_DIR}/icecast/icecast.xml" > "${WORK_DIR}/icecast/icecast.xml"
+  MOUNTPOINT_CONFIG="\
+    <mount>\n\
+      <mount-name>/${MOUNTPOINT}</mount-name>\n\
+      <authentication type=\"url\">\n\
+        <option name=\"listener_add\" value=\"${AUTH_URL}\"/>\n\
+        <option name=\"auth_header\" value=\"icecast-auth-test: 1\"/>\n\
+      </authentication>\n\
+    </mount>\n\n"
+
+  sed -i.bak "/<fileserve>/i ${MOUNTPOINT_CONFIG}" "${WORK_DIR}/icecast/icecast.xml"
   # If somthing wrong happened, we restore icecast backup conf
   if [[ $? != 0 ]] ; then
     echo "[ FATAL ]  An error occured configuring Icecast Server... Exiting..."
+    mv "${WORK_DIR}/icecast/icecast.xml.bak" "${WORK_DIR}/icecast/icecast.xml"
     garbageClean ${BACKUP}
     exit 1
   fi
 # Don't forget to reload the icecast server configuration :
-  docker restart "radiobretzel_icecast_${INSTANCE_ID}"
+  docker restart "radiobretzel_icecast_${INSTANCE_ID}" > /dev/null 2>&1
+  if [[ $? != 0 ]] ; then
+    echo "[ FATAL ]  An error occured restarting Icecast Server container... Exiting..."
+    mv "${WORK_DIR}/icecast/icecast.xml.bak" "${WORK_DIR}/icecast/icecast.xml"
+    garbageClean ${BACKUP}
+    exit 1
+  fi
 fi
 
 # If the mountpoint already exists, we must stop its container.
@@ -205,7 +212,7 @@ if [[ ${BACKUP} == 1 ]]; then
   OK=0
   until [[ ${OK} == 1 ]]; do
     STOP=n
-    echo "[ WARN ]  In Order to create new stream, the old one must be stopped. Continue ? (y/n)"
+    echo "[ WARN ]  In Order to create new stream, the old one must be stopped (Current listenners will be sooo disapointed !) Continue ? (y/n)"
     read STOP
     if [[ ${STOP} =~ ^[yn]{1}$ ]]; then
       # Don't ask about settings if answered "no"
@@ -252,12 +259,14 @@ if [[ $? != 0 ]]; then
 else
   echo "[  OK  ]  Your new stream is up !! Here's your source container id : ${docker_output}"
   mkdir -p ./system/${INSTANCE_ID}/ 2> /dev/null
+  # Removing icecast backup
+  rm -f "${WORK_DIR}/icecast/icecast.xml.bak"
   if [[ ${BACKUP} == 1 ]]; then
     rm -rf "${MOUNTPOINT_PATH}.bak"
-    rm -r "${WORK_DIR}/icecast/icecast.xml.bak"
     echo "Removing backup files ...";
   # Adding the container to the list file if not already present
-  else echo -e "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}\n" >> ./system/${INSTANCE_ID}/source_ct_list
+  else
+    echo "radiobretzel_source-${MOUNTPOINT}_${INSTANCE_ID}" >> ./system/${INSTANCE_ID}/source_ct_list
   fi
   echo "Thank you, come again ! =|"
   exit 0
