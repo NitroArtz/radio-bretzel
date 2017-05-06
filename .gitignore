@@ -1,6 +1,7 @@
 # Git Ignore File
 
 # Icecast files
+
 icecast/icecast.xml
 icecast/icecast.xml.bak
 
@@ -20,7 +21,6 @@ liquidsoap/*
 !liquidsoap/fail.mp3
 !liquidsoap/script.liq
 !liquidsoap/test.mp3
-
 
 
 # System Files
