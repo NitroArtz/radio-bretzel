@@ -23,3 +23,6 @@ liquidsoap/*
 
 # System Files
 system/
+
+# Documentation files
+documentation/database/radio-bretzel-database-model.mbw.bak
