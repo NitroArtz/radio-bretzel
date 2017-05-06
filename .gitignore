@@ -1,25 +1,27 @@
 # Git Ignore File
 
+# Icecast files
+icecast/icecast.xml
+icecast/icecast.xml.bak
+
 # Node files
 
-/node/server/node_modules/
-/node/server/npm-debug.log
-/node/server/upload/
+node/server/node_modules/*
+node/server/npm-debug.log
+node/server/upload/*
 
 
 # Liquidsoap Files
-# White Listing files
+liquidsoap/*
+!liquidsoap/test/
+!liquidsoap/template/
+!liquidsoap/conf.liq
+!liquidsoap/Dockerfile
+!liquidsoap/fail.mp3
+!liquidsoap/script.liq
+!liquidsoap/test.mp3
 
-/liquidsoap/
-!/liquidsoap/test/
-!/liquidsoap/Dockerfile
-!/liquidsoap/script.liq
-!/liquidsoap/conf.liq
-!/liquidsoap/fail.mp3
-!/liquidsoap/template/
 
 
-# Documentation files
-
-#mwb backup
-/documentation/database/radio-bretzel-database-model.mwb.bak
+# System Files
+system/

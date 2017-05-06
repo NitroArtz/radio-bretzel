@@ -7,6 +7,8 @@ set("log.stdout", true)
 %include "~/conf.liq"
 %include "~/var/infos.liq"
 
+url="http://#{host}#{port}/#{mountpoint}"
+
 #Playlist Handler
 pl=playlist(reload=1, reload_mode="rounds", mode="normal", "~/var/playlist.m3u")
 security=single("~/fail.mp3")
