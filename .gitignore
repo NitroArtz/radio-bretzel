@@ -8,8 +8,6 @@ icecast/icecast.xml.bak
 
 frontend/server/node_modules/*
 frontend/server/npm-debug.log
-frontend/server/upload/*
-
 
 # Liquidsoap Files
 liquidsoap/*
