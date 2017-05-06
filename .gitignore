@@ -6,9 +6,9 @@ icecast/icecast.xml.bak
 
 # Node files
 
-node/server/node_modules/*
-node/server/npm-debug.log
-node/server/upload/*
+frontend/server/node_modules/*
+frontend/server/npm-debug.log
+frontend/server/upload/*
 
 
 # Liquidsoap Files
