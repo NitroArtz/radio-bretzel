@@ -11,15 +11,23 @@ networks:
 
 # Volumes
 volumes:
-  mysql:
+  database:
     driver : local
   audio:
     driver : local
+  src-conf:
+    driver : local
+  ice-conf:
+    driver : local
+
 
 # Now, the services.
 services:
   # First, the source container. This one is a test, but it's used as a default image for any instance of a source container.
   source-test:
+    env_file:
+      - ./liquidsoap/conf/icecast-test.bretzel/icecast-conf.env
+      - ./liquidsoap/conf/icecast-test.bretzel/test/conf.env
     build:
       context: ./liquidsoap/
       dockerfile: Dockerfile
@@ -29,6 +37,12 @@ services:
     # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
     depends_on:
       - "icecast-test"
+    volumes:
+      # Uncomment these for prod
+      # - src-conf:/home/liquy/conf:ro
+      # - audio:/home/liquy/audio:ro
+      - ./audio/:/home/liquy/audio/:ro
+      - ./liquidsoap/conf/:/home/liquy/conf/:ro
     # We include the sourcetest in the default network.
     networks:
       default:
@@ -47,7 +61,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./icecast/icecast.xml:/etc/icecast/icecast.xml
+      # - ice-conf:/etc/icecast
+      - ./icecast/conf/:/etc/icecast/
     image: icecast-bretzel
     hostname: icecast-test.bretzel
     # Adding to the default network
@@ -57,7 +72,7 @@ services:
           - icecast-test
           - icecast-test.bretzel
 
-  # The frontend server. Here's handled the web interface through a nodejs server. Later, this server will be able to communicate with the API of the backend server.
+  # TEMPORARY -- Frontend web interface
   frontend:
     build:
       context: ./frontend/
@@ -85,11 +100,19 @@ services:
       dockerfile: Dockerfile
     # Here mounting docker socket of the host to communicate with docker's API
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      # - src-conf:/srv/src-conf
+      - ./liquidsoap/conf/:/srv/src-conf/
+      # - ice-conf:/srv/ice-conf
+      - ./icecast/conf/:/srv/ice-conf/
+      # - audio:/srv/audio
+      - ./audio/:/srv/audio/
+      # - /var/run/docker.sock:/var/run/docker.sock
       # For dev, we mount source code
       - ./backend/backend/:/usr/src/app/
     ports:
       - "1337:1337"
+    depends_on:
+      - "database"
     image: backend-bretzel
     hostname: backend.bretzel
     networks:
@@ -105,24 +128,9 @@ services:
     image: "mysql/mysql-server:5.7"
     hostname: database.bretzel
     volumes:
-      - mysql:/var/lib/mysql
+      - database:/var/lib/mysql
     networks:
       default:
         aliases:
           - database
           - database.bretzel
-
-  # Finally the file server
-  file-server:
-    build:
-      context: ./file-server/
-      dockerfile: Dockerfile
-    volumes:
-      - audio:/srv/audio/
-    image: file-server-bretzel
-    hostname: file-server.bretzel
-    networks:
-      default:
-        aliases:
-          - file-server
-          - file-server-bretzel
