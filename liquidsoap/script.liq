@@ -4,24 +4,31 @@
 set("log.file", false)
 set("log.stdout", true)
 
-%include "~/conf.liq"
-%include "~/var/infos.liq"
+# Loading config from environment
+icecastHost = getenv("ICECAST_HOST")
+icecastPort = getenv("ICECAST_PORT")
+sourcePasswd = getenv("ICECAST_SOURCE_PASSWD")
+icecastMountpoint = getenv("ICECAST_MOUNTPOINT")
+serverURL = getenv("ICECAST_URL")
 
-url="http://#{host}#{port}/#{mountpoint}"
+name = getenv("SOURCE_NAME")
+desc = getenv("SOURCE_DESC")
+genre = getenv("SOURCE_GENRE")
+playlistUrl=string.concat(["~/conf/",icecastHost,"/",icecastMountpoint,"/playlist.m3u"])
 
 #Playlist Handler
-pl=playlist(reload=1, reload_mode="rounds", mode="normal", "~/var/playlist.m3u")
+pl=playlist(reload=1, reload_mode="rounds", mode="normal", playlistUrl)
 security=single("~/fail.mp3")
 radio=fallback([pl, security])
 
 #Streaaaamin out !
 output.icecast(%mp3,
-host = host,
-port = port,
+host = icecastHost,
+port = int_of_string(icecastPort),
 name = name,
 description = desc,
 genre = genre,
-url = url,
-password = src_passwd,
-mount = mountpoint,
+url = serverURL,
+password = sourcePasswd,
+mount = icecastMountpoint,
 radio)
