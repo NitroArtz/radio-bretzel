@@ -1,25 +1,34 @@
 # Git Ignore File
 
+# Audio files
+audio/*
+!audio/test.mp3
+
 # Icecast files
+
 icecast/*
 !icecast/conf
 icecast/conf/*
 !icecast/conf/test
+
 !icecast/Dockerfile
 !icecast/icecast.xml.default
 
 
-
-# Node files
+# Frontend files
 
 frontend/server/node_modules/*
 frontend/server/npm-debug.log
 
 # Liquidsoap Files
+
 liquidsoap/*
 !liquidsoap/conf
 liquidsoap/conf/*
-!liquidsoap/conf/icecast-test.bretzel/test/*
+!liquidsoap/conf/icecast-test.bretzel
+liquidsoap/cong/icecast-test.bretzel/*
+!liquidsoap/conf/icecast-test.bretzel/test
+
 !liquidsoap/Dockerfile
 !liquidsoap/fail.mp3
 !liquidsoap/script.liq
