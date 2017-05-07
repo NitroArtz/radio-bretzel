@@ -1,8 +1,11 @@
 # Git Ignore File
 
 # Icecast files
-icecast/icecast.xml
-icecast/icecast.xml.bak
+icecast/*
+!Dockerfile
+!icecast.xml.default
+!icecast/conf/test/
+
 
 # Node files
 
@@ -11,14 +14,10 @@ frontend/server/npm-debug.log
 
 # Liquidsoap Files
 liquidsoap/*
-!liquidsoap/test/
-!liquidsoap/template/
-!liquidsoap/conf.liq
+!liquidsoap/conf/icecast-test.bretzel/test/*
 !liquidsoap/Dockerfile
 !liquidsoap/fail.mp3
 !liquidsoap/script.liq
-!liquidsoap/test.mp3
-
 
 
 # System Files
