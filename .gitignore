@@ -2,9 +2,9 @@
 
 # Icecast files
 icecast/*
-icecast/!Dockerfile
-icecast/!icecast.xml.default
-icecast/!icecast/conf/test/
+!icecast/Dockerfile
+!icecast/icecast.xml.default
+!icecast/icecast/conf/test/
 
 
 # Node files
