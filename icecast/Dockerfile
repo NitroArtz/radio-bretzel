@@ -8,8 +8,9 @@ RUN apt-get update -y && \
 	apt-get install -y icecast2
 
 # Copying icecast conf
-COPY ./icecast.xml /etc/icecast2/icecast.xml
+COPY ./conf/test/icecast.xml /etc/icecast2/icecast.mxl
 
 # Run container
 USER icecast2
-CMD ["icecast2", "-c", "/etc/icecast2/icecast.xml"]
+# Overide the start command to load another conf file.
+CMD ["icecast2", "-c", "etc/icecast2/icecast.xml"]
