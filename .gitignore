@@ -4,7 +4,7 @@
 icecast/*
 !icecast/Dockerfile
 !icecast/icecast.xml.default
-!icecast/icecast/conf/test/
+!icecast/conf/test/
 
 
 # Node files
