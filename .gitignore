@@ -2,9 +2,12 @@
 
 # Icecast files
 icecast/*
+!icecast/conf
+icecast/conf/*
+!icecast/conf/test
 !icecast/Dockerfile
 !icecast/icecast.xml.default
-!icecast/conf/test/*
+
 
 
 # Node files
@@ -14,6 +17,8 @@ frontend/server/npm-debug.log
 
 # Liquidsoap Files
 liquidsoap/*
+!liquidsoap/conf
+liquidsoap/conf/*
 !liquidsoap/conf/icecast-test.bretzel/test/*
 !liquidsoap/Dockerfile
 !liquidsoap/fail.mp3
