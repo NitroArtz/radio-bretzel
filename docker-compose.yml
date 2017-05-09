@@ -4,9 +4,6 @@ version: '2'
 networks:
   bretzel:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.133.7.0/24
 
 # Volumes
 volumes:
@@ -39,14 +36,11 @@ services:
     volumes:
       #- ./database/logs/:/var/log/
       - database:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_HOST=172.133.7.2
     networks:
       bretzel:
         aliases:
           - database
           - database.bretzel
-        ipv4_address: 172.133.7.3
 
   # The backend API.
   backend:
@@ -75,7 +69,6 @@ services:
         aliases:
           - backend
           - backend.bretzel
-        ipv4_address: 172.133.7.2
 
 
   # The streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
