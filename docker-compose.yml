@@ -2,96 +2,51 @@
 version: '2'
 
 networks:
-  default:
+  bretzel:
     driver: bridge
     ipam:
       config:
-        # Here we use a /24 mask, permitting ~ 250 free IP for new streaming containers. The IP and the mask can be addapted, allowing a large or less large number of containers. Feel free to change it
-      - subnet: 18.18.18.0/24
+        - subnet: 172.133.7.0/24
 
 # Volumes
 volumes:
   database:
     driver : local
-  audio:
-    driver : local
-  src-conf:
-    driver : local
-  ice-conf:
-    driver : local
+#   audio:
+#     driver : local
+#   src-conf:
+#     driver : local
+#   ice-conf:
+#     driver : local
 
 
 # Now, the services.
 services:
-  # First, the source container. This one is a test, but it's used as a default image for any instance of a source container.
-  source-test:
+  # The database container
+  database:
+    build:
+      context: ./database/
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE=backend
+        - MYSQL_USER=backend
+        - MYSQL_PASSWORD=backendpass
+        - MYSQL_ROOT_PASSWORD=rootpass
     env_file:
-      - ./liquidsoap/conf/icecast-test.bretzel/icecast-conf.env
-      - ./liquidsoap/conf/icecast-test.bretzel/test/conf.env
-    build:
-      context: ./liquidsoap/
-      dockerfile: Dockerfile
-    # naming the image
-    image: source-bretzel
-    hostname: source-test.bretzel
-    # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
-    depends_on:
-      - "icecast-test"
+      - ./database/mysql-server.env
+    image: "mysql/mysql-server:5.7"
+    hostname: database.bretzel
     volumes:
-      # Uncomment these for prod
-      # - src-conf:/home/liquy/conf:ro
-      # - audio:/home/liquy/audio:ro
-      - ./audio/:/home/liquy/audio/:ro
-      - ./liquidsoap/conf/:/home/liquy/conf/:ro
-    # We include the sourcetest in the default network.
+      #- ./database/logs/:/var/log/
+      - database:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_HOST=172.133.7.2
     networks:
-      default:
+      bretzel:
         aliases:
-          - source-test
-          - source-test.bretzel
-
-
-  # Second, the streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
-  icecast-test:
-    build:
-      context: ./icecast/
-      dockerfile: Dockerfile
-    # Here, we're binding port 8000 on the host. This allows us to go on icecast server web interface.
-    # In a security concern, we should take a look at making it work without exposing another port of the host (for example using default network)
-    ports:
-      - "8000:8000"
-    volumes:
-      # - ice-conf:/etc/icecast
-      - ./icecast/conf/:/etc/icecast/
-    image: icecast-bretzel
-    hostname: icecast-test.bretzel
-    # Adding to the default network
-    networks:
-      default:
-        aliases:
-          - icecast-test
-          - icecast-test.bretzel
-
-  # TEMPORARY -- Frontend web interface
-  frontend:
-    build:
-      context: ./frontend/
-      dockerfile: Dockerfile
-    # We choose for dev to mount source code. By this, we can see our changing just by restarting this signle container. Of course, this line should be removed for prod.
-    volumes:
-      - ./frontend/server/src:/usr/src/app/src
-    image: frontend-bretzel
-    hostname: frontend.bretzel
-    # We bind port 80 of host to port 8082 of the container. Feel free to bind the host's port of your choice, but make sure it's not already used !
-    ports:
-      - "80:8082"
-    # We add this container to both networks for now.
-    networks:
-      # Adding it to the default network
-      default:
-        aliases:
-          - frontend
-          - frontend.bretzel
+          - database
+          - database.bretzel
+        ipv4_address: 172.133.7.3
 
   # The backend API.
   backend:
@@ -116,21 +71,81 @@ services:
     image: backend-bretzel
     hostname: backend.bretzel
     networks:
-      default:
+      bretzel:
         aliases:
           - backend
           - backend.bretzel
+        ipv4_address: 172.133.7.2
 
-  # The database container
-  database:
-    env_file:
-      - ./database/mysql-server.env
-    image: "mysql/mysql-server:5.7"
-    hostname: database.bretzel
+
+  # The streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
+  icecast-test:
+    build:
+      context: ./icecast/
+      dockerfile: Dockerfile
+    # In a security concern, we should take a look at making it work without exposing another port of the host (for example using bretzel network)
+    ports:
+      - "8000:8000"
     volumes:
-      - database:/var/lib/mysql
+      # - ice-conf:/etc/icecast
+      - ./icecast/conf/:/etc/icecast/
+    image: icecast-bretzel
+    hostname: icecast-test.bretzel
+    depends_on:
+      - "backend"
+    # Adding to the bretzel network
     networks:
-      default:
+      bretzel:
         aliases:
-          - database
-          - database.bretzel
+          - icecast-test
+          - icecast-test.bretzel
+
+  # The source container. This one is a test, but it's used as a default image for any instance of a source container.
+  source-test:
+    env_file:
+      - ./liquidsoap/conf/icecast-test.bretzel/icecast-conf.env
+      - ./liquidsoap/conf/icecast-test.bretzel/test/conf.env
+    build:
+      context: ./liquidsoap/
+      dockerfile: Dockerfile
+    # naming the image
+    image: source-bretzel
+    hostname: source-test.bretzel
+    # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
+    depends_on:
+      - "icecast-test"
+    volumes:
+      # Uncomment these for prod
+      # - src-conf:/home/liquy/conf:ro
+      # - audio:/home/liquy/audio:ro
+      - ./audio/:/home/liquy/audio/:ro
+      - ./liquidsoap/conf/:/home/liquy/conf/:ro
+    # We include the sourcetest in the bretzel network.
+    networks:
+      bretzel:
+        aliases:
+          - source-test
+          - source-test.bretzel
+
+  # TEMPORARY -- Frontend web interface
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    # We choose for dev to mount source code. By this, we can see our changing just by restarting this signle container. Of course, this line should be removed for prod.
+    volumes:
+      - ./frontend/server/src:/usr/src/app/src
+    image: frontend-bretzel
+    hostname: frontend.bretzel
+    # We bind port 80 of host to port 8082 of the container. Feel free to bind the host's port of your choice, but make sure it's not already used !
+    ports:
+      - "80:8082"
+    depends_on:
+      - "backend"
+    # We add this container to both networks for now.
+    networks:
+      # Adding it to the bretzel network
+      bretzel:
+        aliases:
+          - frontend
+          - frontend.bretzel
