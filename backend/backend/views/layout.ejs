@@ -36,6 +36,19 @@
   <body>
     <%- body %>
 
+    <h1>Login</h1>
+        <form method="POST" action="/auth/local">
+        <input type="email" name="identifier">
+        <input type="password" name="password">
+        <input type="submit" value="submit">
+    </form>
+
+    <h1>Signup</h1>
+    <form method="POST" action="/user">
+        <input type="email" name="email">
+        <input type="password" name="password">
+        <input type="submit" value="submit">
+    </form>
 
 
     <!--

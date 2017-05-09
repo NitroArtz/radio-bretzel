@@ -42,9 +42,11 @@ module.exports.connections = {
   ***************************************************************************/
   mysqlServer: {
     adapter: 'sails-mysql',
-    host: 'database.bretzel',
-    user: 'root', //optional
-    password: 'rootpass', //optional
+    host: "172.133.7.3",
+    user: "backend",
+    password: "backendpass",
+    database: "backend",
+    port: 3306
   },
 
   /***************************************************************************

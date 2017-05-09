@@ -15,6 +15,7 @@ WORKDIR /usr/src/app/
 # Installing all node modules
 RUN npm install
 
+
 # Running the container
 USER node
 CMD ["/usr/local/bin/sails", "lift"]
