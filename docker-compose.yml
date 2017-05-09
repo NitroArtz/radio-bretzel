@@ -28,7 +28,7 @@ services:
         - MYSQL_DATABASE=backend
         - MYSQL_USER=backend
         - MYSQL_PASSWORD=backendpass
-        - MYSQL_ROOT_PASSWORD=rootpass
+        - MYSQL_RANDOM_ROOT_PASSWORD=yes
     env_file:
       - ./database/mysql-server.env
     image: "mysql/mysql-server:5.7"
