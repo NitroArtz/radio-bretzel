@@ -39,6 +39,10 @@ module.exports = {
       collection: 'album',
       via: 'teams'
     },
+    tracks: {
+      collection: 'track',
+      via: 'teams'
+    },
     description: {
       type: 'longtext',
     },

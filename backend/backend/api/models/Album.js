@@ -19,7 +19,7 @@ module.exports = {
     artist: {
       model: 'artist',
       required: true
-    }
+    },
     teams: {
       collection: 'team',
       via: 'albums'

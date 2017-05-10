@@ -36,6 +36,10 @@ module.exports = {
       collection: 'team',
       via: 'tracks'
     },
+    channels: {
+      collection: 'channel',
+      via: 'tracks'
+    },
     addedBy:{
       model: 'user',
       required: true,

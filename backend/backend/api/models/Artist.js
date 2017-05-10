@@ -35,7 +35,7 @@ module.exports = {
     genres: {
       collection: 'genre',
       via: 'artists'
-    }
+    },
     description: {
       type: 'longtext'
     }
