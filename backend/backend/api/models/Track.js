@@ -8,6 +8,56 @@
 module.exports = {
 
   attributes: {
-
+    active: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    name: {
+      type: 'string',
+      required: true
+    },
+    artist: {
+      model: 'artist',
+      required: true
+    },
+    album: {
+      model: 'album',
+      required: true
+    },
+    genres:{
+      collection: 'genre',
+      via: 'tracks'
+    },
+    featurings: {
+      collection: 'artist',
+      via: 'featurings'
+    },
+    teams: {
+      collection: 'team',
+      via: 'tracks'
+    },
+    addedBy:{
+      model: 'user',
+      required: true,
+      columnName: 'added_by'
+    },
+    description: {
+      type: 'longtext'
+    },
+    duration: {
+      type: 'string',
+      required: true
+    },
+    year: {
+      type: 'integer'
+    },
+    path: {
+      type: 'string',
+      required: true
+    },
+    weight: {
+      type: 'integer',
+      defaultsTo: 5000
+    }
   }
 };

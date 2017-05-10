@@ -9,12 +9,20 @@ _.merge(exports, {
   // Extend with custom logic here by adding additional fields, methods, etc.
 
   attributes: {
-    active :{
+    active: {
       type: 'boolean',
-      defaultsTo: false
+      defaultsTo: false,
     },
-    teamID: {
+    activationDate: {
+      type: 'datetime',
+      columnName: 'activated_at'
+    },
+    team: {
       model: 'team'
+    },
+    channels: {
+      collection: 'channel',
+      via: 'users'
     },
     firstName: {
       type: 'string',
@@ -27,11 +35,7 @@ _.merge(exports, {
       columnName: 'last_name'
     },
     description: {
-      type: 'string'
-    },
-    activationDate: {
-      type: 'datetime',
-      columnName: 'activated_at'
+      type: 'longtext'
     },
     lastConnection: {
       type: 'datetime',

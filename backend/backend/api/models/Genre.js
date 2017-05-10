@@ -8,6 +8,25 @@
 module.exports = {
 
   attributes: {
-
+    name: {
+      type: 'string',
+      required: true,
+    },
+    channels: {
+      collection: 'channel',
+      via: 'genres'
+    },
+    artists: {
+      collection: 'artist',
+      via: 'genres'
+    },
+    albums: {
+      collection: 'album',
+      via: 'genres'
+    },
+    tracks: {
+      collection: 'track',
+      via: 'genres'
+    }
   }
 };
