@@ -26,11 +26,13 @@ _.merge(exports, {
     },
     firstName: {
       type: 'string',
-      columnName: 'first_name'
+      columnName: 'first_name',
+      required: true
     },
     lastName: {
       type: 'string',
-      columnName: 'last_name'
+      columnName: 'last_name',
+      required: true
     },
     description: {
       type: 'longtext'

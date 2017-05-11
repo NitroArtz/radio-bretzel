@@ -15,6 +15,9 @@ WORKDIR /usr/src/app/
 # Installing all node modules
 RUN npm install
 
+# Params about sails-permissions
+COPY ./sails-permissions-default-config/admin-user.js:/usr/src/app/node_modules/sails-permissions/config/fixtures/user.js
+COPY ./sails-permissions-default-config/permissions.js:/usr/src/app/node_modules/sails-permissions/config/permissions.js
 
 # Running the container
 USER node
