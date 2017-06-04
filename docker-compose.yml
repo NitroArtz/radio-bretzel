@@ -21,21 +21,11 @@ volumes:
 services:
   # The database container
   database:
-    build:
-      context: ./database/
-      dockerfile: Dockerfile
-      args:
-        - MYSQL_DATABASE=backend
-        - MYSQL_USER=backend
-        - MYSQL_PASSWORD=backendpass
-        - MYSQL_RANDOM_ROOT_PASSWORD=yes
-    env_file:
-      - ./database/mysql-server.env
-    image: "mysql/mysql-server:5.7"
+    image: "mongo"
     hostname: database.bretzel
     volumes:
       #- ./database/logs/:/var/log/
-      - database:/var/lib/mysql
+      - database:/data/db
     networks:
       bretzel:
         aliases:
@@ -57,7 +47,7 @@ services:
       - ./audio/:/srv/audio/
       # - /var/run/docker.sock:/var/run/docker.sock
       # For dev, we mount source code
-      - ./backend/backend/:/usr/src/app/
+      - ./backend/:/usr/src/app/
     ports:
       - "1337:1337"
     depends_on:
