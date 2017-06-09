@@ -13,7 +13,7 @@ COPY ./package.json /usr/src/app/package.json
 WORKDIR /usr/src/app/
 
 # Installing all node modules
-RUN npm install
+RUN npm install -g
 
 # Params about sails-permissions
 # COPY ./sails-permissions-default-config/admin-user.js /usr/src/app/node_modules/sails-permissions/config/fixtures/user.js

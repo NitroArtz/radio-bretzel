@@ -5,7 +5,7 @@ networks:
   bretzel:
     driver: bridge
 
-# Volumes
+
 volumes:
   database:
     driver : local
@@ -17,7 +17,6 @@ volumes:
 #     driver : local
 
 
-# Now, the services.
 services:
   # The database container
   database:
@@ -66,7 +65,7 @@ services:
     build:
       context: ./icecast/
       dockerfile: Dockerfile
-    # In a security concern, we should take a look at making it work without exposing another port of the host (for example using bretzel network)
+    # In a security concern, we should take a look at making it work without exposing another port of the host (for example using separated network)
     ports:
       - "8000:8000"
     volumes:
