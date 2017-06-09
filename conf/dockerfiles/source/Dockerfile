@@ -4,7 +4,7 @@
 FROM debian:wheezy-slim
 
 # Setting env for conf
-ENV ICECAST_HOST="icecast-test.bretzel"
+ENV ICECAST_HOST="stream-test.bretzel"
 ENV ICECAST_PORT=8000
 ENV ICECAST_SOURCE_PASSWD="sourcepass"
 ENV ICECAST_MOUNTPOINT="test"
