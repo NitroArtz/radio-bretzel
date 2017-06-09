@@ -23,7 +23,7 @@ services:
     image: "mongo"
     hostname: database.bretzel
     volumes:
-      - ./logs/database/:/var/log/
+      - ./logs/database:/var/log
       - ./data/database:/data/db
     networks:
       bretzel:
@@ -39,14 +39,14 @@ services:
     # Here mounting docker socket of the host to communicate with docker's API
     volumes:
       # - src-conf:/srv/src-conf
-      - ./conf/source/:/srv/src-conf/
+      - ./conf/source:/srv/src-conf
       # - ice-conf:/srv/ice-conf
-      - ./conf/stream/:/srv/ice-conf/
+      - ./conf/stream:/srv/ice-conf
       # - audio:/srv/audio
-      - ./data/audio/:/srv/audio/
+      - ./data/audio:/srv/audio
       # - /var/run/docker.sock:/var/run/docker.sock
       # For dev, we mount source code
-      - ./api/:/usr/src/app/
+      - ./api:/usr/src/app
     ports:
       - "1337:1337"
     depends_on:
@@ -70,7 +70,7 @@ services:
       - "8000:8000"
     volumes:
       # - ice-conf:/etc/icecast
-      - ./conf/stream/:/etc/icecast/
+      - ./conf/stream:/etc/icecast
     image: stream-bretzel
     hostname: stream-test.bretzel
     depends_on:
@@ -100,8 +100,8 @@ services:
       # Uncomment these for prod
       # - src-conf:/home/source/conf:ro
       # - audio:/home/source/audio:ro
-      - ./data/audio/:/home/source/audio/:ro
-      - ./conf/source/:/home/source/conf/:ro
+      - ./data/audio:/home/source/audio:ro
+      - ./conf/source:/home/source/conf:ro
     # We include the sourcetest in the bretzel network.
     networks:
       bretzel:
