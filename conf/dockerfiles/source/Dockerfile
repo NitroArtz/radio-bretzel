@@ -20,16 +20,16 @@ RUN apt-get update -y && \
 	liquidsoap-plugin-voaacenc liquidsoap-plugin-vorbis liquidsoap-plugin-xmlplaylist
 
 # Creating a workspace and a user with restricted shell
-RUN useradd -m -s /usr/bin/liquidsoap liquy && \
-	mkdir -p /home/liquy/audio
-WORKDIR /home/liquy
+RUN useradd -m -s /usr/bin/liquidsoap source && \
+	mkdir -p /home/source/audio
+WORKDIR /home/source
 
 # Copying the main liquidsoap script and audio fail file.
-COPY ./fail.mp3 /home/liquy/fail.mp3
-COPY ./script.liq /home/liquy/script.liq
+COPY conf/source/fail.mp3 /home/source/fail.mp3
+COPY conf/source/script.liq /home/source/script.liq
 
 # Running Container as restricted shell user
-USER liquy
-
+WORKDIR /home/source
+USER source
 # The entrypoint of this container is a regular liquidsoap script run on foreground. while the source is up, the script keeps going, so as the container
-CMD ["./script.liq"]
+ENTRYPOINT ["./script.liq"]

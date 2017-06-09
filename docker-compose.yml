@@ -6,9 +6,9 @@ networks:
     driver: bridge
 
 
-volumes:
-  database:
-    driver : local
+#volumes:
+# database:
+#   driver : local
 #   audio:
 #     driver : local
 #   src-conf:
@@ -23,8 +23,8 @@ services:
     image: "mongo"
     hostname: database.bretzel
     volumes:
-      #- ./database/logs/:/var/log/
-      - database:/data/db
+      - ./logs/database/:/var/log/
+      - ./data/database:/data/db
     networks:
       bretzel:
         aliases:
@@ -32,76 +32,76 @@ services:
           - database.bretzel
 
   # The backend API.
-  backend:
+  api:
     build:
-      context: ./backend/
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./conf/dockerfiles/api/Dockerfile
     # Here mounting docker socket of the host to communicate with docker's API
     volumes:
       # - src-conf:/srv/src-conf
-      - ./liquidsoap/conf/:/srv/src-conf/
+      - ./conf/source/:/srv/src-conf/
       # - ice-conf:/srv/ice-conf
-      - ./icecast/conf/:/srv/ice-conf/
+      - ./conf/stream/:/srv/ice-conf/
       # - audio:/srv/audio
-      - ./audio/:/srv/audio/
+      - ./data/audio/:/srv/audio/
       # - /var/run/docker.sock:/var/run/docker.sock
       # For dev, we mount source code
-      - ./backend/:/usr/src/app/
+      - ./api/:/usr/src/app/
     ports:
       - "1337:1337"
     depends_on:
       - "database"
-    image: backend-bretzel
-    hostname: backend.bretzel
+    image: api-bretzel
+    hostname: api.bretzel
     networks:
       bretzel:
         aliases:
-          - backend
-          - backend.bretzel
+          - api
+          - api.bretzel
 
 
   # The streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
-  icecast-test:
+  stream-test:
     build:
-      context: ./icecast/
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./conf/dockerfiles/stream/Dockerfile
     # In a security concern, we should take a look at making it work without exposing another port of the host (for example using separated network)
     ports:
       - "8000:8000"
     volumes:
       # - ice-conf:/etc/icecast
-      - ./icecast/conf/:/etc/icecast/
-    image: icecast-bretzel
-    hostname: icecast-test.bretzel
+      - ./conf/stream/:/etc/icecast/
+    image: stream-bretzel
+    hostname: stream-test.bretzel
     depends_on:
-      - "backend"
+      - "api"
     # Adding to the bretzel network
     networks:
       bretzel:
         aliases:
-          - icecast-test
-          - icecast-test.bretzel
+          - stream-test
+          - stream-test.bretzel
 
   # The source container. This one is a test, but it's used as a default image for any instance of a source container.
   source-test:
     env_file:
-      - ./liquidsoap/conf/icecast-test.bretzel/icecast-conf.env
-      - ./liquidsoap/conf/icecast-test.bretzel/test/conf.env
+      - ./conf/source/stream-test.bretzel/stream-conf.env
+      - ./conf/source/stream-test.bretzel/test/conf.env
     build:
-      context: ./liquidsoap/
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./conf/dockerfiles/source/Dockerfile
     # naming the image
     image: source-bretzel
     hostname: source-test.bretzel
-    # In order to successfully run, the source containers must connect to an already existant and running icecast server, authenticate and start sending data to it.
+    # In order to successfully run, the source containers must connect to an already existant and running stream server, authenticate and start sending data to it.
     depends_on:
-      - "icecast-test"
+      - "stream-test"
     volumes:
       # Uncomment these for prod
-      # - src-conf:/home/liquy/conf:ro
-      # - audio:/home/liquy/audio:ro
-      - ./audio/:/home/liquy/audio/:ro
-      - ./liquidsoap/conf/:/home/liquy/conf/:ro
+      # - src-conf:/home/source/conf:ro
+      # - audio:/home/source/audio:ro
+      - ./data/audio/:/home/source/audio/:ro
+      - ./conf/source/:/home/source/conf/:ro
     # We include the sourcetest in the bretzel network.
     networks:
       bretzel:
@@ -112,8 +112,8 @@ services:
   # TEMPORARY -- Frontend web interface
   frontend:
     build:
-      context: ./frontend/
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./conf/dockerfiles/frontend/Dockerfile
     # We choose for dev to mount source code. By this, we can see our changing just by restarting this signle container. Of course, this line should be removed for prod.
     volumes:
       - ./frontend/server/src:/usr/src/app/src
@@ -123,7 +123,7 @@ services:
     ports:
       - "80:8082"
     depends_on:
-      - "backend"
+      - "api"
     # We add this container to both networks for now.
     networks:
       # Adding it to the bretzel network

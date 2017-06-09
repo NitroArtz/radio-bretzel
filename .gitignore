@@ -1,41 +1,29 @@
 # Git Ignore File
 
-# Audio files
-audio/*
-!audio/test.mp3
+# API modules
+api/node_modules/*
 
-# Icecast files
+# All Data files
+data/*
+!data/audio
+data/audio/*
+!data/audio/test.mp3
 
-icecast/*
-!icecast/conf
-icecast/conf/*
-!icecast/conf/test
+# Conf files
 
-!icecast/Dockerfile
-!icecast/icecast.xml.default
+conf/stream/*
+!conf/stream/icecast.xml.default
+!conf/stream/test
 
+conf/source/*
+!conf/source/fail.mp3
+!conf/source/script.liq
+!conf/source/stream-test.bretzel
 
 # Frontend files
 
 frontend/server/node_modules/*
 frontend/server/npm-debug.log
-
-# Liquidsoap Files
-
-liquidsoap/*
-!liquidsoap/conf
-liquidsoap/conf/*
-!liquidsoap/conf/icecast-test.bretzel
-liquidsoap/cong/icecast-test.bretzel/*
-!liquidsoap/conf/icecast-test.bretzel/test
-
-!liquidsoap/Dockerfile
-!liquidsoap/fail.mp3
-!liquidsoap/script.liq
-
-
-# System Files
-system/
 
 # Documentation files
 documentation/database/radio-bretzel-database-model.mwb.bak

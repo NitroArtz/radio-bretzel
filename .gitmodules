@@ -1,3 +1,3 @@
-[submodule "backend"]
-	path = backend
+[submodule "api"]
+	path = api
 	url = https://github.com/Clement-Ruiz/radio-bretzel-api.git
