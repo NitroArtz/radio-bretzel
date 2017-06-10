@@ -84,9 +84,6 @@ services:
 
   # The source container. This one is a test, but it's used as a default image for any instance of a source container.
   source-test:
-    env_file:
-      - ./conf/source/stream-test.bretzel/stream-conf.env
-      - ./conf/source/stream-test.bretzel/test/conf.env
     build:
       context: ./
       dockerfile: ./conf/dockerfiles/source/Dockerfile
