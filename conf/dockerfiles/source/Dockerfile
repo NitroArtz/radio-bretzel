@@ -4,10 +4,10 @@
 FROM debian:wheezy-slim
 
 # Setting env for conf
-ENV ICECAST_HOST="stream-test.bretzel"
-ENV ICECAST_PORT=8000
-ENV ICECAST_SOURCE_PASSWD="sourcepass"
-ENV ICECAST_MOUNTPOINT="test"
+ENV STREAM_HOST="stream-test.bretzel"
+ENV STREAM_PORT=8000
+ENV STREAM_SOURCE_PASSWD="sourcepass"
+ENV STREAM_MOUNTPOINT="test"
 ENV SOURCE_NAME="Radio Test"
 ENV SOURCE_DESC="Bretzel Radio Test"
 ENV SOURCE_GENRE="test"
