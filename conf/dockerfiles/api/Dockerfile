@@ -1,7 +1,6 @@
 # Sails Backend Dockerfile
 FROM node:alpine
 
-
 # Creating a workspace for the application
 RUN mkdir -p /usr/src/app
 RUN npm install -g sails

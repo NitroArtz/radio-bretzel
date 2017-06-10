@@ -70,7 +70,7 @@ services:
       - "8000:8000"
     volumes:
       # - ice-conf:/etc/icecast
-      - ./conf/stream:/etc/icecast2:ro
+      - ./conf/stream:/etc/icecast2/conf:ro
     image: stream-bretzel
     hostname: stream-test.bretzel
     depends_on:
