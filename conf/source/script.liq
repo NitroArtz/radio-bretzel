@@ -5,11 +5,11 @@ set("log.file", false)
 set("log.stdout", true)
 
 # Loading config from environment
-icecastHost = getenv("ICECAST_HOST")
-icecastPort = getenv("ICECAST_PORT")
-sourcePasswd = getenv("ICECAST_SOURCE_PASSWD")
-icecastMountpoint = getenv("ICECAST_MOUNTPOINT")
-serverURL = getenv("ICECAST_URL")
+icecastHost = getenv("STREAM_HOST")
+icecastPort = getenv("STREAM_PORT")
+sourcePasswd = getenv("STREAM_SOURCE_PASSWD")
+icecastMountpoint = getenv("STREAM_MOUNTPOINT")
+serverURL = getenv("STREAM_URL")
 
 name = getenv("SOURCE_NAME")
 desc = getenv("SOURCE_DESC")
