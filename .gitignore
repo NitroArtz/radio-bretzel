@@ -8,6 +8,8 @@ data/*
 !data/audio
 data/audio/*
 !data/audio/test.mp3
+!data/audio/test2.mp3
+!data/audio/test3.mp3
 
 # Conf files
 
