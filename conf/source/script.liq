@@ -10,16 +10,36 @@ icecastPort = getenv("STREAM_PORT")
 sourcePasswd = getenv("STREAM_SOURCE_PASSWD")
 icecastMountpoint = getenv("STREAM_MOUNTPOINT")
 serverURL = getenv("STREAM_URL")
-
+id = getenv("SOURCE_ID")
+apihost = getenv("API_HOST")
+key = getenv("SOURCE_TOKEN")
 name = getenv("SOURCE_NAME")
 desc = getenv("SOURCE_DESC")
 genre = getenv("SOURCE_GENRE")
-playlistUrl=string.concat(["~/conf/",icecastHost,"/",icecastMountpoint,"/playlist.m3u"])
 
-#Playlist Handler
-pl=playlist(reload=1, reload_mode="rounds", mode="normal", playlistUrl)
-security=single("~/fail.mp3")
-radio=fallback([pl, security])
+
+def filePath (id, key)
+  url = string.concat(['http://', apihost, '/test'])
+  response = http.get(headers=[('source-id', id), ('source-key', key)], url)
+  if snd(fst(fst(fst(response)))) == 200
+    then
+    echo=string.concat(['~/audio/', snd(response)])
+    echo
+  else
+    log("Server bad response :")
+    "../fail.mp3"
+  end
+end
+
+def createSource()
+  request.create(filePath(id,key))
+end
+
+security = single("~/fail.mp3")
+radio = fallback([
+  request.dynamic(createSource),
+  security
+  ])
 
 #Streaaaamin out !
 output.icecast(%mp3,

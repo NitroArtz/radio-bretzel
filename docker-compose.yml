@@ -38,8 +38,6 @@ services:
       dockerfile: ./conf/dockerfiles/api/Dockerfile
     # Here mounting docker socket of the host to communicate with docker's API
     volumes:
-      # - src-conf:/srv/src-conf
-      - ./conf/source:/srv/src-conf
       # - ice-conf:/srv/ice-conf
       - ./conf/stream:/srv/ice-conf
       # - audio:/srv/audio
@@ -93,10 +91,9 @@ services:
     # In order to successfully run, the source containers must connect to an already existant and running stream server, authenticate and start sending data to it.
     depends_on:
       - "stream-test"
+      - "api"
     volumes:
       # Uncomment these for prod
-      # - src-conf:/home/source/conf:ro
-      # - audio:/home/source/audio:ro
       - ./data/audio:/home/source/audio:ro
       - ./conf/source:/home/source/conf:ro
     # We include the sourcetest in the bretzel network.

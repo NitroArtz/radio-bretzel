@@ -13,10 +13,6 @@ COPY api/package.json /usr/src/app/package.json
 WORKDIR /usr/src/app/
 RUN npm install
 
-# Params about sails-permissions
-COPY api/sails-permissions-default-config/admin-user.js /usr/src/app/node_modules/sails-permissions/config/fixtures/user.js
-COPY api/sails-permissions-default-config/permissions.js /usr/src/app/node_modules/sails-permissions/config/permissions.js
-
 # Running the container
 USER node
 CMD ["/usr/local/bin/sails", "lift"]
