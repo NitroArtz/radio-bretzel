@@ -19,7 +19,7 @@ genre = getenv("SOURCE_GENRE")
 
 
 def filePath (id, key)
-  url = string.concat(['http://', apihost, '/test'])
+  url = string.concat(['http://', apihost, '/test/next'])
   response = http.get(headers=[('source-id', id), ('source-key', key)], url)
   if snd(fst(fst(fst(response)))) == 200
     then
