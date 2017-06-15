@@ -17,6 +17,8 @@ Think about the storage and network resources. The needed amount will depend on 
 So easy !
 * `git clone https://github.com/Clement-Ruiz/radio-bretzel.git`
 * `cd radio-bretzel`
+* `git submodule init`
+* `git submodule update`
 * `docker-compose up -d`
 
 
