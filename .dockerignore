@@ -1,0 +1,3 @@
+# Making builds faster by ignoring .git folders in the build context
+.git/
+api/.git
