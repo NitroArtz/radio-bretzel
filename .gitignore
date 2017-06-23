@@ -22,6 +22,8 @@ conf/source/*
 !conf/source/script.liq
 !conf/source/stream-test.bretzel
 
+conf/dockerfiles/api/Dockerfile
+
 # Frontend files
 
 frontend/server/node_modules/*
