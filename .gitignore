@@ -7,6 +7,8 @@ api/node_modules/*
 data/*
 !data/audio
 data/audio/*
+!data/audio/ok
+data/audio/ok/*
 !data/audio/ok/test.mp3
 !data/audio/ok/test2.mp3
 !data/audio/ok/test3.mp3
