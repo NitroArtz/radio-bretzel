@@ -5,17 +5,10 @@ set("log.file", false)
 set("log.stdout", true)
 
 # Loading config from environment
-icecastHost = getenv("STREAM_HOST")
-icecastPort = getenv("STREAM_PORT")
-sourcePasswd = getenv("STREAM_SOURCE_PASSWD")
 mountpoint = getenv("STREAM_MOUNTPOINT")
-serverURL = getenv("STREAM_URL")
 id = getenv("SOURCE_ID")
 apihost = getenv("API_HOST")
 key = getenv("SOURCE_TOKEN")
-name = getenv("SOURCE_NAME")
-desc = getenv("SOURCE_DESC")
-genre = getenv("SOURCE_GENRE")
 
 
 def filePath (id, key)
@@ -42,13 +35,6 @@ radio = fallback([
   ])
 
 #Streaaaamin out !
-output.icecast(%mp3,
-host = icecastHost,
-port = int_of_string(icecastPort),
-name = name,
-description = desc,
-genre = genre,
-url = serverURL,
-password = sourcePasswd,
-mount = mountpoint,
-radio)
+output.harbor(%mp3,
+  mount = mountpoint,
+  radio)

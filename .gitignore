@@ -15,9 +15,6 @@ data/audio/ok/*
 
 # Conf files
 
-conf/stream/*
-!conf/stream/icecast.xml.default
-!conf/stream/test
 
 conf/source/*
 !conf/source/fail.mp3

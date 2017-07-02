@@ -21,13 +21,13 @@ var container=require('dockerode');
 //routes
 //	index
 app.get('/', (req,res) =>{
-	res.send('<html><body><h3>Hello You. It works. :O</h3><ul><a href="/upload"><li>Upload</li></a><a href="/stream/test"><li>Test Stream</li></a><a href="/stream/pool"><li>All Pool Stream</li></a></ul></body></html>').end();
+	res.send('<html><body><h3>Hello You. It works. :O</h3><ul><a href="/upload"><li>Upload</li></a><a href="/stream/test"><li>Test Stream</li></a></ul></body></html>').end();
 });
 
 
 //	upload
 app.get('/upload', (req, res) => {
-	res.send('<html><body><form action="/upload" method="post" enctype="multipart/form-data"><input type="file" name="file"/><input type="submit"/></form></body></html>')
+	res.send('<html><body><form action="localhost:1337/upload" method="post" enctype="multipart/form-data"><input type="file" name="file[]"/><input type="file" name="file[]"/><input type="submit"/></form></body></html>')
 });
 app.post('/upload', multer({dest: './upload/'}).single('file'), function (req, res) {
 	console.log(req.file);
@@ -37,13 +37,9 @@ app.post('/upload', multer({dest: './upload/'}).single('file'), function (req, r
 
 // 	stream
 app.get('/stream/test', (req,res) =>{
-	res.send('<html><body><h3>Stream Test</h3><div><audio src="http://'+FQDN+':8000/test" controls>Marche plus ? :(</audio></div></body></html>').end();
+	res.send('<html><body><h3>Stream Test</h3><div><audio src="http://'+FQDN+':1337/test/test" controls>Marche plus ? :(</audio></div></body></html>').end();
 });
 
-// CREATING NEW STREAM TEST
-app.get('/stream/pool', (req,res) =>{
-	res.send('<html><body><h3>Stream Pool</h3><div><audio src="http://'+FQDN+':8000/pool" controls>Marche plus ? :(</audio></div></body></html>').end();
-});
 app.get('/stream/generate', (req,res) =>{
 	//Do files exist ?
 

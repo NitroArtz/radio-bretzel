@@ -39,7 +39,6 @@ services:
     # Here mounting docker socket of the host to communicate with docker's API
     volumes:
       # - ice-conf:/srv/ice-conf
-      - ./conf/stream:/srv/ice-conf
       # - audio:/srv/audio
       - ./data/audio:/srv/audio
       # - /var/run/docker.sock:/var/run/docker.sock
@@ -58,27 +57,6 @@ services:
           - api.bretzel
 
 
-  # The streaming server container. Here we're using Icecast2, allowing us to send our source data through http.
-  stream-test:
-    build:
-      context: ./
-      dockerfile: ./conf/dockerfiles/stream/Dockerfile
-    # In a security concern, we should take a look at making it work without exposing another port of the host (for example using separated network)
-    ports:
-      - "8000:8000"
-    volumes:
-      # - ice-conf:/etc/icecast
-      - ./conf/stream:/etc/icecast2/conf:ro
-    image: stream-bretzel
-    hostname: stream-test.bretzel
-    depends_on:
-      - "api"
-    # Adding to the bretzel network
-    networks:
-      bretzel:
-        aliases:
-          - stream-test
-          - stream-test.bretzel
 
   # The source container. This one is a test, but it's used as a default image for any instance of a source container.
   source-test:
@@ -88,13 +66,11 @@ services:
     # naming the image
     image: source-bretzel
     hostname: source-test.bretzel
-    # In order to successfully run, the source containers must connect to an already existant and running stream server, authenticate and start sending data to it.
     depends_on:
-      - "stream-test"
       - "api"
     volumes:
       # Uncomment these for prod
-      - ./data/audio:/home/source/audio:ro
+      - ./data/audio/ok:/home/source/audio:ro
       - ./conf/source:/home/source/conf:ro
     # We include the sourcetest in the bretzel network.
     networks:
