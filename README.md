@@ -13,7 +13,7 @@ Think about the storage and network resources. The needed amount will depend on 
 ## Installation
 
 So easy !
-* `git clone https://github.com/Clement-Ruiz/radio-bretzel.git`
+* `git clone https://github.com/radio-bretzel/radio-bretzel.git`
 * `cd radio-bretzel`
 * `git submodule init`
 * `git submodule update`
