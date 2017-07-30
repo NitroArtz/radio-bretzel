@@ -20,12 +20,12 @@ So easy !
 * `docker-compose up -d`
 
 
-**/!\\** 
- _In order to develop this project more confortably, we chose to mount api's source code 
-directly in the container, which overrides node_modules and cause "module not found" errors. 
-To bypass this, install the modules in the project directory on your host, like if you were 
-going to run it locally._
-**/!\\**  
+### /!\\
+> _In order to develop this project more confortably, we chose to mount api's source code 
+> directly in the container, which overrides node_modules and cause "module not found" errors. 
+> To bypass this, install the modules in the project directory on your host, like if you were 
+> going to run it locally._
+### /!\\  
 
 # Client
 
