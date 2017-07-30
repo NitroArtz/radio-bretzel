@@ -7,7 +7,6 @@ MAINTAINER Papy-Bretzel <papybretzel@protonmail.com>
 RUN mkdir -p /usr/src/app
 # Copying source code
 # COPY ../../../api/ /usr/src/app/
-# COPY api/package.json /usr/src/app/package.json
 
 # Installing all node modules
 WORKDIR /usr/src/app/
