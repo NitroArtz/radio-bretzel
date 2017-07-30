@@ -72,7 +72,7 @@ services:
     image: radio-bretzel-source
     hostname: source-test.bretzel
     depends_on:
-      - "api"
+      - api
     volumes:
       # Uncomment these for prod
       - ./data/audio/ok:/home/source/audio:ro
@@ -96,9 +96,9 @@ services:
     hostname: frontend.bretzel
     # We bind port 80 of host to port 8082 of the container. Feel free to bind the host's port of your choice, but make sure it's not already used !
     ports:
-      - "80:8082"
+      - 80:8082
     depends_on:
-      - "api"
+      - api
     # We add this container to both networks for now.
     networks:
       # Adding it to the bretzel network
@@ -106,3 +106,22 @@ services:
         aliases:
           - frontend
           - frontend.bretzel
+
+  # For development, we set a phpmyadmin container.
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    hostname: phpmyadmin.bretzel
+    environment:
+      - PMA_HOST=database.bretzel
+      - PMA_PORT=3306
+      - PMA_USER=radio-bretzel-api
+      - PMA_PASSWORD=radio-bretzel-apipass
+    depends_on:
+      - database
+    ports:
+      - 8080:80
+    networks:
+      bretzel:
+        aliases:
+          - phpmyadmin
+          - phpmyadmin.bretzel
