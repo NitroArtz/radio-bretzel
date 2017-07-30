@@ -20,8 +20,13 @@ networks:
 services:
   # The database container
   database:
-    image: "mongo"
+    image: mysql
     hostname: database.bretzel
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_USER=radio-bretzel-api
+      - MYSQL_PASSWORD=radio-bretzel-apipass
+      - MYSQL_DATABASE=radio-bretzel
     volumes:
       - ./logs/database:/var/log
       - ./data/database:/data/db
@@ -36,20 +41,20 @@ services:
     build:
       context: ./
       dockerfile: ./conf/dockerfiles/api/Dockerfile
-    # Here mounting docker socket of the host to communicate with docker's API
+    image: radio-bretzel-api
+    hostname: api.bretzel
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - database
     volumes:
-      # - ice-conf:/srv/ice-conf
       # - audio:/srv/audio
       - ./data/audio:/srv/audio
       # - /var/run/docker.sock:/var/run/docker.sock
       # For dev, we mount source code
       - ./api:/usr/src/app
     ports:
-      - "1337:1337"
-    depends_on:
-      - "database"
-    image: api-bretzel
-    hostname: api.bretzel
+      - 3000:3000
     networks:
       bretzel:
         aliases:
@@ -64,7 +69,7 @@ services:
       context: ./
       dockerfile: ./conf/dockerfiles/source/Dockerfile
     # naming the image
-    image: source-bretzel
+    image: radio-bretzel-source
     hostname: source-test.bretzel
     depends_on:
       - "api"
@@ -87,7 +92,7 @@ services:
     # We choose for dev to mount source code. By this, we can see our changing just by restarting this signle container. Of course, this line should be removed for prod.
     volumes:
       - ./frontend/server/src:/usr/src/app/src
-    image: frontend-bretzel
+    image: radio-bretzel-frontend
     hostname: frontend.bretzel
     # We bind port 80 of host to port 8082 of the container. Feel free to bind the host's port of your choice, but make sure it's not already used !
     ports:
