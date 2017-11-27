@@ -1,0 +1,2 @@
+FROM  traefik:1.4-alpine
+MAINTAINER Papy Bretzel "radio-bretzel@ntymail.com"
