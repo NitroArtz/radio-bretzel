@@ -1,0 +1,29 @@
+FROM radiobretzel/source:liquidsoap
+
+LABEL project.component="Radio Bretzel Source"
+LABEL project.version="0.0.2"
+LABEL project.env="dev"
+LABEL docker.image.name="radiobretzel/source:dev-0.0.2"
+LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
+
+# Info about next line can be found at https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#user
+WORKDIR /audio
+RUN chown -R liquidsoap:liquidsoap /audio && \
+  chmod -R 600 /audio
+
+COPY fail.mp3 /fail.mp3
+
+VOLUME /audio
+VOLUME /home/liquidsoap
+
+USER liquidsoap
+WORKDIR /home/liquidsoap
+
+ENV API_HOST="api.radiobretzel"
+ENV STREAM_HOST="stream.radiobretzel"
+ENV STREAM_MOUNTPOINT="/test"
+ENV SOURCE_ID="00000000-0000-0000-0000-000000000000"
+ENV PATH="/usr/bin/liquidsoap"
+
+ENTRYPOINT ["liquidsoap"]
+CMD ["default.liq"]
