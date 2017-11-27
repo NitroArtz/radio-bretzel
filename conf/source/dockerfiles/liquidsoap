@@ -1,0 +1,17 @@
+FROM radiobretzel/source:base
+
+LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
+
+RUN apt-get update -y && apt-get install -y \
+  liquidsoap \
+  liquidsoap-plugin-faad \
+  liquidsoap-plugin-flac \
+	liquidsoap-plugin-icecast \
+  liquidsoap-plugin-lame \
+  liquidsoap-plugin-mad \
+  liquidsoap-plugin-ogg \
+	liquidsoap-plugin-pulseaudio \
+  liquidsoap-plugin-samplerate \
+  liquidsoap-plugin-taglib \
+  liquidsoap-plugin-voaacenc \
+  liquidsoap-plugin-vorbis \
