@@ -5,7 +5,5 @@ LABEL docker.image.name="radiobretzel/stream:icecast"
 LABEL docker.image.version="0.1"
 LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
 
-RUN apt-get update && apt-get install -y icecast2 && \
-  rm -rf /etc/icecast2/*
-
+RUN apt-get update && apt-get install -y icecast2
 COPY default.xml /etc/icecast2/default.xml
