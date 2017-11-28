@@ -1,27 +1,8 @@
-# Git Ignore File
-
-# Icecast files
-
-icecast/icecast.xml
-icecast/icecast.xml.bak
-
-# Node files
-
-node/server/node_modules/*
-node/server/npm-debug.log
-node/server/upload/*
-
-
-# Liquidsoap Files
-liquidsoap/*
-!liquidsoap/test/
-!liquidsoap/template/
-!liquidsoap/conf.liq
-!liquidsoap/Dockerfile
-!liquidsoap/fail.mp3
-!liquidsoap/script.liq
-!liquidsoap/test.mp3
-
-
-# System Files
-system/
+data/
+!data/audio
+data/audio/
+!data/audio/ok/
+data/audio/ok/
+!data/audio/ok/test.mp3
+!data/audio/ok/test2.mp3
+!data/audio/ok/test3.mp3
