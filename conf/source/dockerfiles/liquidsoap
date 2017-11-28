@@ -1,17 +1,12 @@
 FROM radiobretzel/source:base
 
+LABEL project.component="Radio Bretzel Source"
+LABEL docker.image.name="radiobretzel/source:liquidsoap"
+LABEL docker.image.version="0.1"
 LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
 
 RUN apt-get update -y && apt-get install -y \
   liquidsoap \
-  liquidsoap-plugin-faad \
-  liquidsoap-plugin-flac \
-	liquidsoap-plugin-icecast \
-  liquidsoap-plugin-lame \
-  liquidsoap-plugin-mad \
-  liquidsoap-plugin-ogg \
-	liquidsoap-plugin-pulseaudio \
-  liquidsoap-plugin-samplerate \
-  liquidsoap-plugin-taglib \
-  liquidsoap-plugin-voaacenc \
-  liquidsoap-plugin-vorbis \
+  liquidsoap-plugin-all
+
+COPY fail.mp3 /fail.mp3
