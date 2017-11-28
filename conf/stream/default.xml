@@ -18,7 +18,7 @@
         <admin-password>adminpass</admin-password>
     </authentication>
 
-    <hostname>radiobretzel_icecast</hostname>
+    <hostname>radiobretzel</hostname>
 
     <listen-socket>
         <port>8000</port>
