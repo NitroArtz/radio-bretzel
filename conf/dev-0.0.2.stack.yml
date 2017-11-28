@@ -22,6 +22,8 @@ services:
       context: ./stream
       dockerfile: ./stream/dockerfiles/dev-0.0.2
     hostname: stream-test
+    ports:
+      - 8000:8000
     network:
       radiobretel:
         aliases:
