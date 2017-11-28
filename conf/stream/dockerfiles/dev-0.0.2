@@ -1,0 +1,12 @@
+FROM radiobretzel/stream:icecast
+
+
+VOLUME /etc/icecast2/ 
+
+EXPOSE 8000 
+
+USER icecast
+WORKDIR /etc/icecast2/
+
+ENTRYPOINT ["icecast2", "-c"]
+CMD ["icecast2.xml.default"]
