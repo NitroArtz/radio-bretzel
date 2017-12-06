@@ -12,11 +12,12 @@ WORKDIR /scripts
 COPY fail.mp3 /fail.mp3
 COPY scripts/dummy.liq /scripts/dummy.liq
 
-# Info about next line can be found at https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#user
 RUN chown -R liquidsoap:liquidsoap /audio && \
   chown -R liquidsoap:liquidsoap /scripts && \
-  chmod -R 500 /audio && \
-  chmod -R 500 /scripts && \
+  find /audio -type d -exec chmod 500 {} \;
+  find /audio -type f -exec chmod 400 {} \;
+  find /scripts -type d -exec chmod 500 {} \;
+  find /scripts -type f -exec chmod 400 {} \;
   chown liquidsoap:liquidsoap /fail.mp3 && \
   chmod 400 /fail.mp3
 
@@ -24,7 +25,7 @@ VOLUME /audio
 VOLUME /scripts
 
 ENV API_HOST="api.radiobretzel"
-ENV STREAM_HOST="stream.radiobretzel"
+ENV STREAM_HOST="stream-test.radiobretzel"
 ENV STREAM_MOUNTPOINT="/test"
 ENV SOURCE_ID="00000000-0000-0000-0000-000000000000"
 ENV PATH="/usr/bin/liquidsoap"
