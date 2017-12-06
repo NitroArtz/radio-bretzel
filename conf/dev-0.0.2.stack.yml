@@ -1,7 +1,7 @@
 version: "3.3"
 
-network:
-  radiobretel:
+networks:
+  radiobretzel:
     driver: bridge
 
 services:
@@ -9,10 +9,10 @@ services:
     image: radiobretzel/source:dev-0.0.2
     build:
       context: ./source
-      dockerfile: ./source/dockerfiles/dev-0.0.2
+      dockerfile: ./dockerfiles/dev-0.0.2
     hostname: source-test
-    network:
-      radiobretel:
+    networks:
+      radiobretzel:
         aliases:
           - source-test.radiobretzel
 
@@ -20,11 +20,11 @@ services:
     image: radiobretzel/stream:dev-0.0.2
     build:
       context: ./stream
-      dockerfile: ./stream/dockerfiles/dev-0.0.2
+      dockerfile: ./dockerfiles/dev-0.0.2
     hostname: stream-test
     ports:
       - 8000:8000
-    network:
-      radiobretel:
+    networks:
+      radiobretzel:
         aliases:
-          - stream-test.radiobretel
+          - stream-test.radiobretzel
