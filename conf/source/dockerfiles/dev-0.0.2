@@ -33,6 +33,5 @@ ENV PATH="/usr/bin/liquidsoap"
 USER liquidsoap
 WORKDIR /scripts
 
-ENTRYPOINT ["/bin/bash"]
 ENTRYPOINT ["/usr/bin/liquidsoap"]
 CMD ["./dummy.liq"]
