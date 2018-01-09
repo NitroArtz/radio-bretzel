@@ -6,10 +6,10 @@ networks:
 
 services:
   source:
-    image: radiobretzel/source:dev-0.0.2
+    image: radiobretzel/source:dev
     build:
       context: ./source
-      dockerfile: ./dockerfiles/dev-0.0.2
+      dockerfile: ./dockerfiles/dev
     hostname: source-test
     networks:
       radiobretzel:
@@ -17,10 +17,10 @@ services:
           - source-test.radiobretzel
 
   stream:
-    image: radiobretzel/stream:dev-0.0.2
+    image: radiobretzel/stream:dev
     build:
       context: ./stream
-      dockerfile: ./dockerfiles/dev-0.0.2
+      dockerfile: ./dockerfiles/dev
     hostname: stream-test
     ports:
       - 8000:8000

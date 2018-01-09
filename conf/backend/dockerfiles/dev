@@ -1,0 +1,7 @@
+FROM radiobretzel/backend:flask
+
+LABEL project.component="Radio Bretzel Backend"
+LABEL project.version="0.0.2"
+LABEL docker.image.name="radiobretzel/backend:flask"
+LABEL docker.image.version="0.1"
+LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"

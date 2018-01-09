@@ -1,12 +1,5 @@
 FROM radiobretzel/source:liquidsoap
 
-LABEL project.component="Radio Bretzel Source"
-LABEL project.version="0.0.2"
-LABEL project.env="dev"
-LABEL docker.image.name="radiobretzel/source:dev-0.0.2"
-LABEL docker.image.version="0.1"
-LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
-
 WORKDIR /audio
 WORKDIR /scripts
 COPY fail.mp3 /fail.mp3
@@ -35,3 +28,10 @@ WORKDIR /scripts
 
 ENTRYPOINT ["/usr/bin/liquidsoap"]
 CMD ["./dummy.liq"]
+
+LABEL project.component="Radio Bretzel Source"
+LABEL project.version="0.0.2"
+LABEL project.env="dev"
+LABEL docker.image.name="radiobretzel/source:dev"
+LABEL docker.image.version="0.1"
+LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"

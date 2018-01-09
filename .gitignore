@@ -1,8 +1,8 @@
-data/*
-!data/audio
-data/audio/*
-!data/audio/ok/
-data/audio/ok/*
-!data/audio/ok/test.mp3
-!data/audio/ok/test2.mp3
-!data/audio/ok/test3.mp3
+_data/*
+!_data/audio
+_data/audio/*
+!_data/audio/ok/
+_data/audio/ok/*
+!_data/audio/ok/test.mp3
+!_data/audio/ok/test2.mp3
+!_data/audio/ok/test3.mp3
