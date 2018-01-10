@@ -1,7 +1,5 @@
 FROM radiobretzel/source:liquidsoap
 
-WORKDIR /audio
-WORKDIR /scripts
 COPY fail.mp3 /fail.mp3
 COPY scripts/dummy.liq /scripts/dummy.liq
 
