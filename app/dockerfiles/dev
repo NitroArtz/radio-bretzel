@@ -9,7 +9,7 @@ RUN pip install -r requirements.txt
 VOLUME /usr/src/app
 VOLUME /var/lib/docker.sock
 
-EXPOSE 80
+EXPOSE 5000
 
 CMD ["hello.py"]
 
