@@ -1,22 +1,13 @@
 version: "3.3"
 
-networks:
-  radiobretzel:
-    driver: bridge
-
 services:
   backend:
     image: radiobretzel/backend:feature-1.1-Generate-audio-source
     build:
       context: ./app/
       dockerfile: dockerfiles/dev
-    network:
-      radiobretzel:
-        aliases:
-          - backend
-          - backend.radiobretzel
     ports:
       - 80:5000
     volumes:
       - app/:/usr/src/app
-- /var/lib/docker.sock
+      - /var/lib/docker.sock
