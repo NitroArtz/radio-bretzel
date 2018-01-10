@@ -19,3 +19,4 @@ services:
       - 80:80
     volumes:
       - app/:/usr/src/app
+      - /var/lib/docker.sock
