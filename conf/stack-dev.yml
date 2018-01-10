@@ -18,5 +18,4 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./backend/:/usr/src/app
-    
+      - ../app/:/usr/src/app
