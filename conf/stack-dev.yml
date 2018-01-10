@@ -6,7 +6,7 @@ networks:
 
 services:
   backend:
-    image: radiobretzel/backend:feature/1.1-Generate-audio-source
+    image: radiobretzel/backend:feature-1.1-Generate-audio-source
     build:
       context: ./backend/
       dockerfile: dockerfiles/dev
