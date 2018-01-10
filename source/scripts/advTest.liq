@@ -4,7 +4,7 @@
 set("log.file", false)
 set("log.stdout", true)
 
-# Loading config from environment
+# Loading config from environment and building API url from that
 mountpoint = getenv("STREAM_MOUNTPOINT")
 id = getenv("SOURCE_ID")
 apihost = getenv("API_HOST")
@@ -36,6 +36,7 @@ end
 def createSource()
   request.create(filePath(id,key))
 end
+
 
 security = single("~/fail.mp3")
 radio = fallback([

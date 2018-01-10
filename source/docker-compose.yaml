@@ -9,12 +9,12 @@ services:
     image: radiobretzel/source:dev
     command: "./test.liq"
     build:
-      context: ./source
+      context: ./
       dockerfile: ./dockerfiles/dev
     volumes: 
-      - ./_data/audio/ok:/audio
-      - ./source/scripts:/scripts
-    hostname: source-testi
+      - ./../_data/audio/ok:/audio
+      - ./scripts:/scripts
+    hostname: source-test
     ports:
       - 4242:8080
     networks:
@@ -25,7 +25,7 @@ services:
   stream:
     image: radiobretzel/stream:dev
     build:
-      context: ./stream
+      context: ./../stream
       dockerfile: ./dockerfiles/dev
     hostname: stream-test
     ports:
