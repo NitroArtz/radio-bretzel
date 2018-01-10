@@ -11,5 +11,7 @@ COPY hello.py hello.py
 RUN pip install --upgrade pip && \
   pip install Flask
 
+VOLUME /usr/src/app
+
 ENTRYPOINT ["/usr/local/bin/python"]
 CMD ["hello.py"]
