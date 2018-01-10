@@ -4,7 +4,7 @@
 set("log.file",false)
 set("log.stdout", true)
 
-myPlaylist = playlist(mode="randomize", "/audio/playlist.m3u")
+myPlaylist = playlist("/audio")
 
 security = single("/fail.mp3")
 
