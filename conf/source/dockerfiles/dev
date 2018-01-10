@@ -5,10 +5,10 @@ COPY scripts/dummy.liq /scripts/dummy.liq
 
 RUN chown -R liquidsoap:liquidsoap /audio && \
   chown -R liquidsoap:liquidsoap /scripts && \
-  find /audio -type d -exec chmod 500 {} \;
-  find /audio -type f -exec chmod 400 {} \;
-  find /scripts -type d -exec chmod 500 {} \;
-  find /scripts -type f -exec chmod 400 {} \;
+  find /audio -type d -exec chmod 500 {} \; && \
+  find /audio -type f -exec chmod 400 {} \; && \
+  find /scripts -type d -exec chmod 500 {} \; && \
+  find /scripts -type f -exec chmod 400 {} \; && \
   chown liquidsoap:liquidsoap /fail.mp3 && \
   chmod 400 /fail.mp3
 
