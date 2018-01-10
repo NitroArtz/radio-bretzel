@@ -16,7 +16,7 @@ services:
           - backend
           - backend.radiobretzel
     ports:
-      - 80:80
+      - 80:5000
     volumes:
       - app/:/usr/src/app
       - /var/lib/docker.sock
