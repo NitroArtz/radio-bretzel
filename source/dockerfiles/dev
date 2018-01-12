@@ -1,11 +1,13 @@
 FROM radiobretzel/source:liquidsoap
 
-WORKDIR /audio
-WORKDIR /scripts
-
 COPY fail.mp3 /fail.mp3
-COPY scripts/dummy.liq /scripts/dummy.liq
-COPY audio-test/ /audio
+
+WORKDIR /audio/test
+COPY audio-test/ .
+
+WORKDIR /scripts
+COPY scripts/dummy.liq dummy.liq
+COPY scripts/test.liq test.liq
 
 RUN chown -R liquidsoap:liquidsoap /audio && \
   chown -R liquidsoap:liquidsoap /scripts && \
@@ -20,8 +22,6 @@ VOLUME /audio
 VOLUME /scripts
 
 ENV API_HOST="api.radiobretzel"
-ENV STREAM_HOST="stream-test.radiobretzel"
-ENV STREAM_MOUNTPOINT="/test"
 ENV SOURCE_ID="00000000-0000-0000-0000-000000000000"
 ENV PATH="/usr/bin/liquidsoap"
 
