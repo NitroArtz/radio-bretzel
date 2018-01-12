@@ -5,6 +5,7 @@ WORKDIR /scripts
 
 COPY fail.mp3 /fail.mp3
 COPY scripts/dummy.liq /scripts/dummy.liq
+COPY audio-test/ /audio
 
 RUN chown -R liquidsoap:liquidsoap /audio && \
   chown -R liquidsoap:liquidsoap /scripts && \
