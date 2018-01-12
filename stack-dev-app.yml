@@ -3,11 +3,12 @@ version: "3.3"
 services:
   backend:
     image: radiobretzel/backend:feature-1.1-Generate-audio-source
+    command: app/app.py
     build:
       context: ./app/
       dockerfile: dockerfiles/dev
     ports:
       - 80:5000
     volumes:
-      - app/:/usr/src/app
-      - /var/lib/docker.sock
+      - ./app/:/usr/src/app
+      - /var/run/docker.sock:/var/run/docker.sock
