@@ -1,11 +1,11 @@
 from flask import Flask
 import docker
 
-import SourceModels
+from api.source import SourceModels
 
 app = Flask(__name__)
 docker_client = docker.DockerClient(
-    base_url='unix:///var/run/docker.sock',
+    base_url='unix://var/run/docker.sock',
     version='auto'
 )
 
@@ -14,10 +14,13 @@ def hello_world():
     return 'Welcome to Radio Bretzel'
 
 @app.route('/new')
-SourceModels.create()
+def new():
+    source = SourceModels.create(docker_client, 'test_source-creation')
+    return source.id
 
 @app.route('/next')
-SourceModels.select_next_track()
+def netx():
+    return SourceModels.select_next_track()
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
