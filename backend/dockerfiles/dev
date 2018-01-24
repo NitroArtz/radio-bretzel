@@ -7,10 +7,11 @@ COPY requirements-dev.txt requirements-dev.txt
 RUN pip install -r requirements-dev.txt
 
 VOLUME /usr/src/app
-VOLUME /var/lib/docker.sock
+VOLUME /var/run/docker.sock
 
 EXPOSE 5000
 
+ENTRYPOINT ["/usr/local/bin/python"]
 CMD ["hello.py"]
 
 LABEL project.component="Radio Bretzel Backend"

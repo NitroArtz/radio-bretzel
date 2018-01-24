@@ -25,15 +25,17 @@ def validate_source_data(sourceData):
    return False
 
 def create_valid_source_data(sourceData):
-   if !(re.match('((?:[a-z][a-z]+))(-)((?:[a-z][a-z]+))', sourceData['id'])):
-      #should be generated
-      id = "jean-patate"
-   if !(sourceData['active'] == 'False' and sourceData['active'] !== 'True'):
+    # This code doesn't work yet
 
-   if !(re.match('((?:[a-z][a-z]*[0-9]*[a-z0-9]*))(-?)((?:[a-z][a-z]*[0-9]*[a-z0-9]*)?)(-?)((?:[a-z][a-z]*[0-9]*[a-z0-9]*)?)', sourceData['name']) and len(sourceData['name']) > 64): #slug
-      sourceData['name']='L4T34M-d3s-p4t4t3s'
-   if !(re.match('regex', sourceData['description'])):
-      sourceData['description']=''
+   # if not re.match('((?:[a-z][a-z]+))(-)((?:[a-z][a-z]+))', sourceData['id']):
+   #    #should be generated
+   #    id = "jean-patate"
+   # if not sourceData['active'] == 'False' and sourceData['active'] != 'True':
+   #
+   # if not re.match('((?:[a-z][a-z]*[0-9]*[a-z0-9]*))(-?)((?:[a-z][a-z]*[0-9]*[a-z0-9]*)?)(-?)((?:[a-z][a-z]*[0-9]*[a-z0-9]*)?)', sourceData['name']) and len(sourceData['name']) > 64: #slug
+   #    sourceData['name']='L4T34M-d3s-p4t4t3s'
+   # if not re.match('regex', sourceData['description']):
+   #    sourceData['description']=''
    return sourceData
 
 class SourceModel:
@@ -43,4 +45,3 @@ class SourceModel:
       self.active = True if sourceData['active'] == "True" else False
       self.name = sourceData['name']
       self.description = sourceData['description']
-      
