@@ -12,7 +12,7 @@ VOLUME /var/run/docker.sock
 EXPOSE 5000
 
 ENTRYPOINT ["/usr/local/bin/python"]
-CMD ["hello.py"]
+CMD ["run.py"]
 
 LABEL project.component="Radio Bretzel Backend"
 LABEL project.version="0.0.2"

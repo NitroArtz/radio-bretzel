@@ -1,7 +1,7 @@
 version: "3.3"
 
 services:
-  backend:
+  source:
     command: ./test.liq
     image: radiobretzel/source:dev
     build:

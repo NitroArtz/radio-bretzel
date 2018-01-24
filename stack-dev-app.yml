@@ -7,7 +7,6 @@ networks:
 services:
    backend:
       image: radiobretzel/backend:dev
-      command: run.py
       build:
          context: ./backend/
          dockerfile: dockerfiles/dev
