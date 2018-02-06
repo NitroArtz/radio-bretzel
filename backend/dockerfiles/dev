@@ -1,21 +1,17 @@
 FROM radiobretzel/backend:flask
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/radiobretzel
 
 COPY requirements-dev.txt requirements-dev.txt
 
-RUN pip install -r requirements-dev.txt
+RUN pip install --upgrade pip && \
+   pip install -r requirements.txt
 
-VOLUME /usr/src/app
-VOLUME /var/run/docker.sock
-
+VOLUME /usr/src/radiobretzel /var/run/docker.sock
 EXPOSE 5000
 
-ENTRYPOINT ["/usr/local/bin/python"]
-CMD ["run.py"]
+ENV RADIO_BRETZEL_ENV development
 
-LABEL project.component="Radio Bretzel Backend"
-LABEL project.version="0.0.2"
-LABEL docker.image.name="radiobretzel/backend:flask"
-LABEL docker.image.version="0.1"
 LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
+
+CMD ["./run.py"]
