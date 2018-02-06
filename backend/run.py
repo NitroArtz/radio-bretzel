@@ -1,6 +1,7 @@
-from app import start, config
+#!/usr/local/bin/python
+from app import create_app
 
-app = start(config.Dev)
+app = create_app()
 
 if __name__ == '__main__':
-   app.run(debug=True,host='0.0.0.0')
+   app.run(debug=True, use_reloader=False, host='0.0.0.0')
