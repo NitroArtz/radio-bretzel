@@ -28,7 +28,7 @@ class Document(object):
          collection.replace_one({'_id': document['_id']}, document)
       return True
 
-   def delete(self):
+   def delete(collection, document):
       """ Delete the current document from given collection """
       if not document.get('_id'):
          return False

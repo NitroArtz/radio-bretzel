@@ -1,5 +1,9 @@
 version: "3.3"
 
+networks:
+  radiobretzel_default:
+    driver: bridge
+
 services:
   source:
     command: ./test.liq
@@ -10,4 +14,29 @@ services:
     ports:
       - 8080:8080
     volumes:
+      - ./source/audio:/audio
       - ./source/scripts:/scripts
+    networks:
+      radiobretzel_default:
+        aliases:
+          - source.radiobretzel
+    environment:
+      - STREAM_MOUNTPOINT = channel
+      - API_HOST = backend.radiobretzel
+      - SOURCE_ID = dummy_id
+      - SOURCE_TOKEN = dummy_token
+
+  backend:
+    command: ./run.py
+    image: radiobretzel/backend:dev
+    build:
+      context: ./backend/
+      dockerfile: dockerfiles/dev
+    ports:
+      - 8000:5000
+    volumes:
+      - ./backend:/usr/src/radiobretzel
+    networks:
+      radiobretzel_default:
+        aliases:
+          - backend.radiobretzel

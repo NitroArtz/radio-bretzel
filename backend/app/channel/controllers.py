@@ -6,11 +6,6 @@ from app.channel.models import Channel
 
 from ..channel import channel
 
-@channel.route('/next')
-def select_next_track():
-   random_song = randint(1, 3)
-   return "/audio/test%s.mp3" % random_song
-
 def validate(**data):
    """ Validate Channel arguments """
    for field in data:
@@ -23,9 +18,10 @@ def validate(**data):
    return True
 
 
+""" the routes for the channel blueprint """
+
 @channel.route('/', methods=['POST'])
 @channel.route('/<_id>', methods=['POST'])
-
 def create_channel():
    _id = request.values.get('_id')
    if not _id:
@@ -33,3 +29,8 @@ def create_channel():
 
    newChannel = Channel(_id)
    return jsonify(newChannel.save())
+
+@channel.route('/next')
+def select_next_track():
+   random_song = randint(1, 3)
+   return "test%s.mp3" % random_song

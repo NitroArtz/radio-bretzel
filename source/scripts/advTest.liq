@@ -17,7 +17,8 @@ def getHttpStatusCode (httpResponse)
 end
 
 def getFilePathFromAPI (id, key)
-  response = http.get(headers=[('source-id', id), ('source-key', key)], url)
+  # response = http.get(headers=[('source-id', id), ('source-key', key)], url)
+  response =http.get(url)
   response
 end
 
