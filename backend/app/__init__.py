@@ -40,9 +40,8 @@ def load_config(app):
    try:
       app.config.from_pyfile('local.py')
    except Exception as e:
-      print(type(e))
-      print(e)
-
+      pass
+      
 def register_modules(app):
    """Activate Flask extensions and initiate external connections"""
    init_db(app)

@@ -25,6 +25,8 @@ services:
       - API_HOST = backend.radiobretzel
       - SOURCE_ID = dummy_id
       - SOURCE_TOKEN = dummy_token
+    depends_on:
+      - backend
 
   backend:
     command: ./run.py

@@ -1,3 +1,5 @@
+import random
+
 from flask import request, abort, jsonify
 from flask import current_app as app
 
@@ -32,5 +34,5 @@ def create_channel():
 
 @channel.route('/next')
 def select_next_track():
-   random_song = randint(1, 3)
+   random_song = random.randint(1, 3)
    return "test%s.mp3" % random_song
