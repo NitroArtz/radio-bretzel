@@ -5,13 +5,12 @@ set("log.file", false)
 set("log.stdout", true)
 
 # Loading config from environment and building API url from that
-# mountpoint = getenv("STREAM_MOUNTPOINT")
-# log(mountpoint)
+mountpoint = getenv("STREAM_MOUNTPOINT")
+log(mountpoint)
 id = getenv("SOURCE_ID")
-# apihost = getenv("API_HOST")
+apihost = getenv("API_HOST")
 key = getenv("SOURCE_TOKEN")
-# url = string.concat(['http://', apihost, '/', mountpoint,'/next'])
-url = "http://backend.radiobretzel/channel/next"
+url = string.concat(['http://', apihost, ':5000/', mountpoint,'/next'])
 
 def getHttpStatusCode (httpResponse)
    httpStatusCode = snd(fst(fst(fst(httpResponse))))

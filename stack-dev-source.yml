@@ -14,17 +14,17 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./source/audio:/audio
+      - ./source/audio-test:/audio
       - ./source/scripts:/scripts
     networks:
       radiobretzel_default:
         aliases:
           - source.radiobretzel
     environment:
-      - STREAM_MOUNTPOINT = channel
-      - API_HOST = backend.radiobretzel
-      - SOURCE_ID = dummy_id
-      - SOURCE_TOKEN = dummy_token
+     - STREAM_MOUNTPOINT=channel
+     - API_HOST=backend.radiobretzel
+     - SOURCE_ID=dummy_id
+     - SOURCE_TOKEN=dummy_token
     depends_on:
       - backend
 
