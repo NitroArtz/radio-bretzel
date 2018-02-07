@@ -12,7 +12,7 @@ key = getenv("SOURCE_TOKEN")
 url = string.concat(['http://', apihost, '/', mountpoint,'/next'])
 
 def getHttpStatusCode (httpResponse)
-  httpStatusCode = snd(fst(fst(fst(response))))
+  httpStatusCode = snd(fst(fst(fst(httpResponse))))
   httpStatusCode
 end
 
@@ -23,10 +23,10 @@ def getFilePathFromAPI (id, key)
 end
 
 def getFileFromAPIOrHandleFail (id, key)
-  getFilePathFromAPI(id, key)
+  response = getFilePathFromAPI(id, key)
   if getHttpStatusCode(response) == 200
     then
-    echo=string.concat(['~/audio/', snd(response)])
+    echo=string.concat(["/audio/", snd(response)])
     echo
   else
     log("Server bad response :")
@@ -35,12 +35,12 @@ def getFileFromAPIOrHandleFail (id, key)
 end
 
 def createSource()
-  request.create(filePath(id,key))
+  request.create(getFileFromAPIOrHandleFail(id,key))
 end
 
 
-security = single("~/fail.mp3")
-radio = fallback([
+security = single("/fail.mp3")
+radio = fallback(track_sensitive = false, [
   request.dynamic(createSource),
   security
   ])

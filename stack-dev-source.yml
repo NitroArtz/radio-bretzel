@@ -6,7 +6,7 @@ networks:
 
 services:
   source:
-    command: ./test.liq
+    command: ./advTest.liq
     image: radiobretzel/source:dev
     build:
       context: ./source/
@@ -36,6 +36,7 @@ services:
       - 8000:5000
     volumes:
       - ./backend:/usr/src/radiobretzel
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       radiobretzel_default:
         aliases:
