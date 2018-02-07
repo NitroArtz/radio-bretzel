@@ -6,6 +6,9 @@ from app.channel.models import Channel
 
 from ..channel import channel
 
+def select_next_track():
+   random_song = randint(1, 3)
+   return "/audio/test%s.mp3" % random_song
 
 def validate(**data):
    """ Validate Channel arguments """
