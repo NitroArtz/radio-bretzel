@@ -24,7 +24,7 @@
         <port>8000</port>
     </listen-socket>
 
-    <fileserve>1</fileserve>
+    <fileserve>0</fileserve>
 
     <paths>
         <basedir>/usr/share/icecast2</basedir>
