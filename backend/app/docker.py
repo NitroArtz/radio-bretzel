@@ -4,7 +4,7 @@ def connect_docker(config):
    """ Create a connection to docker server, and return the client object """
    client = docker.DockerClient(
       base_url=config["url"],
-      # version=config["version"]
+      version=config["version"]
    )
    return client
 
