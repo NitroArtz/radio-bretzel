@@ -37,8 +37,11 @@ def load_config(app):
       app.config.from_object(config.test)
    else:
       raise ValueError('environment variable not supported ('+ env + ')')
-   app.config.from_pyfile('local.py')
-
+   try:
+      app.config.from_pyfile('local.py')
+   except Exception as e:
+      pass
+      
 def register_modules(app):
    """Activate Flask extensions and initiate external connections"""
    init_db(app)
