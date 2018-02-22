@@ -3,12 +3,11 @@
 # Log settings
 set("log.file", false)
 set("log.stdout", true)
-host = getenv('STREAM_HOST')
-mountpoint = getenv('STREAM_MOUNTPOINT')
-password = getenv('STREAM_SOURCE_PASSWD')
 
 # Loading config from environment and building API url from that
 mountpoint = getenv("STREAM_MOUNTPOINT")
+host = getenv('STREAM_HOST')
+password = getenv('STREAM_SOURCE_PASSWD')
 log(mountpoint)
 id = getenv("SOURCE_ID")
 apihost = getenv("API_HOST")
