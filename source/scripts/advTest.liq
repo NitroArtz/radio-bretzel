@@ -3,6 +3,9 @@
 # Log settings
 set("log.file", false)
 set("log.stdout", true)
+host = getenv('STREAM_HOST')
+mountpoint = getenv('STREAM_MOUNTPOINT')
+password = getenv('STREAM_SOURCE_PASSWD')
 
 # Loading config from environment and building API url from that
 mountpoint = getenv("STREAM_MOUNTPOINT")
@@ -51,4 +54,9 @@ radio = fallback(track_sensitive = false, [
    ])
 
 #Streaaaamin out !
-output.harbor(%mp3 , port=8080, mount="/", radio)
+output.icecast(%mp3,
+   host=host,
+   port=8000,
+   password=password,
+   mount=mountpoint,
+   radio)
