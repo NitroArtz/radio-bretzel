@@ -1,8 +1,14 @@
 version: "3.3"
 
 networks:
-   radiobretzel:
+   main:
       driver: bridge
+   sources:
+      driver: bridge
+
+volumes:
+   stream_config:
+      driver: local
 
 services:
    backend:
@@ -15,19 +21,32 @@ services:
       ports:
          - 80:5000
       volumes:
-         - ./backend/:/usr/src/app
+         - ./backend/:/usr/src/radiobretzel
          - /var/run/docker.sock:/var/run/docker.sock
+         # - stream_config:/usr/src/stream_config
       networks:
-         radiobretzel:
+         main:
             aliases:
-               - backend
-               - backend.radiobretzel
+               - backend.main.radiobretzel
+         sources:
+            aliases:
+               - backend.sources.radiobretzel
    database:
       image: mongo
-      ports:
-         - 27017:27017
       networks:
-         radiobretzel:
+         main:
             aliases:
-               - database
-               - database.radiobretzel
+               - database.main.radiobretzel
+   streaming:
+      image: radiobretzel/stream:dev
+      build:
+         context: ./stream/
+         dockerfile: dockerfiles/dev
+      ports:
+         - 8000:8000
+      volumes:
+         - ./stream:/usr/src/stream_config
+      networks:
+         sources:
+            aliases:
+               - streaming.sources.radiobretzel
