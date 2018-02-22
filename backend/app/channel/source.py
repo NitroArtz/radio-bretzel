@@ -1,8 +1,6 @@
-import os, re
-
 from flask import current_app as app
 
-from app.database import Document
+from app.docker import get_source_network
 
 class Source(object):
    """ Abstract class whose Channels will inherit """
@@ -11,27 +9,40 @@ class Source(object):
 
    def create_source(self):
       """ Create a source container from given args """
-      config = app.config.get_namespace('SOURCE_CONTAINER_')
+      source_container_config = app.config.get_namespace('SOURCE_CONTAINER_')
+      stream_config = app.config.get_namespace('STREAM_')
       container_args = {
          'name': self.get_container_name(),
          'detach': True,
          'read_only': True,
-         'network': app.config['OBJECTS_NAME_PREFIX'] + app.config['SOURCE_NETWORK'],
-         'auto_remove': True
+         #'auto_remove': True,
+         'environment':{
+            'STREAM_MOUNTPOINT': self._id,
+            'STREAM_HOST': stream_config['host'],
+            'STREAM_SOURCE_PASSWD': stream_config['source_passwd']
+         },
       }
-      config.update(container_args)
-      source = app.docker.containers.run(image=app.config['SOURCE_IMAGE'], **config)
+      source_container_config.update(container_args)
+
+      source = app.docker.containers.run(image=app.config['SOURCE_IMAGE'], **source_container_config)
       if not source:
          return False
+      source_network = get_source_network()
+      if not source_network:
+         raise SystemError('Couldn\'t get nor create Source network')
+         return False
+      source_network.connect(source)
       return source
 
    def get_source(self):
       """ Return source container object or false if doesn't exist """
       try:
          source = app.docker.containers.get(self.get_container_name())
+         if not source:
+            return False
+         return source
       except:
          return False
-      return source
 
    def get_or_create_source(self):
       """ Return source container object, and create it if doesn't exist """
@@ -48,30 +59,3 @@ class Source(object):
 
    def delete_source(self):
       return app.docker.containers.remove(self.get_container_name())
-
-
-class Channel(Source):
-
-   def __init__(self,
-                  _id,
-                  name=None):
-      self._id = _id
-      if name:
-         self.name = name.title()
-      else:
-         name = _id.replace('-', ' ')
-         self.name = name.title()
-      self.source = self.get_or_create_source()
-
-   def document(self):
-      document = {
-         '_id': self._id,
-         'name': self.name,
-      }
-      return document
-
-   def save(self):
-      return Document.save(app.mongo.db.channels, self.document())
-
-   def delete(self):
-      return Document.delete(app.mongo.db.channels, self.document())

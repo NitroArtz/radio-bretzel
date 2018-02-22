@@ -4,7 +4,7 @@ from flask import request, abort, jsonify
 from flask import current_app as app
 
 from app import utils
-from app.channel.models import Channel
+from app.channel.model import Channel
 
 from ..channel import channel
 
@@ -23,7 +23,6 @@ def validate(**data):
 """ the routes for the channel blueprint """
 
 @channel.route('/', methods=['POST'])
-@channel.route('/<_id>', methods=['POST'])
 def create_channel():
    _id = request.values.get('_id')
    if not _id:
