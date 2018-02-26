@@ -16,7 +16,7 @@ class Source(object):
          'detach': True,
          'read_only': True,
          #'auto_remove': True,
-         'environment':{
+         'environment': {
             'STREAM_MOUNTPOINT': self._id,
             'STREAM_HOST': stream_config['host'],
             'STREAM_SOURCE_PASSWD': stream_config['source_passwd']
@@ -52,6 +52,7 @@ class Source(object):
       if not source:
          return False
       else:
+         self.source = source
          return source
 
    def reload_source(self):

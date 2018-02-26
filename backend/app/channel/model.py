@@ -1,20 +1,17 @@
 from flask import current_app as app
 
 from app.database import Document
+from app.utils import formats, validations
 from app.channel.source import Source
 
-class Channel(Source):
+class Channel(Source, Document):
+   model = 'channel'
 
    def __init__(self,
                   _id,
                   name=None):
       self._id = _id
-      if name:
-         self.name = name.title()
-      else:
-         name = _id.replace('-', ' ')
-         self.name = name.title()
-      self.source = self.get_or_create_source()
+      self.name = formats.name(self._id, name)
 
    def document(self):
       document = {
@@ -23,8 +20,13 @@ class Channel(Source):
       }
       return document
 
-   def save(self):
-      return Document.save(app.mongo.db.channels, self.document())
-
-   def delete(self):
-      return Document.delete(app.mongo.db.channels, self.document())
+def validate(**data):
+   """ Validate Channel arguments """
+   for field in data:
+      if field == '_id':
+         try:
+            if not data['_id'] or not validations.slug(data['_id']):
+               raise ValueError('"name" argument don\'t fit the requirements.')
+         except:
+            return False
+   return True
