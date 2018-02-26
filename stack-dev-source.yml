@@ -1,45 +1,62 @@
 version: "3.3"
 
 networks:
-  radiobretzel_default:
-    driver: bridge
+   sources:
+      driver: bridge
 
 services:
-  source:
-    command: ./advTest.liq
-    image: radiobretzel/source:dev
-    build:
-      context: ./source/
-      dockerfile: dockerfiles/dev
-    ports:
-      - 8080:8080
-    volumes:
-      - ./source/audio-test:/audio
-      - ./source/scripts:/scripts
-    networks:
-      radiobretzel_default:
-        aliases:
-          - source.radiobretzel
-    environment:
-     - STREAM_MOUNTPOINT=channel
-     - API_HOST=backend.radiobretzel
-     - SOURCE_ID=dummy_id
-     - SOURCE_TOKEN=dummy_token
-    depends_on:
-      - backend
+   source:
+      command: ./advTest.liq
+      image: radiobretzel/source:dev
+      build:
+         context: ./source/
+         dockerfile: dockerfiles/dev
+      volumes:
+         - ./source/audio-test:/audio
+         - ./source/scripts:/scripts
+      networks:
+         sources:
+            aliases:
+               - source.radiobretzel
+      environment:
+         - STREAM_HOST=backend.sources.radiobretzel
+         - STREAM_SOURCE_PASSWD=sourcepass
+         - STREAM_MOUNTPOINT=test
+         - API_HOST=backend.source.radiobretzel
+         - API_PORT=5000
+         - SOURCE_ID=dummy_id
+         - SOURCE_TOKEN=dummy_token
+      depends_on:
+         - backend
 
-  backend:
-    command: ./run.py
-    image: radiobretzel/backend:dev
-    build:
-      context: ./backend/
-      dockerfile: dockerfiles/dev
-    ports:
-      - 8000:5000
-    volumes:
-      - ./backend:/usr/src/radiobretzel
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      radiobretzel_default:
-        aliases:
-          - backend.radiobretzel
+   backend:
+      image: radiobretzel/backend:dev
+      build:
+         context: ./backend/
+         dockerfile: dockerfiles/dev
+      depends_on:
+         - database
+      ports:
+         - 80:5000
+      volumes:
+         - ./backend/:/usr/src/radiobretzel
+         - /var/run/docker.sock:/var/run/docker.sock
+         # - stream_config:/usr/src/stream_config
+      networks:
+         sources:
+            aliases:
+               - backend.sources.radiobretzel
+
+   streaming:
+      image: radiobretzel/stream:dev
+      build:
+         context: ./stream/
+         dockerfile: dockerfiles/dev
+      ports:
+         - 8000:8000
+      volumes:
+         - ./stream:/usr/src/stream_config
+      networks:
+         sources:
+            aliases:
+               - streaming.sources.radiobretzel

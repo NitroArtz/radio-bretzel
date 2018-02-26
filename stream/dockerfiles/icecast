@@ -2,7 +2,6 @@ FROM radiobretzel/stream:base
 
 LABEL project.component="Radio Bretzel Stream server"
 LABEL docker.image.name="radiobretzel/stream:icecast"
-LABEL docker.image.version="0.1"
 LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
 
 RUN apt-get update && apt-get install -y icecast2

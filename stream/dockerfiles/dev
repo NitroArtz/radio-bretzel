@@ -1,0 +1,13 @@
+FROM radiobretzel/stream:icecast
+
+LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
+
+VOLUME /etc/icecast2/
+
+EXPOSE 8000
+
+USER icecast2
+WORKDIR /etc/icecast2/
+
+ENTRYPOINT ["icecast2", "-c"]
+CMD ["default.xml"]

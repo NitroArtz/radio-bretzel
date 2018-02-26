@@ -1,7 +1,7 @@
 import os
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify
 
-from app import config
+from app import config, docker
 from app.database import init_db
 from app.docker import init_docker
 from app.channel import channel
@@ -19,13 +19,19 @@ def create_app():
    def hello_world():
       return 'Welcome to Radio Bretzel'
 
-   @app.route('/docker')
+   @app.route('/networks')
    def get_docker():
       networks = []
-      for network in app.docker.networks.list(names=['rb_default']):
-         networks.append(network.short_id)
-      return jsonify(app.source_network.short_id)
+      for network in app.docker.networks.list(names=[docker.get_source_network_name(app)]):
+         networks.append(network.name)
+      return jsonify(networks)
 
+   @app.route('/source_network')
+   def network():
+      if hasattr(app, 'source_network'):
+         return jsonify(app.source_network.name)
+      else:
+         return jsonify("Not Found")
    return app
 
 def load_config(app):
@@ -41,12 +47,11 @@ def load_config(app):
       app.config.from_pyfile('local.py')
    except Exception as e:
       pass
-      
+
 def register_modules(app):
    """Activate Flask extensions and initiate external connections"""
    init_db(app)
    init_docker(app)
-
 
 def register_blueprints(app):
    """Register blueprints with the Flask application."""

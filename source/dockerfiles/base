@@ -1,2 +1,4 @@
 FROM debian:stretch-slim
+
+LABEL docker.image.name="radiobretzel/source:base"
 LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
