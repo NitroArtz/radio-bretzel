@@ -1,8 +1,6 @@
 FROM radiobretzel/source:base
 
-LABEL project.component="Radio Bretzel Source"
 LABEL docker.image.name="radiobretzel/source:liquidsoap"
-LABEL docker.image.version="0.1"
 LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
 
 RUN apt-get update -y && apt-get install -y \
@@ -10,3 +8,10 @@ RUN apt-get update -y && apt-get install -y \
   liquidsoap-plugin-all
 
 COPY fail.mp3 /fail.mp3
+
+WORKDIR /scripts
+COPY scripts/dummy.liq dummy.liq
+
+USER liquidsoap
+ENTRYPOINT ["/usr/bin/liquidsoap"]
+CMD ["./dummy.liq"]

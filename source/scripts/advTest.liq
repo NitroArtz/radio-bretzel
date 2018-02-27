@@ -6,11 +6,14 @@ set("log.stdout", true)
 
 # Loading config from environment and building API url from that
 mountpoint = getenv("STREAM_MOUNTPOINT")
-log(mountpoint)
+host = getenv('STREAM_HOST')
+password = getenv('STREAM_SOURCE_PASSWD')
 id = getenv("SOURCE_ID")
 apihost = getenv("API_HOST")
+apiport = getenv("API_PORT")
 key = getenv("SOURCE_TOKEN")
-url = string.concat(['http://', apihost, ':5000/', mountpoint,'/next'])
+
+url = string.concat(['http://', apihost, ':', apiport, '/channel/next'])
 
 def getHttpStatusCode (httpResponse)
    httpStatusCode = snd(fst(fst(fst(httpResponse))))
@@ -51,4 +54,9 @@ radio = fallback(track_sensitive = false, [
    ])
 
 #Streaaaamin out !
-output.harbor(%mp3 , port=8080, mount="/", radio)
+output.icecast(%mp3,
+   host=host,
+   port=8000,
+   password=password,
+   mount=mountpoint,
+   radio)

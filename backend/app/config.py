@@ -20,12 +20,15 @@ class default(object):
    DOCKER_URL = 'unix://var/run/docker.sock'
    DOCKER_VERSION = 'auto'
 
-   MONGO_HOST = 'mongo.default.radiobretzel'
+   MONGO_HOST = 'database.main.radiobretzel'
    MONGO_DBNAME = 'radiobretzel'
 
    SOURCE_IMAGE = 'radiobretzel/source:latest'
    # SOURCE_CONTAINER_AUDIO_VOLUME = 'radiobretzel_audio'
    SOURCE_NETWORK = 'sources'
+
+   STREAM_HOST="streaming.sources.radiobretzel"
+   STREAM_SOURCE_PASSWD="sourcepass"
 
 class development(default):
 
