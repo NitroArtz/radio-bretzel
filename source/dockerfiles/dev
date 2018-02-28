@@ -11,7 +11,7 @@ WORKDIR /audio/test
 COPY audio-test/ .
 
 WORKDIR /scripts
-COPY scripts/test.liq test.liq
+COPY scripts/tests/test.liq test.liq
 
 VOLUME /audio
 VOLUME /scripts

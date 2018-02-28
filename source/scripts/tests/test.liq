@@ -8,7 +8,7 @@ host = getenv('STREAM_HOST')
 mountpoint = getenv('STREAM_MOUNTPOINT')
 password = getenv('STREAM_SOURCE_PASSWD')
 
-myPlaylist = playlist("/audio/test/")
+myPlaylist = playlist("/audio-test/")
 security = single("/fail.mp3")
 
 radio = fallback(track_sensitive = false, [myPlaylist, security])

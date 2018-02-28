@@ -6,7 +6,7 @@ networks:
 
 services:
    source:
-      command: ./advTest.liq
+      command: ./sourceTest.liq
       image: radiobretzel/source:dev
       build:
          context: ./source/
@@ -19,15 +19,17 @@ services:
             aliases:
                - source.radiobretzel
       environment:
-         - STREAM_HOST=backend.sources.radiobretzel
-         - STREAM_SOURCE_PASSWD=sourcepass
-         - STREAM_MOUNTPOINT=test
-         - API_HOST=backend.source.radiobretzel
+         - API_HOST=backend.sources.radiobretzel
          - API_PORT=5000
          - SOURCE_ID=dummy_id
          - SOURCE_TOKEN=dummy_token
+         - STREAM_HOST=streaming.sources.radiobretzel
+         - STREAM_SOURCE_PASSWD=sourcepass
+         - STREAM_MOUNTPOINT=test
+         - STREAM_OUTPUT_TYPE=icecast
       depends_on:
          - backend
+         - streaming
 
    backend:
       image: radiobretzel/backend:dev
@@ -37,7 +39,7 @@ services:
       depends_on:
          - database
       ports:
-         - 80:5000
+         - 8080:5000
       volumes:
          - ./backend/:/usr/src/radiobretzel
          - /var/run/docker.sock:/var/run/docker.sock
@@ -60,3 +62,10 @@ services:
          sources:
             aliases:
                - streaming.sources.radiobretzel
+
+   database:
+      image: mongo
+      networks:
+         sources:
+            aliases:
+               - database.sources.radiobretzel

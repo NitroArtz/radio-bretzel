@@ -42,7 +42,7 @@ def getFileFromAPIOrHandleFail (id, key)
 end
 
 def createSource()
-log("creating source")
+   log("creating source")
    request.create(getFileFromAPIOrHandleFail(id,key))
 end
 

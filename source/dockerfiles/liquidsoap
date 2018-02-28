@@ -10,7 +10,7 @@ RUN apt-get update -y && apt-get install -y \
 COPY fail.mp3 /fail.mp3
 
 WORKDIR /scripts
-COPY scripts/dummy.liq dummy.liq
+COPY scripts/tests/dummy.liq dummy.liq
 
 USER liquidsoap
 ENTRYPOINT ["/usr/bin/liquidsoap"]
