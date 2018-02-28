@@ -1,16 +1,10 @@
 #!/usr/bin/liquidsoap
+%include "includes/defaults.liq"
 
-# Log settings
-set("log.file", false)
-set("log.stdout", true)
-
-# Loading config from environment and building API url from that
-mountpoint = getenv("STREAM_MOUNTPOINT")
-host = getenv('STREAM_HOST')
-password = getenv('STREAM_SOURCE_PASSWD')
-id = getenv("SOURCE_ID")
 apihost = getenv("API_HOST")
 apiport = getenv("API_PORT")
+
+id = getenv("SOURCE_ID")
 key = getenv("SOURCE_TOKEN")
 
 url = string.concat(['http://', apihost, ':', apiport, '/channel/next'])
@@ -42,21 +36,12 @@ def getFileFromAPIOrHandleFail (id, key)
 end
 
 def createSource()
-log("creating source")
+   log("creating source")
    request.create(getFileFromAPIOrHandleFail(id,key))
 end
 
+source = request.dynamic(createSource)
 
-security = single("/fail.mp3")
-radio = fallback(track_sensitive = false, [
-   request.dynamic(createSource),
-   security
-   ])
+%include "includes/createStream.liq"
 
-#Streaaaamin out !
-output.icecast(%mp3,
-   host=host,
-   port=8000,
-   password=password,
-   mount=mountpoint,
-   radio)
+%include "includes/outputStream.liq"
