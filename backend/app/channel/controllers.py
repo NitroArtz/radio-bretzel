@@ -12,16 +12,12 @@ from ..channel import channel
 """ All routes for the channel blueprint """
 @channel.route('/', methods=['GET'])
 def get_all_channels():
-   collection = get_collection('channel')
-   channels = []
-   for channel in collection.find():
-      channels.append(channel['_id'])
-   return jsonify(channels)
+   return Channel.get_all()
 
 
 @channel.route('/<_id>', methods=['POST'])
 def create_channel(_id):
-  
+   form = request.form()
    channel = Channel(_id)
    channel.get_or_create_source()
    channel.save()

@@ -33,6 +33,13 @@ def get_collection(name):
 class Document(object):
    """ Abstract class whose different models will inherit """
 
+   def get_all(self):
+      collection = get_collection(self.model)
+      channels = []
+      for channel in collection.find():
+         channels.append(channel['_id'])
+      return channels
+
    def save(self):
       """ Update or create model's document in database """
       try:
