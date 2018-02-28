@@ -1,11 +1,8 @@
 #!/usr/bin/liquidsoap
 %include "includes/defaults.liq"
 
-apihost = getenv("API_HOST")
-apiport = getenv("API_PORT")
-
 id = getenv("SOURCE_ID")
-key = getenv("SOURCE_TOKEN")
+token = getenv("SOURCE_TOKEN")
 
 url = string.concat(['http://', apihost, ':', apiport, '/channel/next'])
 
@@ -15,7 +12,7 @@ def getHttpStatusCode (httpResponse)
 end
 
 def getFilePathFromAPI (id, key)
-   # response = http.get(headers=[('source-id', id), ('source-key', key)], url)
+   # response = http.get(headers=[('source-id', id), ('source-token', token)], url)
    response =http.get(url)
    response
 end

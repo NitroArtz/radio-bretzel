@@ -21,7 +21,7 @@ def get_all_channels():
 
 @channel.route('/<_id>', methods=['POST'])
 def create_channel(_id):
-  
+
    channel = Channel(_id)
    channel.get_or_create_source()
    channel.save()
