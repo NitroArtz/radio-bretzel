@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from app.errors import DatabaseError
 
 models = [
-   'channel',
+   'item',
 ]
 
 def connect_db(app):
@@ -26,19 +26,24 @@ def get_collection(name):
          collection = app.mongo.db[name]
          return collection
       else:
-         raise DatabaseError('Database Error - Unreferenced model')
-   except:
-      raise DatabaseError("Couldn't get collection object")
+         raise ValueError('Database Error - Unreferenced model')
+   except Exception as e:
+      raise e
 
 class Document(object):
    """ Abstract class whose different models will inherit """
 
-   def get_all(self):
-      collection = get_collection(self.model)
-      channels = []
-      for channel in collection.find():
-         channels.append(channel['_id'])
-      return channels
+   def get_all(model):
+      items = []
+      try:
+         collection = get_collection(model)
+      except ValueError:
+         return []
+      except Exception:
+         raise DatabaseError("")
+      for item in collection.find():
+         items.append(item['_id'])
+      return items
 
    def save(self):
       """ Update or create model's document in database """
