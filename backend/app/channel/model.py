@@ -2,9 +2,9 @@ from flask import current_app as app
 
 from app.database import Document
 from app.utils import formats, validations
-from app.channel.source import Source
+from app.channel.source import DockerSource as Source
 
-class Channel(Source, Document):
+class Channel(Document):
    model = 'channel'
 
    def __init__(self,
@@ -12,6 +12,7 @@ class Channel(Source, Document):
                name=None):
       self._id = _id
       self.name = formats.name(self._id, name)
+      self.source = Source(_id)
 
    def document(self):
       document = {
@@ -20,6 +21,16 @@ class Channel(Source, Document):
       }
       return document
 
+   def get_all():
+      return Document.get_all('channel')
+
+   def info(self):
+      info = self.document()
+      info['source'] = {
+         'name': self.source.name,
+         'status': self.source.status()
+      }
+      return info
 
 def validate(**data):
    """ Validate Channel arguments """

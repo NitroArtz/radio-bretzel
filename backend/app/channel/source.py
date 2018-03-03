@@ -1,62 +1,77 @@
 from flask import current_app as app
 
 from app.docker import get_source_network
+from app.errors import DockerError
 
-class Source(object):
-   """ Abstract class whose Channels will inherit """
-   def get_container_name(self):
-      return app.config['OBJECTS_NAME_PREFIX'] + 'source_' + self._id
-
-   def create_source(self):
-      """ Create a source container from given args """
-      source_container_config = app.config.get_namespace('SOURCE_CONTAINER_')
+class DockerSource(object):
+   """ DockerSource objects represent liquidsoap containers """
+   def __init__(self, channel_name):
       stream_config = app.config.get_namespace('STREAM_')
-      container_args = {
-         'name': self.get_container_name(),
+      self.name = app.config['OBJECTS_NAME_PREFIX'] + 'source_' + channel_name
+      self.args = {
+         'name': self.name,
          'detach': True,
          'read_only': True,
          #'auto_remove': True,
          'environment': {
-            'STREAM_MOUNTPOINT': self._id,
+            'STREAM_MOUNTPOINT': channel_name,
             'STREAM_HOST': stream_config['host'],
             'STREAM_SOURCE_PASSWD': stream_config['source_passwd']
          },
       }
-      source_container_config.update(container_args)
 
-      source = app.docker.containers.run(image=app.config['SOURCE_IMAGE'], **source_container_config)
-      if not source:
-         return False
-      source_network = get_source_network()
-      if not source_network:
-         raise SystemError('Couldn\'t get nor create Source network')
-         return False
-      source_network.connect(source)
-      return source
-
-   def get_source(self):
-      """ Return source container object or false if doesn't exist """
+   def create(self):
+      """ Create a source container from given args """
+      source_container_config = app.config.get_namespace('SOURCE_CONTAINER_')
+      source_container_config.update(self.args)
       try:
-         source = app.docker.containers.get(self.get_container_name())
-         if not source:
-            return False
+         source = app.docker.containers.create(image=app.config['SOURCE_IMAGE'], **source_container_config)
+      except:
+         raise DockerError("Couldn't create source container")
+      try:
+         source_network = get_source_network()
+         source_network.connect(source)
          return source
       except:
-         return False
+         raise DockerError('Couldn\'t connect source to sources network')
 
-   def get_or_create_source(self):
-      """ Return source container object, and create it if doesn't exist """
-      source = self.get_source()
-      if not source:
-         source = self.create_source()
-      if not source:
-         return False
-      else:
-         self.source = source
+   def get(self):
+      """ Return source container object or create it if doesn't exist. """
+      try:
+         source = app.docker.containers.get(self.name)
          return source
+      except:
+         try:
+            source = self.create()
+            return source
+         except Exception as e:
+            raise e
+
+   def start(self):
+      try:
+         container = self.get()
+         container.start()
+         return True
+      except:
+         raise DockerError("Couldn't start source container")
+
+   def stop(self):
+      try:
+         container = self.get()
+         container.stop()
+         return True
+      except:
+         raise DockerError("Couldn't stop source container")
+
+   def status(self):
+      try:
+         container = self.get()
+         return container.status
+      except:
+         raise DockerError("Couldn't get container status")
 
    def reload_source(self):
       return True
 
    def delete_source(self):
-      return app.docker.containers.remove(self.get_container_name())
+      return app.docker.containers.remove(self.name)
