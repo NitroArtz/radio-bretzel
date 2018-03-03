@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from app.errors import DatabaseError
 
 models = [
-   'item',
+   'channel',
 ]
 
 def connect_db(app):
@@ -37,12 +37,10 @@ class Document(object):
       items = []
       try:
          collection = get_collection(model)
-      except ValueError:
-         return []
-      except Exception:
-         raise DatabaseError("")
+      except:
+         raise DatabaseError("Couldn't search database")
       for item in collection.find():
-         items.append(item['_id'])
+         items.append(item)
       return items
 
    def save(self):
