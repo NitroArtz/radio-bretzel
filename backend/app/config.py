@@ -14,7 +14,7 @@
 
 class default(object):
 
-   SITE_NAME = 'Radio Bretzel backend API'
+   SITE_NAME = 'Radio Bretzel backend'
    OBJECTS_NAME_PREFIX = 'radiobretzel_'
 
    DOCKER_URL = 'unix://var/run/docker.sock'
@@ -27,8 +27,8 @@ class default(object):
    # SOURCE_CONTAINER_AUDIO_VOLUME = 'radiobretzel_audio'
    SOURCE_NETWORK = 'sources'
 
-   STREAM_HOST="streaming.sources.radiobretzel"
-   STREAM_SOURCE_PASSWD="sourcepass"
+   STREAM_HOST = 'streaming.sources.radiobretzel'
+   STREAM_SOURCE_PASSWD = 'sourcepass'
 
 class development(default):
 
@@ -42,3 +42,12 @@ class test(default):
 
    TESTING = True
    WTF_CSRF_ENABLED =  False
+
+   OBJECTS_NAME_PREFIX = 'radiobretzel_tests_'
+
+   MONGO_HOST = 'database.tests_main.radiobretzel'
+   MONGO_DBNAME = 'radiobretzel_test'
+
+   SOURCE_NETWORK = 'tests_sources'
+
+   STREAM_HOST = 'streaming.tests_sources.radiobretzel'

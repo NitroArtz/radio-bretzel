@@ -1,0 +1,52 @@
+version: "3.3"
+
+networks:
+   tests_main:
+      driver: bridge
+   tests_sources:
+      driver: bridge
+
+volumes:
+   stream_config:
+      driver: local
+
+services:
+   tests_backend:
+      image: radiobretzel/backend:test
+      build:
+         context: ./backend/
+         dockerfile: dockerfiles/test
+      depends_on:
+         - tests_database
+      ports:
+         - 80:5000
+      volumes:
+         - ./backend/:/usr/src/radiobretzel
+         - /var/run/docker.sock:/var/run/docker.sock
+         # - stream_config:/usr/src/stream_config
+      networks:
+         tests_main:
+            aliases:
+               - backend.tests_main.radiobretzel
+         tests_sources:
+            aliases:
+               - backend.tests_sources.radiobretzel
+   tests_database:
+      image: mongo
+      networks:
+         tests_main:
+            aliases:
+               - database.tests_main.radiobretzel
+   tests_streaming:
+      image: radiobretzel/stream:test
+      build:
+         context: ./stream/
+         dockerfile: dockerfiles/test
+      ports:
+         - 8000:8000
+      volumes:
+         - ./stream:/usr/src/stream_config
+      networks:
+         tests_sources:
+            aliases:
+               - streaming.tests_sources.radiobretzel

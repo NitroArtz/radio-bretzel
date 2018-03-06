@@ -1,0 +1,5 @@
+Flask
+Flask-pymongo
+
+pytest
+docker
