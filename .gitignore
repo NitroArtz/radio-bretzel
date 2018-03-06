@@ -2,5 +2,6 @@ _data/*
 source/audio-test
 
 backend/**/__pycache__
+backend/.pytest_cache
 backend/app/__init__.pyc
 backend/app/local.py
