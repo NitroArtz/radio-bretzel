@@ -6,18 +6,15 @@ from .errors import DockerError
 def init_docker(app):
    """ Function launched at application startup.
        Create a connection to docker server.       """
-   if not hasattr(app, 'docker'):
-      config = app.config.get_namespace('DOCKER_')
-      try:
-         app.docker = docker.DockerClient(
-            base_url=config["url"],
-            version=config["version"]
-         )
-         return app
-      except DockerException as e:
-         raise e
-      except:
-         raise DockerError("Couldn't init docker connection")
+   config = app.config.get_namespace('DOCKER_')
+   try:
+      app.docker = docker.DockerClient(
+         base_url=config["url"],
+         version=config["version"]
+      )
+      return app
+   except Exception as e:
+      raise DockerError("Couldn't init docker connection : " + e.message)
 
 def get_source_network_name():
    """ Get source network name from config """

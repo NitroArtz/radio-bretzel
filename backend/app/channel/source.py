@@ -12,7 +12,6 @@ class DockerSource(object):
          'name': self.name,
          'detach': True,
          'read_only': True,
-         #'auto_remove': True,
          'environment': {
             'STREAM_MOUNTPOINT': channel_name,
             'STREAM_HOST': stream_config['host'],

@@ -19,6 +19,7 @@ def init_db(app):
    return app
 
 def get_collection(name):
+   """ Returns collection object from given name """
    try:
       if not hasattr(app, 'mongo'):
          raise DatabaseError("Database unavailable")
@@ -34,6 +35,7 @@ class Document(object):
    """ Abstract class whose different models will inherit """
 
    def get_all(model):
+      """ Returns all documents from given model name """
       items = []
       try:
          collection = get_collection(model)
