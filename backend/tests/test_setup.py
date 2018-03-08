@@ -21,13 +21,15 @@ def app_no_db():
    instance.config['MONGO_HOST'] = ''
    return instance
 
+
+
 def test_connection_no_docker(app_no_docker):
    with pytest.raises(Exception):
-      app_not_initialized.docker.init_docker(app_not_initialized)
+      app_not_initialized.docker.init_docker(app_no_docker)
 
 def test_connection_no_db(app_no_db):
    with pytest.raises(Exception):
-      radiobretzel.database.connect_db(app_not_initialized)
+      radiobretzel.database.connect_db(app_no_db)
 
 
 
@@ -35,6 +37,5 @@ def test_connections(app):
    assert hasattr(app, 'docker') == True
    assert app.docker.ping() == True
    assert hasattr(app, 'mongo') == True
-   assert app.mongo.server_info() != None
 
 #def test_slash(app):
