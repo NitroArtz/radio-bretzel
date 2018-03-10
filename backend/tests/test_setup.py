@@ -38,4 +38,8 @@ def test_connections(app):
    assert app.docker.ping() == True
    assert hasattr(app, 'mongo') == True
 
-#def test_slash(app):
+def test_slash(app):
+   with app.test_client() as client:
+      response = client.get('/')
+      assert response.status_code == 200
+      assert b'Welcome to Radio Bretzel' == response.data
