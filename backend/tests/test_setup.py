@@ -42,4 +42,4 @@ def test_slash(app):
    with app.test_client() as client:
       response = client.get('/')
       assert response.status_code == 200
-      assert b'Welcome to Radio Bretzel' == response.data
+      assert b'Welcome to Radio Bretzel' == response.get_data()
