@@ -28,7 +28,7 @@ class DockerSource(object):
       except:
          raise DockerError("Couldn't create source container")
       try:
-         source_network = get_source_network()
+         source_network = get_source_network(app)
          source_network.connect(source)
          return source
       except:
