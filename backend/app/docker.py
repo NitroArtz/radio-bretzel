@@ -1,52 +1,51 @@
-import docker
+import docker, time
 
-from .errors import DockerError
+from flask import current_app as app
+from app.errors import DockerError
 
-def init_docker(app):
-   """ Function launched at application startup.
-       Create a connection to docker server.       """
-   config = app.config.get_namespace('DOCKER_')
-   try:
-      app.docker = docker.DockerClient(
-         base_url=config["url"],
-         version=config["version"]
-      )
-      return app
-   except Exception as e:
-      raise DockerError("Couldn't init docker connection : " + e.message)
+__client = None
 
-def get_source_network_name(app):
-   """ Get source network name from config """
-   return app.config['OBJECTS_NAME_PREFIX'] + app.config['SOURCE_NETWORK']
+def get_docker_client(config=None):
+   """ Returns an instance of docker client
+   """
+   global __client
+   if __client:
+      return __client
+   if not config:
+      try:
+         config = app.config
+      except:
+         raise DockerError("Couldn't init docker connection : no config given")
+   tries = 0
+   while tries < 3:
+      tries += 1
+      try:
+         if not config:
+            raise DockerError("Need configuration to start Docker")
+         docker_config = config.docker_config()
+         __client = docker.DockerClient(
+            base_url=docker_config["url"],
+            version=docker_config["version"]
+         )
+         return __client
+      except Exception as e:
+         if tries == 3:
+            raise e
+            raise DockerError("Couldn't init docker connection")
+         time.sleep(0.5)
 
-def create_source_network(app):
-   """ Create docker network for sources """
-   network_config = app.config.get_namespace('SOURCE_NETWORK_')
-   network_name = get_source_network_name(app)
-   try:
-      source_network = app.docker.networks.create(network_name, **network_config)
-      if not source_network:
-         raise DockerError("Couldn't create source network")
-      app.source_network = source_network
-      return app.source_network
-   except Exception as e:
-      raise e
-
-def get_source_network(app):
-   """ Returns a docker network object if found, create it if not """
-   if hasattr(app, 'source_network'):
-      return app.source_network
-   try:
-      networks = app.docker.networks.list(get_source_network_name(app))
-      if not networks:
-         network = create_source_network(app)
-      elif len(networks) > 1:
-         raise DockerError('matched multiple Docker "' + get_source_network_name(app) + '" networks')
-      else:
-         network = networks[0]
-      if not network:
-         raise DockerError("Couldn't create source network")
-      app.source_network = network
-      return network
-   except Exception as e:
-      raise e
+def get_docker_network(name, **config):
+   """This function returns a docker network depending on configuration given.
+   Create the network if not found.
+   """
+   docker_client = get_docker_client()
+   networks = docker_client.networks.list(name)
+   if not networks:
+      return docker_client.networks.create(name, **config)
+   elif len(networks) > 1:
+      raise DockerError('Matched multiple Docker networks named '+ name)
+   else:
+      network = networks[0]
+   if not network:
+      raise DockerError("Couldn't find nor create docker source network")
+   return network
