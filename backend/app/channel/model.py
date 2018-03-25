@@ -1,18 +1,25 @@
 from flask import current_app as app
 
+from app.config import get_config
 from app.database import Document
 from app.utils import formats, validations
-from app.channel.source import DockerSource as Source
+
+from app.channel.source.dockerSource import DockerSource
+
 
 class Channel(Document):
    model = 'channel'
 
    def __init__(self,
                _id,
-               name=None):
+               name=None,
+               config=None):
+      config = get_config(config, SystemError("Couldn't create channel"))
       self._id = _id
-      self.name = formats.name(self._id, name)
-      self.source = Source(_id)
+      self.name = formats.id_to_name(_id, name)
+      streaming_mountpoint = _id
+      if config['SOURCE_TYPE'] == 'docker':
+         self.source = DockerSource(_id, streaming_mountpoint)
 
    def document(self):
       document = {
@@ -42,9 +49,8 @@ def validate(**data):
             if not data['_id']:
                raise ValueError('Mandatory argument "_id" not found.')
             validations.slug(data['_id'])
-         except Exception as e:
-            invalids['_id'] = e
-         else:
             valids[field] = data[field]
+         except ValueError as e:
+            invalids['_id'] = e.message
 
    return valids, invalids
