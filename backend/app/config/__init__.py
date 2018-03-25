@@ -3,6 +3,15 @@ import os
 from flask import Config as FlaskConfig
 from flask import current_app as app
 
+def get_config(config, error):
+   if not config:
+      try:
+         config = app.config
+         return config
+      except:
+         raise type(error)(error.message + " : no configuration found")
+   return config
+
 class Config(FlaskConfig):
    """Main configuration class. This class will be used normally by Flask and  as a singleton by our app, in order to prevent any unexpected behaviour
    """
@@ -29,7 +38,3 @@ class Config(FlaskConfig):
          self.from_pyfile('config/' + local_config_file)
       except:
          raise ValueError("Couldn't load config file " + local_config_file)
-
-
-   def docker_config(self):
-      return self.get_namespace('DOCKER_')
