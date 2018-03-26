@@ -20,11 +20,12 @@ def get_docker_client(config=None):
       raise DockerError("Couldn't init docker connection : couldn't connect to server")
 
 
-def get_docker_network(name, **config):
+def get_docker_network(name, docker_client=None, **config):
    """This function returns a docker network depending on configuration given.
    Create the network if not found.
    """
-   docker_client = get_docker_client()
+   if not docker_client
+      docker_client = get_docker_client()
    networks = docker_client.networks.list(name)
    if not networks:
       return docker_client.networks.create(name, **config)

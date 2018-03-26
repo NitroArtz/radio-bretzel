@@ -38,7 +38,7 @@ class DockerSource(Source):
       """
       config = get_config(config, DockerError("Couldn't create source container"))
       if not docker_client:
-         docker_client = get_docker_client()
+         docker_client = get_docker_client(config)
 
       try:
          docker_client.containers.get(self.name)
@@ -49,7 +49,7 @@ class DockerSource(Source):
          raise DockerError("Couldn't create source container : already exists")
       except:
          pass
-      
+
       try:
          container = docker_client.containers.create(image=self.__image, **self.__args)
       except:
@@ -58,7 +58,7 @@ class DockerSource(Source):
       if config['SOURCE_NETWORK'] == True:
          network_config = config.get_namespace('SOURCE_NETWORK_')
          network_name = network_config.pop('name')
-         source_network = get_docker_network(network_name, **network_config)
+         source_network = get_docker_network(network_name, docker_client, **network_config)
          try:
             source_network.connect(container)
          except Exception as e:
