@@ -53,7 +53,7 @@ class DockerSource(Source):
       if app.config['SOURCE_NETWORK'] == True:
          network_config = app.config.get_namespace('SOURCE_NETWORK_')
          network_name = network_config.pop('name')
-         source_network = get_docker_network(network_name)
+         source_network = get_docker_network(network_name, **network_config)
          try:
             source_network.connect(container)
          except Exception as e:
