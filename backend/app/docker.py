@@ -1,13 +1,12 @@
 import docker, time
 
-from app.config import get_config
+from flask import current_app as app
 from app.errors import DockerError
 
-def get_docker_client(config=None):
+def get_docker_client():
    """ Returns an instance of docker client
    """
-   config = get_config(config, DockerError("Couldn't initiate docker connection"))
-   docker_config = config.get_namespace('DOCKER_')
+   docker_config = app.config.get_namespace('DOCKER_')
    url = docker_config.pop('url')
    version = docker_config.pop('version')
    try:
@@ -20,12 +19,11 @@ def get_docker_client(config=None):
       raise DockerError("Couldn't init docker connection : couldn't connect to server")
 
 
-def get_docker_network(name, docker_client=None, **config):
+def get_docker_network(name, **config):
    """This function returns a docker network depending on configuration given.
    Create the network if not found.
    """
-   if not docker_client
-      docker_client = get_docker_client()
+   docker_client = get_docker_client()
    networks = docker_client.networks.list(name)
    if not networks:
       return docker_client.networks.create(name, **config)

@@ -1,6 +1,5 @@
 from flask import current_app as app
 
-from app.config import get_config
 from app.database import Document
 from app.utils import formats, validations
 
@@ -12,13 +11,11 @@ class Channel(Document):
 
    def __init__(self,
                _id,
-               name=None,
-               config=None):
-      config = get_config(config, SystemError("Couldn't create channel"))
+               name=None):
       self._id = _id
       self.name = formats.id_to_name(_id, name)
       streaming_mountpoint = _id
-      if config['SOURCE_TYPE'] == 'docker':
+      if app.config['SOURCE_TYPE'] == 'docker':
          self.source = DockerSource(_id, streaming_mountpoint)
 
    def document(self):

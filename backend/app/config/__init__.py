@@ -1,16 +1,6 @@
 import os
 
 from flask import Config as FlaskConfig
-from flask import current_app as app
-
-def get_config(config, error):
-   if not config:
-      try:
-         config = app.config
-         return config
-      except:
-         raise type(error)(error.message + " : no configuration found")
-   return config
 
 class Config(FlaskConfig):
    """Main configuration class. This class will be used normally by Flask and  as a singleton by our app, in order to prevent any unexpected behaviour
@@ -23,7 +13,6 @@ class Config(FlaskConfig):
          env = os.environ.get('RADIO_BRETZEL_ENV', 'development')
       if not local_config_file:
          local_config_file = os.environ.get('RADIO_BRETZEL_CONFIG_FILE', 'local.py')
-      config_file = 'config/'
 
       self.from_pyfile('config/default.py')
 

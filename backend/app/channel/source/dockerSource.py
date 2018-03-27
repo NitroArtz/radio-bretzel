@@ -1,7 +1,6 @@
-from docker.errors import APIError as DockerAPIError
+from flask import current_app as app
 
 from app import utils
-from app.config import get_config
 from app.docker import get_docker_client, get_docker_network
 from app.errors import DockerError
 
@@ -12,11 +11,9 @@ class DockerSource(Source):
 
    def __init__(self,
                name,
-               streaming_mountpoint,
-               config=None):
-      config = get_config(config, DockerError("Couldn't create channel's source"))
-      self.name = config['OBJECTS_NAME_PREFIX'] + 'source_' + name
-      stream_config = config.get_namespace('STREAM_')
+               streaming_mountpoint):
+      self.name = app.config['OBJECTS_NAME_PREFIX'] + 'source_' + name
+      stream_config = app.config.get_namespace('STREAM_')
       default_config = {
          'name': self.name,
          'detach': True,
@@ -27,19 +24,16 @@ class DockerSource(Source):
             'STREAM_MOUNTPOINT': streaming_mountpoint
          }
       }
-      self.__args = config.get_namespace('SOURCE_CONTAINER_')
+      self.__args = app.config.get_namespace('SOURCE_CONTAINER_')
       self.__image = self.__args.pop('image')
       self.__args.update(default_config)
 
 
 
-   def create(self, docker_client=None, config=None):
+   def create(self):
       """ Create a source container from given args
       """
-      config = get_config(config, DockerError("Couldn't create source container"))
-      if not docker_client:
-         docker_client = get_docker_client(config)
-
+      docker_client = get_docker_client()
       try:
          docker_client.containers.get(self.name)
          # If no error is raised before this point, that means
@@ -53,12 +47,13 @@ class DockerSource(Source):
       try:
          container = docker_client.containers.create(image=self.__image, **self.__args)
       except:
+         self.remove()
          raise DockerError("Couldn't create source container")
 
-      if config['SOURCE_NETWORK'] == True:
-         network_config = config.get_namespace('SOURCE_NETWORK_')
+      if app.config['SOURCE_NETWORK'] == True:
+         network_config = app.config.get_namespace('SOURCE_NETWORK_')
          network_name = network_config.pop('name')
-         source_network = get_docker_network(network_name, docker_client, **network_config)
+         source_network = get_docker_network(network_name)
          try:
             source_network.connect(container)
          except Exception as e:
@@ -66,12 +61,11 @@ class DockerSource(Source):
             raise DockerError("Couldn't connect source to sources network")
       return container
 
-   def __get(self, docker_client=None):
+   def __get(self):
       """ Return source container object and return False if
       doesn't exists
       """
-      if not docker_client:
-         docker_client = get_docker_client()
+      docker_client = get_docker_client()
       try:
          container = docker_client.containers.get(self.name)
          return container
