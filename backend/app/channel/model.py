@@ -16,7 +16,8 @@ class Channel(Document):
       self.name = formats.id_to_name(_id, name)
       streaming_mountpoint = _id
       if app.config['SOURCE_TYPE'] == 'docker':
-         self.source = DockerSource(_id, streaming_mountpoint)
+         self.source_class = DockerSource
+      self.source_class(_id, streaming_mountpoint)
 
    def get_all():
       return Document.get_all('channel')
