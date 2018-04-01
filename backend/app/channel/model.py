@@ -17,7 +17,7 @@ class Channel(Document):
       streaming_mountpoint = _id
       if app.config['SOURCE_TYPE'] == 'docker':
          self.source_class = DockerSource
-      self.source_class(_id, streaming_mountpoint)
+      self.source = self.source_class(_id, streaming_mountpoint)
 
    def document(self):
       return {
