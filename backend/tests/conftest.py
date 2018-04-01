@@ -1,6 +1,6 @@
 import pytest
 
-import app as rb_backend
+import rb_backend
 
 
 @pytest.fixture

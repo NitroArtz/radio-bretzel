@@ -1,8 +1,8 @@
 import os
 from flask import Flask
 
-from app import channel, database, docker
-from app.config import Config
+from rb_backend import channel, database, docker
+from rb_backend.config import Config
 
 def create_app(env=None, local_config_file=None, **config):
    """ Main application entry point """

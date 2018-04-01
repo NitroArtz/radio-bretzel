@@ -1,6 +1,6 @@
 import pytest
 
-import app as rb_backend
+import rb_backend
 
 def test_app(app):
    assert app.config['TESTING'] == True

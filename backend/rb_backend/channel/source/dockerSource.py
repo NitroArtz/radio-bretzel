@@ -1,10 +1,10 @@
 from flask import current_app as app
 
-from app import utils
-from app.docker import get_docker_client, get_docker_network
-from app.errors import DockerError
+from rb_backend import utils
+from rb_backend.docker import get_docker_client, get_docker_network
+from rb_backend.errors import DockerError
 
-from app.channel.source import Source
+from rb_backend.channel.source import Source
 
 class DockerSource(Source):
    """ DockerSource objects represent liquidsoap containers """

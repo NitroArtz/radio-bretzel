@@ -1,5 +1,5 @@
 #!/usr/local/bin/python
-from app import create_app
+from rb_backend import create_app
 
 app = create_app()
 

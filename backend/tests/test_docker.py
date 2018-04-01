@@ -1,6 +1,6 @@
 import pytest
 
-import app as rb_backend
+import rb_backend
 
 def test_docker(app):
    with app.app_context():

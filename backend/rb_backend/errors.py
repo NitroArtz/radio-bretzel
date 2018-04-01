@@ -5,7 +5,6 @@ class RadioBretzelException(Exception):
    If you want to catch all errors that the Radio Bretzel API might raise,
    catch this base exception.
    """
-   message = None
 
 class DatabaseError(RadioBretzelException):
    pass

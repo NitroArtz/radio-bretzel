@@ -1,9 +1,9 @@
 from flask import current_app as app
 
-from app.database import Document
-from app.utils import formats, validations
+from rb_backend.database import Document
+from rb_backend.utils import formats, validations
 
-from app.channel.source.dockerSource import DockerSource
+from rb_backend.channel.source.dockerSource import DockerSource
 
 
 class Channel(Document):

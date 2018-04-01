@@ -2,7 +2,7 @@ import random
 
 from flask import request, abort, jsonify
 
-from .model import Channel, validate
+from rb_backend.channel.model import Channel, validate
 
 def routes(app):
    """ All routes for the channel blueprint """
