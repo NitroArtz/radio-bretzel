@@ -1,9 +1,8 @@
 import os
 from flask import Flask
 
-from app import channel
+from app import channel, database, docker
 from app.config import Config
-from app.database import init_db
 
 def create_app(env=None, local_config_file=None, **config):
    """ Main application entry point """
@@ -12,16 +11,11 @@ def create_app(env=None, local_config_file=None, **config):
    app = Flask(__name__)
    app.config.load(env, local_config_file, **config)
 
-   register_modules(app)
    register_routes(app)
    register_main_routes(app)
    # register_teardown(app)
 
    return app
-
-def register_modules(app):
-   """ Activate Flask extensions and initiate external connections """
-   init_db(app)
 
 def register_routes(app):
    """ Register routes of submodules. """
