@@ -16,8 +16,7 @@ def get_docker_client():
          **docker_config)
       return client
    except Exception as e:
-      raise DockerError("Couldn't init docker connection : couldn't connect to server")
-
+      raise DockerError("Couldn't init docker connection : " + str(e))
 
 def get_docker_network(name, **config):
    """This function returns a docker network depending on configuration given.
