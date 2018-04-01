@@ -8,11 +8,13 @@ models = [
 ]
 
 def get_db_client():
-   """Instanciate DB connection"""
-   try:
-      return PyMongo(app)
-   except Exception as e:
-      raise DatabaseError("Couldn't initiate database connection : " + str(e))
+   if not hasattr(app, 'mongo'):
+      try:
+         app.mongo = PyMongo(app)
+         app.mongo.db.command('ping')
+      except Exception as e:
+         raise DatabaseError("Couldn't initiate database connection : " + str(e))
+   return app.mongo
 
 def get_collection(name):
    """ Returns collection object from given name """
