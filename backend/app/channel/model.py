@@ -19,15 +19,21 @@ class Channel(Document):
          self.source_class = DockerSource
       self.source_class(_id, streaming_mountpoint)
 
+   def document(self):
+      return {
+         '_id': self._id,
+         'name': self.name,
+         'source': {
+            'name': self.source.name,
+         }
+      }
+
    def get_all():
       return Document.get_all('channel')
 
    def info(self):
-      info = vars(self)
-      info['source'] = {
-         'name': self.source.name,
-         'status': self.source.status()
-      }
+      info = self.document()
+      info['source']['status'] = self.source.status()
       return info
 
 def validate(**data):

@@ -45,6 +45,8 @@ class Document(object):
          items.append(item)
       return items
 
+   def document(self):
+      raise NotImplemented('Need to implement Document.document(). document(self) must return a dict object containing every fields you want to store in mongodb')
    def save(self):
       """ Update or create model's document in database """
       try:
