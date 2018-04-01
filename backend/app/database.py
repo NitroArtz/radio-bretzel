@@ -7,29 +7,24 @@ models = [
    'channel',
 ]
 
-def connect_db(app):
-   """ Open a Mongodb connection."""
-   client = PyMongo(app)
-   return client
-
 def init_db(app):
    """ Initiate DB connection at app startup """
    if not hasattr(app, 'mongo'):
-      app.mongo = connect_db(app)
+      try:
+         app.mongo = PyMongo(app)
+      except Exception as e:
+         raise DatabaseError("Couldn't initiate database connection : " + str(e))
    return app
 
 def get_collection(name):
    """ Returns collection object from given name """
-   try:
-      if not hasattr(app, 'mongo'):
-         raise DatabaseError("Database unavailable")
-      if name in models:
-         collection = app.mongo.db[name]
-         return collection
-      else:
-         raise ValueError('Database Error - Unreferenced model')
-   except Exception as e:
-      raise e
+   if not hasattr(app, 'mongo'):
+      init_db(app)
+   if name in models:
+      collection = app.mongo.db[name]
+      return collection
+   else:
+      raise DatabaseError("Couldn't get collection : Unreferenced model name")
 
 class Document(object):
    """ Abstract class whose different models will inherit """
@@ -37,41 +32,37 @@ class Document(object):
    def get_all(model):
       """ Returns all documents from given model name """
       items = []
-      try:
-         collection = get_collection(model)
-      except:
-         raise DatabaseError("Couldn't search database")
+      collection = get_collection(model)
       for item in collection.find():
          items.append(item)
       return items
 
    def document(self):
       raise NotImplemented('Need to implement Document.document(). document(self) must return a dict object containing every fields you want to store in mongodb')
+
    def save(self):
       """ Update or create model's document in database """
+      collection = get_collection(self.model)
+      document = self.document()
       try:
-         collection = get_collection(self.model)
-         document = self.document()
          existing_document = collection.find_one({'_id': document['_id']})
          if existing_document:
             collection.replace_one(existing_document, document)
          else:
             collection.insert_one(document)
          return True
-      except:
-         raise SystemError("Couldn't save " + self.model + " in database")
+      except Exception as e:
+         raise DatabaseError("Couldn't save " + self.model + " in database :" + str(e))
 
    def delete(self):
       """ Delete the current document from given collection """
+      collection = get_collection(self.model)
+      document = self.document()
       try:
-         collection = get_collection(self.model)
-         document = self.document()
-         if not document.get('_id'):
-            raise KeyError('No primary key given for object')
          existing_document = collection.find_one({'_id': document['_id']})
          if not existing_document:
-            raise DatabaseError('Document not found')
+            raise DatabaseError("no document with _id " + document['_id'])
          collection.remove(existing_document)
          return True
-      except:
-         raise DatabaseError("Couldn't delete " + self.model + " in database")
+      except Exception as e:
+         raise DatabaseError("Couldn't delete " + self.model + " in database :" + str(e))
