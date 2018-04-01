@@ -7,21 +7,18 @@ models = [
    'channel',
 ]
 
-def init_db(app):
-   """ Initiate DB connection at app startup """
-   if not hasattr(app, 'mongo'):
-      try:
-         app.mongo = PyMongo(app)
-      except Exception as e:
-         raise DatabaseError("Couldn't initiate database connection : " + str(e))
-   return app
+def get_db_client():
+   """Instanciate DB connection"""
+   try:
+      return PyMongo(app)
+   except Exception as e:
+      raise DatabaseError("Couldn't initiate database connection : " + str(e))
 
 def get_collection(name):
    """ Returns collection object from given name """
-   if not hasattr(app, 'mongo'):
-      init_db(app)
+   mongo = get_db_client()
    if name in models:
-      collection = app.mongo.db[name]
+      collection = mongo.db[name]
       return collection
    else:
       raise DatabaseError("Couldn't get collection : Unreferenced model name")
