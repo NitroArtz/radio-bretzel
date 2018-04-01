@@ -24,9 +24,9 @@ class DockerSource(Source):
             'STREAM_MOUNTPOINT': streaming_mountpoint
          }
       }
-      self.__args = app.config.get_namespace('SOURCE_CONTAINER_')
-      self.__image = self.__args.pop('image')
-      self.__args.update(default_config)
+      self._args = app.config.get_namespace('SOURCE_CONTAINER_')
+      self._image = self._args.pop('image')
+      self._args.update(default_config)
 
 
 
@@ -43,9 +43,9 @@ class DockerSource(Source):
          raise DockerError("Couldn't create source container : container '" + self.name + "' already exists")
       except:
          pass
-
       try:
-         container = docker_client.containers.create(image=self.__image, **self.__args)
+         container = docker_client.containers.create(image=self._image, **self._args)
+         return True
       except Exception as e:
          raise DockerError("Couldn't create source container : " + str(e))
 
@@ -60,7 +60,7 @@ class DockerSource(Source):
             raise DockerError("Couldn't connect source to sources network : " + stre(e))
       return container
 
-   def __get(self):
+   def _get(self):
       """ Return source container object and return False if
       doesn't exists
       """
@@ -73,7 +73,7 @@ class DockerSource(Source):
 
    def start(self):
       try:
-         container = self.__get()
+         container = self._get()
          container.start()
          return True
       except Exception as e:
@@ -81,7 +81,7 @@ class DockerSource(Source):
 
    def stop(self):
       try:
-         container = self.__get()
+         container = self._get()
          container.stop()
          return True
       except Exception as e:
@@ -89,20 +89,19 @@ class DockerSource(Source):
 
    def status(self):
       try:
-         container = self.__get()
+         container = self._get()
          return container.status
       except Exception as e:
          raise DockerError("Couldn't get container status : " + str(e))
 
    def remove(self, force=False):
-      if self.status() == 'running':
-         if force:
-            self.stop()
-         else:
-            raise DockerError("Couldn't remove a running source - use force arg to force deletion : " + str(e))
       try:
-         container = self.__get()
-         if container:
-            return container.remove()
+         if self.status() == 'running':
+            if not force:
+               raise DockerError("couldn't remove a running source. Use force arg to force deletion")
+            self.stop()
+         container = self._get()
+         container.remove()
+         return True
       except Exception as e:
          raise DockerError("Couldn't remove source container : " + str(e))
