@@ -6,7 +6,7 @@ class Config(FlaskConfig):
    """Main configuration class. This class will be used normally by Flask and  as a singleton by our app, in order to prevent any unexpected behaviour
    """
 
-   def load(self, env=None, local_config_file=None):
+   def load(self, env=None, local_config_file=None, **config):
       """ Load app configuration """
 
       if not env:
@@ -27,3 +27,6 @@ class Config(FlaskConfig):
          self.from_pyfile('config/' + local_config_file)
       except:
          raise ValueError("Couldn't load config file " + local_config_file)
+
+      if config:
+         self.from_mapping(config)
