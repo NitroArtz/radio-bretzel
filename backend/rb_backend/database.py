@@ -36,6 +36,10 @@ class Document(object):
          items.append(item)
       return items
 
+   def get_one(model, _id, **filters):
+      collection = get_collection(model)
+      return collection.find_one(_id, **filters)
+
    def document(self):
       raise NotImplemented('Need to implement Document.document(). document(self) must return a dict object containing every fields you want to store in mongodb')
 
@@ -44,7 +48,7 @@ class Document(object):
       collection = get_collection(self.model)
       document = self.document()
       try:
-         existing_document = collection.find_one({'_id': document['_id']})
+         existing_document = collection.find_one(document['_id'])
          if existing_document:
             collection.replace_one(existing_document, document)
          else:

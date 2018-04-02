@@ -9,6 +9,13 @@ from rb_backend.channel.source.dockerSource import DockerSource
 class Channel(Document):
    model = 'channel'
 
+   def get_all():
+      return Document.get_all(Channel.model)
+
+   def get_one(_id, **filters):
+      document = Document.get_one(Channel.model, _id, **filters)
+
+
    def __init__(self,
                _id,
                name=None,
@@ -34,9 +41,6 @@ class Channel(Document):
             'name': self.source.name,
          }
       }
-
-   def get_all():
-      return Document.get_all('channel')
 
    def info(self):
       info = self.document()

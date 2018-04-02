@@ -21,8 +21,11 @@ def routes(app):
    @app.route('/channel/<_id>', methods=['GET'])
    def get_channel(_id):
       values = request.values
-      channel = Channel(_id)
-      return jsonify(channel.info())
+      # validations here
+      channel = Channel.get_one(_id)
+      if not channel:
+         return abort(404)
+      return jsonify(channel)
 
 
    @app.route('/channel/next')
