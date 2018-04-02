@@ -11,13 +11,20 @@ class Channel(Document):
 
    def __init__(self,
                _id,
-               name=None):
+               name=None,
+               streaming_mountpoint=None,
+               source_name=None,
+               force_source_creation=False):
       self._id = _id
       self.name = formats.id_to_name(_id, name)
-      streaming_mountpoint = _id
+      self.streaming_mountpoint = streaming_mountpoint or _id
+      self.source_name = source_name or _id
+      self.init_source(force_creation=force_source_creation)
+
+   def init_source(self, force_creation=False):
       if app.config['SOURCE_TYPE'] == 'docker':
-         self.source_class = DockerSource
-      self.source = self.source_class(_id, streaming_mountpoint)
+         self.__source_class = DockerSource
+      self.source = self.__source_class(self.source_name, self.streaming_mountpoint, force_creation=force_creation)
 
    def document(self):
       return {

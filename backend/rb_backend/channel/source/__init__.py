@@ -5,6 +5,10 @@ class Source(object):
    __metaclass__ = abc.ABCMeta
 
    @abc.abstractmethod
+   def create(self):
+      raise NotImplementedError('Need to implement Source.create()')
+
+   @abc.abstractmethod
    def status(self):
       raise NotImplementedError('Need to implement Source.status()')
 

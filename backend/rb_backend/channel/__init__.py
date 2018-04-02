@@ -13,9 +13,8 @@ def routes(app):
    @app.route('/channel/<_id>', methods=['POST'])
    def create_channel(_id):
       values = request.values
+      # validations here
       channel = Channel(_id)
-      channel.source.create()
-      channel.source.start()
       channel.save()
       return jsonify(channel.info())
 
