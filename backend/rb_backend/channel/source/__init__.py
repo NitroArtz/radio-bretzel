@@ -5,7 +5,7 @@ class Source(object):
    __metaclass__ = abc.ABCMeta
 
    @abc.abstractmethod
-   def create(self):
+   def create(self, override=False):
       raise NotImplementedError('Need to implement Source.create()')
 
    @abc.abstractmethod
@@ -21,5 +21,5 @@ class Source(object):
       raise NotImplementedError('Need to implement Source.stop()')
 
    @abc.abstractmethod
-   def remove(self):
-      raise NotImplementedError('Need to implement Source.remove()')
+   def delete(self, force=False):
+      raise NotImplementedError('Need to implement Source.delete()')

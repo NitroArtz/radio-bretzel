@@ -42,6 +42,7 @@ class Channels(Model):
    @classmethod
    def delete(cls, instance, soft=False):
       collection = Model.get_collection(cls)
+      instance.source.delete(force=True)
       try:
          if soft:
             instance.active = False

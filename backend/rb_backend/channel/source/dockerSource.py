@@ -45,7 +45,7 @@ class DockerSource(Source):
          if not override:
             raise DockerError("container '" + self.name + "' already exists")
          try:
-            self.remove(force=True)
+            self.delete(force=True)
          except:
             raise DockerError("Couldn't create source container : " + str(e))
       try:
@@ -63,7 +63,7 @@ class DockerSource(Source):
          try:
             source_network.connect(container)
          except Exception as e:
-            self.remove()
+            self.delete()
             raise DockerError("Couldn't connect source to sources network : " + stre(e))
       return True
 
@@ -103,14 +103,14 @@ class DockerSource(Source):
       except Exception as e:
          raise DockerError("Couldn't get source status : " + str(e))
 
-   def remove(self, force=False):
+   def delete(self, force=False):
       try:
          container = self._get()
          if container.status == 'running':
             if not force:
-               raise DockerError("couldn't remove a running source. Use force arg to force deletion")
+               raise DockerError("source is running. Use force arg to force deletion")
             container.stop()
-         container.remove()
+         container.delete()
          return True
       except Exception as e:
-         raise DockerError("Couldn't remove source : " + str(e))
+         raise DockerError("Couldn't delete source : " + str(e))
