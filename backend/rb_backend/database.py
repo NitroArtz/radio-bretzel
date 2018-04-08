@@ -21,7 +21,8 @@ def get_database():
 
 class Model(dict):
    """ Abstract class whose different models will inherit """
-
+   __metaclass__ = abc.ABCMeta
+   
    @staticmethod
    def get_collection(model):
       """ Returns collection object from given model class"""

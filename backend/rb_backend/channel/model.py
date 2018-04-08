@@ -1,3 +1,5 @@
+import abc
+
 from rb_backend.channel.source.dockerSource import DockerSource
 from rb_backend.config import get_config
 from rb_backend.database import Model
@@ -6,8 +8,10 @@ from rb_backend.utils import formats, validations
 
 class Channels(Model):
    """ Channel's model definition """
+   __metaclass__ = abc.ABCMeta
 
    @classmethod
+   @abc.abstractmethod
    def get(cls, **filters):
       collection = Model.get_collection(cls)
       items = []
@@ -18,6 +22,7 @@ class Channels(Model):
       return items
 
    @classmethod
+   @abc.abstractmethod
    def get_one(cls, _id, **filters):
       collection = Model.get_collection(cls)
       channel_document = collection.find_one(_id, **filters)
@@ -27,31 +32,37 @@ class Channels(Model):
       return Channel(_id, **channel_document)
 
    @classmethod
-   def save(cls, instance):
+   @abc.abstractmethod
+   def save(cls, channel):
       collection = Model.get_collection(cls)
       try:
-         existing_document = collection.find_one(instance._id)
+         existing_document = collection.find_one(channel._id)
          if existing_document:
-            collection.replace_one(existing_document, instance._document())
+            collection.replace_one(existing_document, channel._document())
          else:
-            collection.insert_one(instance._document())
+            collection.insert_one(channel._document())
          return True
       except Exception as e:
-         raise DatabaseError("Couldn't save channel " + instance.name + " in database :" + str(e))
+         raise DatabaseError("Couldn't save channel " + channel.name + " in database :" + str(e))
 
    @classmethod
-   def delete(cls, instance, soft=False):
+   @abc.abstractmethod
+   def delete(cls, channel, soft=False):
       collection = Model.get_collection(cls)
-      instance.source.delete(force=True)
+      channel.source.delete(force=True)
       try:
          if soft:
-            instance.active = False
-            return Channels.save(instance)
-         return collection.delete_one({'_id': instance._id})
+            channel.active = False
+            return Channels.save(channel)
+         return collection.delete_one({'_id': channel._id})
       except Exception as e:
-         raise DatabaseError("Couldn't delete channel " + instance.name + " in database :" + str(e))
+         raise DatabaseError("Couldn't delete channel " + channel.name + " in database :" + str(e))
 
 class Channel(object):
+
+   _source_class = None
+   source = None
+   source_args = {}
 
    def __init__(self,
                _id,
@@ -64,8 +75,6 @@ class Channel(object):
          name                    <string> :  Channel's public name
          source_args             <dict>   :  dictionnary containing source arguments.
                                              will be overriden by source_ prefixed args
-         source_*                <mult>   :  all keys starting with 'source_' will be
-                                             parsed and injected in source_args attribute.
                                              This overrides the given source_args attribute
          force_source_creation   <bool>   :  If set to True (False by default), potential
                                              existing source will be overriden at channel
@@ -74,11 +83,9 @@ class Channel(object):
       self._id = _id
       self.active = kwargs.pop('active', True)
       self.name = kwargs.pop('name', formats.id_to_name(_id))
-      self.source_args = kwargs.pop('source_args', {})
-      if not self.source_args:
-         self.source_args = formats.get_prefixed_keys(kwargs, 'source_', pop=True)
-      if not self.source_args.get('name', False):
-         self.source_args['name'] = _id
+      source_args = kwargs.pop('source_args', {})
+      # Default values for source_args here
+      self.source_args['name'] = source_args.get('name', False) or _id
       self.init_source(force_creation=kwargs.pop('force_source_creation', False))
 
    def _document(self):
@@ -107,13 +114,11 @@ def validate(**data):
    valid = {}
    invalids = {}
    for field in data:
-      if field == '_id':
-         try:
-            if not data['_id']:
-               raise ValueError('Mandatory argument "_id" not found.')
-            validations.slug(data['_id'])
-            valids[field] = data[field]
-         except ValueError as e:
-            invalids['_id'] = e.message
+      try:
+         if field == '_id': validations.slug(data['_id'])
+         if field == 'name': validations.name()
+      except ValueError as e:
+         invalids['_id'] = e.message
+      valids[field] = data[field]
 
    return valids, invalids
