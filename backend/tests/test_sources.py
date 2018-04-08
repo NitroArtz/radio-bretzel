@@ -1,4 +1,4 @@
-import pytest, time
+import pytest
 
 import rb_backend
 
@@ -12,18 +12,18 @@ def test_dockerSource(app):
       assert test_source.status() == 'running'
       assert test_source.stop()
       assert test_source.status() == 'exited'
-      assert test_source.remove()
+      assert test_source.delete()
       with pytest.raises(rb_backend.errors.DockerError, message="source not found"):
          test_source._get()
       assert not test_source._get(silent=True)
 
-def test_dockerSource_force_remove(app):
+def test_dockerSource_force_delete(app):
    with app.app_context():
       test_source = rb_backend.channel.source.dockerSource.DockerSource('test-force-rm')
       test_source.start()
-      with pytest.raises(rb_backend.errors.DockerError, message="Couldn't remove source container : couldn't remove a running source. Use force arg to force deletion"):
-         test_source.remove()
-      assert test_source.remove(force=True)
+      with pytest.raises(rb_backend.errors.DockerError, message="Couldn't delete source container : source is running. Use force arg to force deletion"):
+         test_source.delete()
+      assert test_source.delete(force=True)
 
 def test_dockerSource_already_exists(app):
    with app.app_context():
@@ -31,4 +31,4 @@ def test_dockerSource_already_exists(app):
       assert test_source.create(override=True)
       with pytest.raises(rb_backend.errors.DockerError, message="Couldn't create source container : container 'radiobretzel_tests_source_test' already exists"):
          test_source.create()
-      test_source.remove(force=True)
+      test_source.delete(force=True)

@@ -46,7 +46,7 @@ class DockerSource(Source):
             raise DockerError("container '" + self.name + "' already exists")
          try:
             self.delete(force=True)
-         except:
+         except Exception as e:
             raise DockerError("Couldn't create source container : " + str(e))
       try:
          args = self._args.copy()
@@ -110,7 +110,7 @@ class DockerSource(Source):
             if not force:
                raise DockerError("source is running. Use force arg to force deletion")
             container.stop()
-         container.delete()
+         container.remove()
          return True
       except Exception as e:
          raise DockerError("Couldn't delete source : " + str(e))
