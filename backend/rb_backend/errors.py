@@ -11,3 +11,6 @@ class DatabaseError(RadioBretzelException):
 
 class DockerError(RadioBretzelException):
    pass
+
+class SourceError(RadioBretzelException):
+   pass
