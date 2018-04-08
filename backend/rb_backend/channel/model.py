@@ -1,51 +1,105 @@
-from flask import current_app as app
-
-from rb_backend.database import Document
+from rb_backend.channel.source.dockerSource import DockerSource
+from rb_backend.config import get_config
+from rb_backend.database import Model
+from rb_backend.errors import DatabaseError, SourceError
 from rb_backend.utils import formats, validations
 
-from rb_backend.channel.source.dockerSource import DockerSource
+class Channels(Model):
+   """ Channel's model definition """
 
+   @classmethod
+   def get(cls, **filters):
+      collection = Model.get_collection(cls)
+      items = []
+      for channel_document in collection.find(**filters):
+         _id = channel_document.pop('_id')
+         channel = Channel(_id, **channel_document)
+         items.append(channel)
+      return items
 
-class Channel(Document):
-   model = 'channel'
+   @classmethod
+   def get_one(cls, _id, **filters):
+      collection = Model.get_collection(cls)
+      channel_document = collection.find_one(_id, **filters)
+      if not channel_document:
+         raise DatabaseError('Not found')
+      _id = channel_document.pop('_id')
+      return Channel(_id, **channel_document)
 
-   def get_all():
-      return Document.get_all(Channel.model)
+   @classmethod
+   def save(cls, instance):
+      collection = Model.get_collection(cls)
+      try:
+         existing_document = collection.find_one(instance._id)
+         if existing_document:
+            collection.replace_one(existing_document, instance._document())
+         else:
+            collection.insert_one(instance._document())
+         return True
+      except Exception as e:
+         raise DatabaseError("Couldn't save channel " + instance.name + " in database :" + str(e))
 
-   def get_one(_id, **filters):
-      document = Document.get_one(Channel.model, _id, **filters)
+   @classmethod
+   def delete(cls, instance, soft=False):
+      collection = Model.get_collection(cls)
+      try:
+         if soft:
+            instance.active = False
+            return Channels.save(instance)
+         return collection.delete_one({'_id': instance._id})
+      except Exception as e:
+         raise DatabaseError("Couldn't delete channel " + instance.name + " in database :" + str(e))
 
+class Channel(object):
 
    def __init__(self,
                _id,
-               name=None,
-               streaming_mountpoint=None,
-               source_name=None,
-               force_source_creation=False):
+               **kwargs):
+      """ Channel object constructor.
+      Arguments :
+         _id      (Mandatory)    <string> :  Channel's global id, uniquely composed of
+                                             alphanumeric characters and up to 2 dashes
+         active                  <bool>   :  Administrative enabled / disabled value
+         name                    <string> :  Channel's public name
+         source_args             <dict>   :  dictionnary containing source arguments.
+                                             will be overriden by source_ prefixed args
+         source_*                <mult>   :  all keys starting with 'source_' will be
+                                             parsed and injected in source_args attribute.
+                                             This overrides the given source_args attribute
+         force_source_creation   <bool>   :  If set to True (False by default), potential
+                                             existing source will be overriden at channel
+                                             creation
+      """
       self._id = _id
-      self.name = formats.id_to_name(_id, name)
-      self.streaming_mountpoint = streaming_mountpoint or _id
-      self.source_name = source_name or _id
-      self.init_source(force_creation=force_source_creation)
+      self.active = kwargs.pop('active', True)
+      self.name = kwargs.pop('name', formats.id_to_name(_id))
+      self.source_args = kwargs.pop('source_args', {})
+      if not self.source_args:
+         self.source_args = formats.get_prefixed_keys(kwargs, 'source_', pop=True)
+      if not self.source_args.get('name', False):
+         self.source_args['name'] = _id
+      self.init_source(force_creation=kwargs.pop('force_source_creation', False))
 
-   def init_source(self, force_creation=False):
-      if app.config['SOURCE_TYPE'] == 'docker':
-         self.__source_class = DockerSource
-      self.source = self.__source_class(self.source_name, self.streaming_mountpoint, force_creation=force_creation)
+   def _document(self):
+      document = vars(self).copy()
+      document.pop('source', False)
+      document.pop('_source_class', False)
+      return document
 
-   def document(self):
-      return {
-         '_id': self._id,
-         'name': self.name,
-         'source': {
-            'name': self.source.name,
-         }
-      }
+   def init_source(self, force_creation=False, silent=False):
+      config = get_config()
+      if config['SOURCE_TYPE'] == 'docker':
+         self._source_class = DockerSource
+      source_args = self.source_args.copy()
+      source_name = source_args.pop('name')
+      try:
+         self.source = self._source_class(source_name, force_creation=force_creation, **source_args)
+         return self.source
+      except Exception as e:
+         if silent:
+            return False
+         raise SourceError("Couldn't init_source : " + str(e))
 
-   def info(self):
-      info = self.document()
-      info['source']['status'] = self.source.status()
-      return info
 
 def validate(**data):
    """ Validate Channel arguments """
