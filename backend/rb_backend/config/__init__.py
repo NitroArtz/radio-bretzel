@@ -1,6 +1,15 @@
 import os
 
 from flask import Config as FlaskConfig
+from flask import current_app as app
+
+from rb_backend.errors import RadioBretzelException
+
+def get_config():
+   try:
+      return app.config
+   except:
+      raise RadioBretzelException("Couldn't get config - is app instanciated ?")
 
 class Config(FlaskConfig):
    """Main configuration class. This class will be used normally by Flask and  as a singleton by our app, in order to prevent any unexpected behaviour
