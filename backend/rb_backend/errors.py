@@ -14,3 +14,6 @@ class DockerError(RadioBretzelException):
 
 class SourceError(RadioBretzelException):
    pass
+
+class ValidationError(RadioBretzelException):
+   pass

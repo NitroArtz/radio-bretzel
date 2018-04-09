@@ -2,42 +2,93 @@ import random
 
 from flask import request, abort, jsonify
 
-from rb_backend.channel.model import Channel, Channels, validate
+from rb_backend.channel.model import Channel, Channels
 from rb_backend.channel import view
+from rb_backend.errors import ValidationError
 from rb_backend.utils import formats
 
 def routes(app):
    """ All routes for the channel blueprint """
+
    @app.route('/channel/', methods=['GET'])
-   def get_all_channels():
-      channels = Channels.get()
+   def get_channels():
+      """
+      Returns all matching channels from given filters
+      Arguments :
+
+      slug               (Mandatory)   :  Channel's global id, uniquely composed of
+                                          alphanumeric characters and up to 2 dashes
+      active                           :  Administrative enabled / disabled value
+                                          Accepts "True" or "False" (case insensitive)
+      soft_deleted                     :  Default to False, shows also soft_deleted items.
+                                          Accepts "True" or "False" (case insensitive)
+      name                             :  Channel's public name
+      description                      :  Channel's description
+      source_name                      :  Channel's source name
+      source_stream_host               :  URL of streaming server.
+      source_stream_source_passwd      :  streaming authentication password
+      source_stream_mountpoint         :  streaming mountpoint
+      """
+      values = request.values
+      channels = Channels.get(**values)
       return view.infos_many(*channels)
 
-   @app.route('/channel/<_id>', methods=['POST'])
-   def create_channel(_id):
+   @app.route('/channel/<string:slug>', methods=['POST'])
+   def create_channel(slug):
       """
       Create new channel from given args
       Arguments :
-         _id      (Mandatory)    <string> :  Channel's global id, uniquely composed of
-                                             alphanumeric characters and up to 2 dashes
-         active                  <bool>   :  Administrative enabled / disabled value
-         name                    <string> :  Channel's public name
+
+      slug               (Mandatory)   :  Channel's global id, uniquely composed of
+                                          alphanumeric characters and up to 2 dashes
+      active                           :  Administrative enabled / disabled value
+                                          Accepts "True" or "False" (case insensitive)
+      name                             :  Channel's public name
+      description                      :  Channel's description
+      source_name                      :  Channel's source name
+      source_stream_host               :  URL of streaming server.
+      source_stream_source_passwd      :  streaming authentication password
+      source_stream_mountpoint         :  streaming mountpoint
+      force_source_creation            :  Default to False, override existing source
+                                          if enabled
       """
       values = request.values
-      # validations here
-      source_args = formats.get_prefixed_keys(values, 'source_', pop=True)
-      channel = Channel(_id, source_args=source_args)
-      Channels.save(channel)
+      channel = Channels.create(slug, **values)
       return view.infos_one(channel)
 
-   @app.route('/channel/<_id>', methods=['GET'])
-   def get_channel(_id):
+   @app.route('/channel/<string:slug>', methods=['GET'])
+   def get_channel(slug):
+      """
+      Return matching channel infos
+      Arguments :
+
+      slug               (Mandatory)   :  Channel's global id, uniquely composed of
+                                          alphanumeric characters and up to 2 dashes
+      active                           :  Administrative enabled / disabled value
+                                          Accepts "True" or "False" (case insensitive)
+      soft_deleted                     :  Default to False, shows also soft_deleted items.
+                                          Accepts "True" or "False" (case insensitive)
+      name                             :  Channel's public name
+      description                      :  Channel's description
+      source_name                      :  Channel's source name
+      source_stream_host               :  URL of streaming server.
+      source_stream_source_passwd      :  streaming authentication password
+      source_stream_mountpoint         :  streaming mountpoint
+      """
       values = request.values
-      # validations here
-      channel = Channels.get_one(_id)
-      if not channel:
-         return abort(404)
+      try: channel = Channels.get_one(slug, **values)
+      except ValidationError as e: return abort(400, str(e))
+      except DatabaseError: return abort(404)
       return view.infos_one(channel)
+
+   @app.route('/channel/<string:slug>/source', methods=['GET'])
+   def get_channel_source(slug):
+      values = request.values
+
+      # Validations here
+      channel = Channels.get_one(slug, **values)
+      if not channel:
+         abort(404)
 
 
    @app.route('/channel/next')

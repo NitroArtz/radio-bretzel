@@ -2,7 +2,7 @@ from flask import current_app as app
 
 from rb_backend.config import get_config
 from rb_backend.docker import get_docker_client, get_docker_network
-from rb_backend.errors import DockerError
+from rb_backend.errors import SourceError
 from rb_backend.utils import formats
 
 from rb_backend.channel.source import Source
@@ -13,28 +13,34 @@ class DockerSource(Source):
    def __init__(self,
                name,
                **args):
+      """
+      Arguments:
+         name     (Mandatory)    <string> :  source name, uniquely composed of
+                                             alphanumeric characters and up to 2 dashes
+         stream_host             <string> :  URL of streaming server.
+         stream_source_passwd    <string> :  streaming authentication password
+         stream_mountpoint       <string> :  streaming mountpoint
+
+      """
       config = get_config()
-      self.name = config['OBJECTS_NAME_PREFIX'] + 'source_' + name
       stream_config = formats.get_prefixed_keys(config, 'STREAM_')
-      mandatory_args = {
+      self.name = name
+      self._args = formats.get_prefixed_keys(config, 'SOURCE_CONTAINER_')
+      ct_args = {
          'name': self.name,
          'detach': True,
          'read_only': True,
          'environment': {
-            'STREAM_HOST': stream_config['host'],
-            'STREAM_SOURCE_PASSWD': stream_config['source_passwd'],
-            'STREAM_MOUNTPOINT': name
+            'STREAM_HOST': args.get('stream_host', False) or config['STREAM_HOST'],
+            'STREAM_SOURCE_PASSWD': args.get('stream_source_passwd', False) or config['STREAM_SOURCE_PASSWD'],
+            'STREAM_MOUNTPOINT': args.get('stream_mountpoint', self.name)
          }
       }
       force_creation = args.pop('force_creation', False)
-      self._args = formats.get_prefixed_keys(config, 'SOURCE_CONTAINER_')
-      if args:
-         self._args.update(args)
-      self._args.update(mandatory_args)
+      self._args.update(ct_args)
+
       if force_creation or not self._get(silent=True):
          self.create(force_creation)
-
-
 
    def create(self, override=False):
       """ Create a source container from given args
@@ -43,18 +49,18 @@ class DockerSource(Source):
       docker_client = get_docker_client()
       if self._get(silent=True):
          if not override:
-            raise DockerError("container '" + self.name + "' already exists")
+            raise SourceError("source '" + self.name + "' already exists")
          try:
             self.delete(force=True)
          except Exception as e:
-            raise DockerError("Couldn't create source container : " + str(e))
+            raise SourceError("Couldn't create source : " + str(e))
       try:
          args = self._args.copy()
          image = args.pop('image', None)
-         if not image: raise DockerError('no image name given')
+         if not image: raise SourceError('no image name given')
          container = docker_client.containers.create(image=image, **args)
       except Exception as e:
-         raise DockerError("Couldn't create source container : " + str(e))
+         raise SourceError("Couldn't create source : " + str(e))
 
       if config['SOURCE_NETWORK']:
          network_config = formats.get_prefixed_keys(config, 'SOURCE_NETWORK_')
@@ -64,7 +70,7 @@ class DockerSource(Source):
             source_network.connect(container)
          except Exception as e:
             self.delete()
-            raise DockerError("Couldn't connect source to sources network : " + stre(e))
+            raise SourceError("Couldn't connect source to sources network : " + stre(e))
       return True
 
    def _get(self, silent=False):
@@ -78,7 +84,7 @@ class DockerSource(Source):
       except:
          if silent:
             return False
-         raise DockerError("source not found")
+         raise SourceError("source not found")
 
    def start(self):
       try:
@@ -86,7 +92,7 @@ class DockerSource(Source):
          container.start()
          return True
       except Exception as e:
-         raise DockerError("Couldn't start source : " + str(e))
+         raise SourceError("Couldn't start source : " + str(e))
 
    def stop(self):
       try:
@@ -94,23 +100,24 @@ class DockerSource(Source):
          container.stop()
          return True
       except Exception as e:
-         raise DockerError("Couldn't stop source : " + str(e))
+         raise SourceError("Couldn't stop source : " + str(e))
 
-   def status(self):
+   def status(self, silent=False):
       try:
          container = self._get()
          return container.status
       except Exception as e:
-         raise DockerError("Couldn't get source status : " + str(e))
+         if silent: return "Source unvailable. check your source config, if doesn't solve issue, contact an administrator"
+         raise SourceError("Couldn't get source status : " + str(e))
 
    def delete(self, force=False):
       try:
          container = self._get()
          if container.status == 'running':
             if not force:
-               raise DockerError("source is running. Use force arg to force deletion")
+               raise SourceError("source is running. Use force arg to force deletion")
             container.stop()
          container.remove()
          return True
       except Exception as e:
-         raise DockerError("Couldn't delete source : " + str(e))
+         raise SourceError("Couldn't delete source : " + str(e))

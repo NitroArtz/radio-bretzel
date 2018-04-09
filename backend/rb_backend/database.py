@@ -22,7 +22,7 @@ def get_database():
 class Model(dict):
    """ Abstract class whose different models will inherit """
    __metaclass__ = abc.ABCMeta
-   
+
    @staticmethod
    def get_collection(model):
       """ Returns collection object from given model class"""
@@ -34,25 +34,43 @@ class Model(dict):
       else:
          raise DatabaseError("Couldn't get collection : Unreferenced model ''" + name + "'")
 
-   @classmethod
-   @abc.abstractmethod
-   def get(cls, **filters):
-      """ Returns multiple matching documents from given filters """
-      raise NotImplementedError('Need to implement Model.get_all()')
+   @staticmethod
+   def validate(**data):
+      """ Returns a tuple of valids and invalids arguments
+      """
+      raise NotImplementedError('Need to implement Model.validate()')
 
    @classmethod
    @abc.abstractmethod
-   def get_one(cls, _id, **filters):
-      """ Returns the first matching document from given filters """
-      raise NotImplementedError('Need to implement Model.get_one()')
+   def find(cls, **filters):
+      """ Returns multiple matching documents from given filters
+      """
+      raise NotImplementedError('Need to implement Model.find()')
 
    @classmethod
    @abc.abstractmethod
-   def save(cls, instance):
-      """ Create or update document in database """
-      raise NotImplementedError('Need to implement Model.save()')
+   def find_one(cls, slug, **filters):
+      """ Returns the first matching document from given filters
+      """
+      raise NotImplementedError('Need to implement Model.find_one()')
+
+   @classmethod
+   @abc.abstractmethod
+   def create(cls, slug, **args):
+      """ Returns new document from given args
+      """
+      raise NotImplementedError('Need to implement Model.create()')
+
+   @classmethod
+   @abc.abstractmethod
+   def update(cls, slug, values):
+      """ Returns first matching document with given slug, updated with
+      given document
+      """
+      raise NotImplementedError('Need to implement Model.update()')
 
    @classmethod
    @abc.abstractmethod
    def delete(cls, instance):
-      """ Delete the current document from given collection """
+      """ Delete the current document from given collection
+      """

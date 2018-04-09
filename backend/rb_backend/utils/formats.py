@@ -3,9 +3,7 @@ def id_to_name(_id):
 
 def get_prefixed_keys(dictionnary, prefix, pop=False, lowercase=True, trim=True):
    """
-   This function parses the given dictionnary in order to extract
-   the key/value pairs with keys starting with given prefix.
-   It returns a dictionnary of extracted keys.
+   This function returns key/value pairs which the key starts with given prefix.
 
    Arguments:
       dictionnary (Mandatory) <dict>   :  the dictionnary to parse
