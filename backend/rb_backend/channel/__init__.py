@@ -11,7 +11,7 @@ def routes(app):
    @app.route('/channel/', methods=['GET'])
    def get_all_channels():
       channels = Channels.get()
-      return jsonify(view.bulk_infos(*channels))
+      return view.infos_many(*channels)
 
    @app.route('/channel/<_id>', methods=['POST'])
    def create_channel(_id):
@@ -28,7 +28,7 @@ def routes(app):
       source_args = formats.get_prefixed_keys(values, 'source_', pop=True)
       channel = Channel(_id, source_args=source_args)
       Channels.save(channel)
-      return jsonify(view.infos(channel))
+      return view.infos_one(channel)
 
    @app.route('/channel/<_id>', methods=['GET'])
    def get_channel(_id):
@@ -37,7 +37,7 @@ def routes(app):
       channel = Channels.get_one(_id)
       if not channel:
          return abort(404)
-      return jsonify(view.infos(channel))
+      return view.infos_one(channel)
 
 
    @app.route('/channel/next')

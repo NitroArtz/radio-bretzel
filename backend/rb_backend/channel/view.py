@@ -1,3 +1,5 @@
+from flask import jsonify
+
 def infos(channel):
    info = channel._document()
    info['source'] = {
@@ -7,9 +9,12 @@ def infos(channel):
    info.pop('source_args', False)
    return info
 
-def bulk_infos(*channels):
+def infos_many(*channels):
    rv = []
    if channels:
       for channel in channels:
          rv.append(infos(channel))
-   return rv
+   return jsonify(rv)
+
+def info_one(channel):
+   return jsonify(infos(channel))
