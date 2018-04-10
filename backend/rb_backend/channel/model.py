@@ -15,6 +15,7 @@ class Channels(Model):
       """ Validate Channel arguments """
       valids = {}
       invalids = {}
+      source_args = {}
       mandatories = ['slug']
       if check_mandatories: validations.check_mandatories(data, *mandatories)
       for key,value in data.items():
@@ -24,15 +25,18 @@ class Channels(Model):
             elif key == 'active': valids[key] = validations.bool(value)
             elif key == 'name': valids[key] = validations.text(value, max_length=32)
             elif key == 'description': valids[key] = validations.text(value)
-            elif key == 'source_name': valids[key] = validations.slug(value)
-            elif key == 'source_stream_mountpoint': valids[key] = validations.slug(value)
+            elif key == 'source_name': source_args['name'] = validations.slug(value)
+            elif key == 'source_stream_mountpoint': source_args['stream_mountpoint'] = validations.slug(value)
             else: raise ValidationError('Unreferenced argument')
          except ValidationError as e:
             invalids[key] = str(e)
+      if invalids: raise ValidationError(invalids)
+      if source_args: valids['source'] = source_args
       valids.pop('source_args', False)
-      if invalids:
-         raise ValidationError(invalids)
       return valids
+
+      if not filters['source']: filters.pop('source', False)
+
 
    @classmethod
    @abc.abstractmethod
@@ -42,7 +46,7 @@ class Channels(Model):
       collection = Model.get_collection(cls)
       soft_deleted = validations.bool(filters.pop('soft_deleted', 'false'))
       filters = Channels.validate(check_mandatories=False, **filters)
-      if not soft_deleted: filters.update({'soft_deleted': soft_deleted})
+      if not soft_deleted: filters.update({'soft_deleted': False})
       items = []
       for document in collection.find(filters):
          slug = document.pop('slug')
@@ -57,11 +61,12 @@ class Channels(Model):
       """
       collection = Model.get_collection(cls)
       soft_deleted = validations.bool(filters.pop('soft_deleted', 'false'))
-      filters = Channels.validate(filters.update({'slug': slug}))
-      if not soft_deleted: filters.update({'soft_deleted': soft_deleted})
+      filters.update({'slug': slug})
+      filters = Channels.validate(**filters)
+      if not soft_deleted: filters.update({'soft_deleted': False})
       document = collection.find_one(filters)
       if not document:
-         raise DatabaseError('No channel named ' + str(slug) + 'found')
+         raise DatabaseError('no channel named ' + str(slug) + ' found')
       slug = document.pop('slug')
       return Channel(slug, **document)
 
@@ -98,17 +103,15 @@ class Channels(Model):
 
    @classmethod
    @abc.abstractmethod
-   def delete(cls, slug, soft=False):
+   def delete(cls, slug, hard_delete='false'):
       collection = Model.get_collection(cls)
-      slug = validations.slug(slug)
-      channel = Channels.find_one(slug, **{'soft_deleted': 'true'})
+      channel = Channels.find_one(slug, **{'soft_deleted': hard_delete})
       try: channel.source.delete(force=True)
       except: pass
-      if soft:
+      if validations.bool(hard_delete): collection.delete_one({'slug': channel.slug})
+      else:
          channel.soft_deleted = True
          collection.replace_one({'slug': slug}, channel._document())
-      else:
-         collection.delete_one({'slug': channel.slug})
       return channel
 
 

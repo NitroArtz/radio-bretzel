@@ -31,8 +31,10 @@ def test_channel_validations():
    assert valids.get('slug') == set1['slug']
    assert valids.get('name') == set1['name']
    assert valids.get('active') == False
-   assert valids.get('source_name') == set1['source_name']
-   assert valids.get('source_stream_mountpoint') == set1['source_stream_mountpoint']
+   assert valids.get('source') == {
+      'name': 'jeez',
+      'stream_mountpoint': 'sambaa'
+   }
    set2 = {
       'slug': 'slug isnt ok',
       'source_name': 'source name either'
@@ -44,9 +46,9 @@ def test_channel_validations():
 def test_Channels_model(app):
    with app.app_context():
       rb_backend.channel.model.Channels.create('test-model')
-      soft_deleted_channel = rb_backend.channel.model.Channels.delete('test-model', soft=True)
+      soft_deleted_channel = rb_backend.channel.model.Channels.delete('test-model')
       assert soft_deleted_channel.soft_deleted == True
       with pytest.raises(rb_backend.errors.DatabaseError) as e:
-         rb_backend.channel.model.Channels.find_one({'slug': 'test-model'})
+         rb_backend.channel.model.Channels.find_one('test-model')
       rb_backend.channel.model.Channels.find_one('test-model', **{'soft_deleted': 'true'})
-      rb_backend.channel.model.Channels.delete('test-model')
+      rb_backend.channel.model.Channels.delete('test-model', hard_delete='true')
