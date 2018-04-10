@@ -95,7 +95,7 @@ class Channels(Model):
       collection = Model.get_collection(cls)
       slug = validations.slug(slug)
       values.pop('slug', False)
-      values = Channels.validate(values, check_mandatories=False)
+      values = Channels.validate(check_mandatories=False, **values)
       channel = Channels.find_one(slug)
       vars(channel).update(values)
       collection.replace_one({'slug': slug}, channel._document())

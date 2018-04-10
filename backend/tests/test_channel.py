@@ -46,6 +46,8 @@ def test_channel_validations():
 def test_Channels_model(app):
    with app.app_context():
       rb_backend.channel.model.Channels.create('test-model')
+      channel = rb_backend.channel.model.Channels.update('test-model', {'description': 'This is a nicer description'})
+      assert channel.description == 'This is a nicer description'
       soft_deleted_channel = rb_backend.channel.model.Channels.delete('test-model')
       assert soft_deleted_channel.soft_deleted == True
       with pytest.raises(rb_backend.errors.DatabaseError) as e:
