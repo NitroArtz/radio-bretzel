@@ -1,4 +1,4 @@
-import abc, html
+import abc
 
 from rb_backend.channel.source.dockerSource import DockerSource
 from rb_backend.config import get_config
@@ -16,10 +16,8 @@ class Channels(Model):
       valids = {}
       invalids = {}
       mandatories = ['slug']
-      if check_mandatories:
-         validations.check_mandatories(mandatories)
+      if check_mandatories: validations.check_mandatories(data, *mandatories)
       for key,value in data.items():
-         value = html.escape(value)
          try:
             if key == 'uuid': valids[key] = validations.uuid(value)
             elif key == 'slug': valids[key] = validations.slug(value)
