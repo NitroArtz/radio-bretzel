@@ -39,7 +39,7 @@ services:
       ports:
          - 80:5000
       volumes:
-         - ./backend/:/usr/src/radiobretzel
+         - ./backend/:/usr/src/rb_backend
          - /var/run/docker.sock:/var/run/docker.sock
          # - stream_config:/usr/src/stream_config
       networks:

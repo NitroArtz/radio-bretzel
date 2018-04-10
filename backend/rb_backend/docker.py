@@ -1,12 +1,12 @@
 import docker, time
 
-from app.config import get_config
-from app.errors import DockerError
+from rb_backend.config import get_config
+from rb_backend.errors import DockerError
 
-def get_docker_client(config=None):
+def get_docker_client():
    """ Returns an instance of docker client
    """
-   config = get_config(config, DockerError("Couldn't initiate docker connection"))
+   config = get_config()
    docker_config = config.get_namespace('DOCKER_')
    url = docker_config.pop('url')
    version = docker_config.pop('version')
@@ -17,13 +17,13 @@ def get_docker_client(config=None):
          **docker_config)
       return client
    except Exception as e:
-      raise DockerError("Couldn't init docker connection : couldn't connect to server")
-
+      raise DockerError("Couldn't init docker connection : " + str(e))
 
 def get_docker_network(name, **config):
    """This function returns a docker network depending on configuration given.
    Create the network if not found.
    """
+   config = get_config()
    docker_client = get_docker_client()
    networks = docker_client.networks.list(name)
    if not networks:
