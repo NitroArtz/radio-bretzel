@@ -1,7 +1,7 @@
 def id_to_name(_id):
    return _id.replace('-', ' ').title()
 
-def get_prefixed_keys(dictionnary, prefix, pop=False, lowercase=True, trim=True):
+def get_prefixed_keys(dictionnary, prefix, lowercase=True, trim=True):
    """
    This function returns key/value pairs which the key starts with given prefix.
 
@@ -26,6 +26,4 @@ def get_prefixed_keys(dictionnary, prefix, pop=False, lowercase=True, trim=True)
       if lowercase:
          key = key.lower()
       rv[key] = v
-      if pop:
-         dictionnary.pop(k)
    return rv

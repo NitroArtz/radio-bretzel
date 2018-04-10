@@ -4,7 +4,7 @@ from flask import request, abort, jsonify
 
 from rb_backend.channel.model import Channel, Channels
 from rb_backend.channel import view
-from rb_backend.errors import ValidationError
+from rb_backend.errors import DatabaseError, ValidationError
 from rb_backend.utils import formats
 
 def routes(app):
@@ -30,7 +30,7 @@ def routes(app):
       source_stream_mountpoint         :  streaming mountpoint
       """
       values = request.values
-      channels = Channels.get(**values)
+      channels = Channels.find(**values)
       return view.infos_many(*channels)
 
    @app.route('/channel/<string:slug>', methods=['POST'])
@@ -76,19 +76,19 @@ def routes(app):
       source_stream_mountpoint         :  streaming mountpoint
       """
       values = request.values
-      try: channel = Channels.get_one(slug, **values)
+      try: channel = Channels.find_one(slug, **values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
       return view.infos_one(channel)
 
-   @app.route('/channel/<string:slug>/source', methods=['GET'])
-   def get_channel_source(slug):
-      values = request.values
-
-      # Validations here
-      channel = Channels.get_one(slug, **values)
-      if not channel:
-         abort(404)
+   # @app.route('/channel/<string:slug>/source', methods=['GET'])
+   # def get_channel_source(slug):
+   #    values = request.values
+   #
+   #    # Validations here
+   #    channel = Channels.find_one(slug, **values)
+   #    if not channel:
+   #       abort(404)
 
 
    @app.route('/channel/next')
