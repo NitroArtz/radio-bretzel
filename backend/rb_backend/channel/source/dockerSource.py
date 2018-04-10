@@ -107,7 +107,7 @@ class DockerSource(Source):
          container = self._get()
          return container.status
       except Exception as e:
-         if silent: return "Source unvailable. check your source config, if doesn't solve issue, contact an administrator"
+         if silent: return "unavailable"
          raise SourceError("Couldn't get source status : " + str(e))
 
    def delete(self, force=False):
