@@ -32,11 +32,7 @@ class Channels(Model):
             invalids[key] = str(e)
       if invalids: raise ValidationError(invalids)
       if source_args: valids['source'] = source_args
-      valids.pop('source_args', False)
       return valids
-
-      if not filters['source']: filters.pop('source', False)
-
 
    @classmethod
    @abc.abstractmethod
@@ -47,12 +43,12 @@ class Channels(Model):
       soft_deleted = validations.bool(filters.pop('soft_deleted', 'false'))
       filters = Channels.validate(check_mandatories=False, **filters)
       if not soft_deleted: filters.update({'soft_deleted': False})
-      items = []
+      channel_list = []
       for document in collection.find(filters):
          slug = document.pop('slug')
          channel = Channel(slug, **document)
-         items.append(channel)
-      return items
+         channel_list.append(channel)
+      return channel_list
 
    @classmethod
    @abc.abstractmethod
