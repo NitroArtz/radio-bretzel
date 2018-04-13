@@ -93,7 +93,9 @@ class Channels(Model):
       values.pop('slug', False)
       values = Channels.validate(check_mandatories=False, **values)
       channel = Channels.find_one(slug)
+      if values.get('source'): channel.source.delete(force=True)
       vars(channel).update(values)
+      channel.init_source(silent=True)
       collection.replace_one({'slug': slug}, channel._document())
       return channel
 
