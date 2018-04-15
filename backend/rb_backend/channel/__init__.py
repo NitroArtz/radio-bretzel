@@ -28,7 +28,7 @@ def routes(app):
       """
       values = request.values
       channels = Channels.find(**values)
-      return view.infos_many(*channels)
+      return view.many(*channels)
 
    @app.route('/channel/<string:slug>', methods=['GET'])
    def get_channel(slug):
@@ -50,7 +50,7 @@ def routes(app):
       try: channel = Channels.find_one(slug, **values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
-      return view.infos_one(channel)
+      return view.one(channel)
 
    @app.route('/channel/<string:slug>', methods=['POST'])
    def create_channel(slug):
@@ -71,7 +71,7 @@ def routes(app):
       """
       values = request.values
       channel = Channels.create(slug, **values)
-      return view.infos_one(channel)
+      return view.one(channel)
 
    @app.route('/channel/<string:slug>', methods=['PUT', 'UPDATE'])
    def update_channel(slug):
@@ -91,7 +91,7 @@ def routes(app):
       try: updated_channel = Channels.update(slug, values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
-      return view.infos_one(update_channel)
+      return view.one(update_channel)
 
    @app.route('/channel/<string:slug>', methods=['DELETE'])
    def delete_channel(slug):
@@ -107,7 +107,7 @@ def routes(app):
       try: deleted_channel = Channels.delete(slug, **hard_delete)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
-      return view.infos_one(deleted_channel)
+      return view.one(deleted_channel)
 
    @app.route('/channel/<string:slug>/source', methods=['GET'])
    def get_channel_source(slug):
@@ -120,9 +120,9 @@ def routes(app):
       try: channel = Channels.find_one(slug)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
-      return view.source_infos(channel)
+      return view.one_source(channel)
 
-   @app.route('/channel/<string:slug>/source/start')
+   @app.route('/channel/<string:slug>/source/start', methods=['POST'])
    def start_channel_source(slug):
       """
       Starts and returns source information for given channel slug
@@ -132,9 +132,36 @@ def routes(app):
       """
       try:
          channel = Channels.find_one(slug)
-         channel.source.start()
+         return view.one_source(channel.source.start())
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
+
+   @app.route('/channel/<string:slug>/source/stop', methods=['POST'])
+   def stop_channel_source(slug):
+      """
+      Stops and returns source information for given channel slug
+      Arguments:
+
+      slug               (Mandatory)   :  Channel's global id
+      """
+      try:
+         channel = Channels.find_one(slug)
+         return view.one_source(channel.source.stop())
+      except ValidationError as e: return abort(400, str(e))
+      except DatabaseError: return abort(404)
+
+   @app.route('/channel/<string:slug>/source/reset', methods=['POST'])
+   def reset_channel_source(slug):
+      """
+      Remove and recreate sourche channel, returning information about source
+      Arguments:
+
+      slug               (Mandatory)   :  Channel's global id
+      """
+      try:
+         channel = Channels.find_one(slug)
+         channel.init_source(force_creation=True)
+
 
 
    @app.route('/channel/next')

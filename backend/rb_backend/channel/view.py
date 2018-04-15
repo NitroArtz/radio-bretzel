@@ -13,12 +13,18 @@ def source_infos(channel):
       'status': channel.source.status()
    }
 
-def infos_many(*channels):
+
+# Views
+
+def many(*channels):
    rv = []
    if channels:
       for channel in channels:
          rv.append(infos(channel))
    return jsonify(rv)
 
-def infos_one(channel):
+def one(channel):
    return jsonify(infos(channel))
+
+def one_source(channel):
+   return jsonify(source_infos(channel))
