@@ -1,34 +1,57 @@
-import pytest
+import pytest, time
 
 import rb_backend
 
-def test_dockerSource(app):
-   with app.app_context():
-      test_source = rb_backend.channel.source.dockerSource.DockerSource('radiobretzel_tests_source_test', stream_mountpoint='test')
-      assert test_source.status() == 'created'
-      container = test_source._get()
-      assert container.name == 'radiobretzel_tests_source_test'
-      assert test_source.start()
-      assert test_source.status() == 'running'
-      assert test_source.stop()
-      assert test_source.status() == 'exited'
-      assert test_source.delete()
-      with pytest.raises(rb_backend.errors.SourceError, message="source not found"):
-         test_source._get()
-      assert not test_source._get(silent=True)
+@pytest.fixture
+def docker_source_app():
+   config = {
+      'SOURCE_TYPE': 'docker'
+   }
+   return rb_backend.create_app('test', **config)
 
-def test_dockerSource_force_delete(app):
-   with app.app_context():
-      test_source = rb_backend.channel.source.dockerSource.DockerSource('radiobretzel_tests_source_test-force-rm')
-      test_source.start()
-      with pytest.raises(rb_backend.errors.SourceError, message="Couldn't delete source container : source is running. Use force arg to force creation"):
-         test_source.delete()
-      assert test_source.delete(force=True)
-
-def test_dockerSource_already_exists(app):
-   with app.app_context():
-      test_source = rb_backend.channel.source.dockerSource.DockerSource('radiobretzel_tests_source_test-exists')
-      assert test_source.create(override=True)
-      with pytest.raises(rb_backend.errors.SourceError, message="Couldn't create source container : container 'radiobretzel_tests_source_test' already exists"):
+def test_dockerSource_defaults(docker_source_app):
+   with docker_source_app.app_context():
+      test_source = rb_backend.channel.source.model.Sources.init('test-docker-source')
+      assert test_source.stream_mountpoint == 'test-docker-source'
+      assert not test_source._get_container(quiet=True)
+      test_source.create()
+      assert test_source._get_container()
+      with pytest.raises(rb_backend.errors.SourceError):
          test_source.create()
-      test_source.delete(force=True)
+      assert test_source.create(force=True)
+      assert test_source.status == 'stopped'
+      test_source.start()
+      assert test_source.status == 'playing'
+      assert test_source.start(quiet=True)
+      with pytest.raises(rb_backend.errors.SourceError):
+         test_source.delete()
+      test_source.stop()
+      assert test_source.status == 'stopped'
+      assert test_source.stop(quiet=True)
+      test_source.delete()
+      assert test_source.status == 'non-existent'
+      assert test_source.delete(quiet=True)
+      docker_source_app.config.update({'DOCKER_URL': 'nowhere'})
+      assert test_source.status == 'in error'
+
+def test_source_model(app):
+   with app.app_context():
+      assert not rb_backend.channel.source.model.Sources.find()
+      test_source_model = rb_backend.channel.source.model.Sources.create(**{'name': 'test-source-model', 'channel': 'dumb'})
+      assert test_source_model._document() == {
+         'name': 'test-source-model',
+         'channel': 'dumb',
+         'status': 'stopped',
+         'stream_mountpoint': 'test-source-model'
+      }
+      test_source_model = rb_backend.channel.source.model.Sources.find_one(**{'name': 'test-source-model'})
+      with pytest.raises(rb_backend.errors.SourceError):
+         test_source_model.create()
+      test_source_model = rb_backend.channel.source.model.Sources.update(test_source_model)
+      assert test_source_model.status == 'stopped'
+      test_source_model = rb_backend.channel.source.model.Sources.update('test-source-model', **{'stream_mountpoint': 'ladida'})
+      assert test_source_model.stream_mountpoint == 'ladida'
+      test_source_model = rb_backend.channel.source.model.Sources.delete(test_source_model)
+      assert test_source_model.status == 'non-existent'
+      with pytest.raises(rb_backend.errors.DatabaseNotFound):
+         rb_backend.channel.source.model.Sources.find_one(**{'name': 'test-source-model'})

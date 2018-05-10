@@ -7,6 +7,7 @@ from rb_backend.errors import DatabaseError
 
 _models = [
    'channels',
+   'sources',
 ]
 
 def get_database():
@@ -19,7 +20,7 @@ def get_database():
          raise DatabaseError("Couldn't initiate database connection : " + str(e))
    return app.db
 
-class Model(dict):
+class Model(object):
    """ Abstract class whose different models will inherit """
    __metaclass__ = abc.ABCMeta
 
@@ -35,10 +36,10 @@ class Model(dict):
          raise DatabaseError("Couldn't get collection : Unreferenced model ''" + name + "'")
 
    @staticmethod
-   def validate(**data):
+   def _schema():
       """ Returns a tuple of valids and invalids arguments
       """
-      raise NotImplementedError('Need to implement Model.validate()')
+      raise NotImplementedError('Need to implement Model._schema()')
 
    @classmethod
    @abc.abstractmethod

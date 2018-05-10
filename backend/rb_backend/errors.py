@@ -8,11 +8,15 @@ class RadioBretzelException(Exception):
 
 class DatabaseError(RadioBretzelException):
    pass
+class DatabaseNotFound(DatabaseError):
+   pass
 
 class DockerError(RadioBretzelException):
    pass
 
 class SourceError(RadioBretzelException):
+   pass
+class SourceNotFound(SourceError):
    pass
 
 class ValidationError(RadioBretzelException):

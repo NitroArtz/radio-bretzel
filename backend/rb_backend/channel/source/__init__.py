@@ -1,34 +1,58 @@
 import abc
 
-class Source(object):
-   """ Interface for multiple sources types
+from rb_backend.utils import formats
 
-      Constructor's arguments :
-         name     (Mandatory)    <string> :  source name, uniquely composed of
-                                             alphanumeric characters and up to 2 dashes
-         stream_host             <string> :  URL of streaming server.
-         stream_source_passwd    <string> :  streaming authentication password
-         stream_mountpoint       <string> :  streaming mountpoint
-
+class SourceAbs(object):
+   """ This astract source will be used to provide generic methods to source classes
    """
-   __metaclass__ = abc.ABCMeta
+
+   def setup(self, status='non-existent'):
+      if status == 'in error' or self.status == status:
+         return self
+      if status == 'non-existent':
+         return self.delete(force=True, quiet=True)
+      if self.status == 'non-existent':
+         self.create()
+      if status == 'playing':
+         self.start()
+      else:
+         self.stop(quiet=True)
+      return self
+
+   def reload(self):
+      old_status = self.status
+      if old_status == 'non-existent':
+         return self
+      self.delete(force=True, quiet=True)
+      self.setup(status=old_status)
+      return self
+
+   def _document(self):
+      """ This function generates source's document """
+      return {
+         'name': self.name,
+         'channel': self.channel,
+         'status': self.status,
+         'stream_mountpoint': self.stream_mountpoint
+      }
 
    @abc.abstractmethod
-   def create(self, override=False):
+   def create(self, force=False):
       raise NotImplementedError('Need to implement Source.create()')
 
+   @property
    @abc.abstractmethod
    def status(self):
-      raise NotImplementedError('Need to implement Source.status()')
+      raise NotImplementedError('Need to implement Source.status')
 
    @abc.abstractmethod
-   def start(self):
+   def start(self, quiet=False):
       raise NotImplementedError('Need to implement Source.start()')
 
    @abc.abstractmethod
-   def stop(self):
+   def stop(self, quiet=False):
       raise NotImplementedError('Need to implement Source.stop()')
 
    @abc.abstractmethod
-   def delete(self, force=False):
+   def delete(self, force=False, quiet=False):
       raise NotImplementedError('Need to implement Source.delete()')
