@@ -3,3 +3,4 @@ Flask-pymongo
 
 pytest
 docker
+cerberus

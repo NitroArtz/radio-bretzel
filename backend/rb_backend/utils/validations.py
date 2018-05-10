@@ -1,50 +1,43 @@
-import re, html
+import re
+from cerberus import Validator
 
 from rb_backend.errors import ValidationError
 
-def check_length(item, max=128, min=1):
-   if len(item) > max:
-      raise ValidationError('item is too long (max ' + str(max) + ' characters)')
-   if len(item) <= min:
-      raise ValidationError('item is too short (min ' + str(min) + ' characters)')
+def validate(data, schema, mandatories=True, allow_unknown=False, **kwargs):
+   """ Validate given data with given Schema. kwargs are passed to cerberus.Validator consructor """
+   v = RB_Validator(schema=schema, allow_unknown=allow_unknown, **kwargs)
+   update = not mandatories
+   valids = v.validated(data, update=update)
+   if valids is None:
+      raise ValidationError(v.errors)
+   return valids
 
-def check_mandatories(data, *fields):
-   missings = []
-   if fields:
-      for key in fields:
-         if key not in data.keys():
-            missings.append(key)
-   if not missings: return True
-   raise ValidationError('missing mandatory items : '+ str(missings))
+class RB_Validator(Validator):
 
-def uuid(item):
-   item = html.escape(item)
-   if not re.match('^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$', item, re.IGNORECASE):
-      raise ValidationError("item doesn't match requirements (not a valid uuid)")
-   return item
+   def _normalize_coerce_text(self, value):
+      return html.escape(value)
 
-def slug(item, max_length=32):
-   check_length(item, max=max_length)
-   item = html.escape(item)
-   if not re.match('^([a-z][a-z0-9]*)((?:-[a-z0-9]+){0,2})$', item):
-      raise ValidationError('item doesn\'t match requirements (only letters, digits and maximum two dashes. Cannot start with a dash.)')
-   return item
+   def _normalize_coerce_boolean(self, value):
+      if isinstance(value, bool):
+         return value
+      if isinstance(value, str):
+         if value.lower() == 'true': return True
+         if value.lower() == 'false': return False
+         return value
 
-def text(item, max_length=1024):
-   item = html.escape(item)
-   check_length(item, max=max_length)
-   return item
 
-def bool(item):
-   """ Returns True or False depending on item's value (string) """
-   item = html.escape(item)
-   if item.lower() == 'true': return True
-   if item.lower() == 'false': return False
-   raise ValidationError('item is not booleean')
+   def _validator_boolean(self, field, value):
+      if not isinstance(value, bool):
+         self._error(field, "Must be one of True, False, TRUE, FALSE, true or false")
 
-def url(item, max_length=128, min_length=4):
-   item = html.escape(item)
-   check_length(item, max=max_length, min=min_length)
-   if not re.match('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$', item):
-      raise ValidationError("item is not a valid url")
-   return item
+   def _validator_uuid(self, field, value):
+      if not re.match('^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$', value, re.IGNORECASE):
+         self._error(field, "Must be valid UUID")
+
+   def _validator_slug(self, field, value):
+      if not re.match('^([a-z][a-z0-9]*)((?:-[a-z0-9]+){0,2})$', value):
+         self._error(field, 'Must be only letters, digits and maximum two dashes. Cannot start nor end with a dash.')
+
+   def _validator_url(self, field, value):
+      if not re.match('^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$', value):
+         self._error(field, "Must be a valid url")
