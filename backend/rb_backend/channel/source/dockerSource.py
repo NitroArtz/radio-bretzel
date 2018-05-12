@@ -130,18 +130,14 @@ class DockerSource(SourceAbs):
 
    def delete(self, force=False, quiet=False):
       container = self._get_container(quiet=quiet)
-      if quiet:
-         self._cached_container = None
-         self._cached_container_exp = datetime.min
+      if not container:
          return self
+      if container.status in ['running', 'restarting'] and not force:
+         raise SourceError("source is playing. Use force arg to force deletion")
       try:
-         if container.status in ['running', 'restarting'] and not force:
-            raise SourceError("source is playing. Use force arg to force deletion")
          container.remove(force=force)
          self._cached_container = None
          self._cached_container_exp = datetime.min
-      except SourceError as e:
-         raise e
       except Exception as e:
          raise DockerError("Couldn't delete source : " + str(e))
       return self

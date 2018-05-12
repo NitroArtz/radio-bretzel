@@ -6,10 +6,11 @@ class SourceAbs(object):
    """ This astract source will be used to provide generic methods to source classes
    """
 
-   def setup(self, status='non-existent'):
+   def setup(self, status):
       if status == 'in error' or self.status == status:
          return self
       if status == 'non-existent':
+         # return self.delete(force=True)
          return self.delete(force=True, quiet=True)
       if self.status == 'non-existent':
          self.create()

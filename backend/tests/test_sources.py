@@ -34,6 +34,23 @@ def test_dockerSource_defaults(docker_source_app):
       docker_source_app.config.update({'DOCKER_URL': 'nowhere'})
       assert test_source.status == 'in error'
 
+def test_Source_setup(app):
+   with app.app_context():
+      test_source_setup = rb_backend.channel.source.model.Sources.init('test-setup')
+      assert test_source_setup.status == 'non-existent'
+      test_source_setup.setup('stopped')
+      assert test_source_setup.status == 'stopped'
+      test_source_setup.setup('playing')
+      assert test_source_setup.status == 'playing'
+      test_source_setup.setup('non-existent')
+      assert test_source_setup.status == 'non-existent'
+      test_source_setup.setup('playing')
+      assert test_source_setup.status == 'playing'
+      test_source_setup.setup('stopped')
+      assert test_source_setup.status == 'stopped'
+      test_source_setup.setup('non-existent')
+      assert test_source_setup.status == 'non-existent'
+
 def test_source_model(app):
    with app.app_context():
       assert not rb_backend.channel.source.model.Sources.find()
