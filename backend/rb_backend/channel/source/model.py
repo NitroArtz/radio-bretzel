@@ -38,13 +38,6 @@ class Sources(Model):
          'status': {
             'allowed': ['playing', 'stopped', 'non-existent', 'in error']
          },
-         'stream_host': {
-            'validator': 'url'
-         },
-         'stream_port': {
-            'type': 'integer',
-            'coerce': int
-         },
          'stream_mountpoint': {
             'validator': 'slug'
          }
