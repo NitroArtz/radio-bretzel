@@ -6,26 +6,17 @@ class SourceAbs(object):
    """ This astract source will be used to provide generic methods to source classes
    """
 
-   def setup(self, status):
-      if status == 'in error' or self.status == status:
-         return self
-      if status == 'non-existent':
-         # return self.delete(force=True)
-         return self.delete(force=True, quiet=True)
-      if self.status == 'non-existent':
-         self.create()
-      if status == 'playing':
-         self.start()
-      else:
-         self.stop(quiet=True)
-      return self
-
-   def reload(self):
+   def reload(self, quiet=True):
       old_status = self.status
-      if old_status == 'non-existent':
-         return self
-      self.delete(force=True, quiet=True)
-      self.setup(status=old_status)
+      if old_status not in ['non-existent', 'in error']:
+         try:
+            self.delete(force=True)
+            self.create()
+            if old_status == 'playing':
+               self.start()
+         except Exception as e:
+            if not quiet:
+               raise SourceError("Couldn't reload source after update : " + str(e))
       return self
 
    def _document(self):

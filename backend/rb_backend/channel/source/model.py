@@ -21,7 +21,6 @@ class Sources(Model):
          raise ValueError('unsupported source type ' + str(source_type))
       source = source_class(name, **kwargs)
       source.channel = kwargs.get('channel')
-      source.setup(kwargs.get('status', 'non-existent'))
       return source
 
 
@@ -98,6 +97,7 @@ class Sources(Model):
       for document in collection.find({'name': name}).limit(1):
          if document: raise ValueError("source '" + str(name) + "' already exists.")
       source = Sources.init(name, **values)
+      source.create()
       try:
          collection.insert_one(source._document())
       except Exception as e:
