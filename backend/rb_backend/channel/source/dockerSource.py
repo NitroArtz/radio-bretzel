@@ -4,12 +4,12 @@ from flask import current_app as app
 from docker.errors import NotFound as DockerNotFound
 
 from rb_backend.config import get_config
-from rb_backend.channel.source import SourceAbs
+from rb_backend.channel.source import Source
 from rb_backend.docker import get_docker_client, get_docker_network
 from rb_backend.errors import SourceError, SourceNotFound, DockerError
 from rb_backend.utils import formats
 
-class DockerSource(SourceAbs):
+class DockerSource(Source):
    """ DockerSource objects represent liquidsoap containers """
 
    _cached_container = None

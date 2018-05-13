@@ -2,7 +2,7 @@ import abc
 
 from rb_backend.utils import formats
 
-class SourceAbs(object):
+class Source(object):
    """ This astract source will be used to provide generic methods to source classes
    """
 
