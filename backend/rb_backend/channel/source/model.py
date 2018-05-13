@@ -59,10 +59,15 @@ class Sources(Model):
       schema = Sources._schema()
       filters = validate(filters, schema, mandatories=False)
       source_list = []
-      for document in collection.find(filters):
-         name = document.pop('name')
-         source = Sources.init(name, **document)
-         source_list.append(source)
+      try:
+         for document in collection.find(filters):
+            name = document.pop('name')
+            source = Sources.init(name, **document)
+            source_list.append(source)
+      except SourceError:
+         raise
+      except Exception as e:
+         raise DatabaseError(str(e))
       return source_list
 
 
@@ -75,11 +80,15 @@ class Sources(Model):
       schema = Sources._schema()
       filters = validate(filters, schema, mandatories=False)
       if not filters: raise ValidationError('You must provide at least one filter')
+      documents = []
       try:
-         document = collection.find_one(filters)
+         for document in collection.find(filters).limit(1):
+            documents.append(document)
       except Exception as e:
          raise DatabaseError(str(e))
-      if not document: raise DatabaseNotFound()
+      if not documents:
+         raise DatabaseNotFound()
+      document = documents.pop()
       name = document.pop('name')
       return Sources.init(name, **document)
 
