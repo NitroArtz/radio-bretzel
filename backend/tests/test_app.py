@@ -2,14 +2,21 @@ import pytest
 
 import rb_backend
 
-def test_app(app):
-   assert app.config['TESTING'] == True
-
-
 def test_default_routes(client):
    res = client.get('/')
    assert b'Welcome to Radio Bretzel' in res.data
 
+def test_Sources_routes(client):
+   assert client.get('/source').data == b'[]\n'
+
+   assert client.get('/source/test-source-routes').status_code == 404
+   assert client.post('/source/test-source-routes', data={'channel': 'dumb'}).status_code == 200
+   assert client.get('/source/test-source-routes').status_code == 200
+   assert client.put('/source/test-source-routes', data={'stream_mountpoint': 'new-mountpoint'}).status_code == 200
+   assert client.get('/source/test-source-routes/start').status_code == 200
+   assert client.get('/source/test-source-routes/stop').status_code == 200
+   assert client.delete('/source/test-source-routes').status_code == 200
+   
 # def test_Channels_controller(client):
 #    assert client.get('/channel/').data == b'[]\n'
 #
