@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 
-from rb_backend import channel, database, docker
+from rb_backend import source, database, docker
 from rb_backend.config import Config
 
 def create_app(env=None, local_config_file=None, **config):
@@ -19,7 +19,7 @@ def create_app(env=None, local_config_file=None, **config):
 
 def register_routes(app):
    """ Register routes of submodules. """
-   channel.routes(app)
+   source.routes(app)
 
 def register_main_routes(app):
    """ Register main routes for application. """

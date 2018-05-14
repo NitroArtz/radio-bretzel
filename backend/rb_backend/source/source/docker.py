@@ -1,32 +1,28 @@
 from datetime import datetime, timedelta
-from flask import current_app as app
 
 from docker.errors import NotFound as DockerNotFound
 
 from rb_backend.config import get_config
-from rb_backend.channel.source import Source
 from rb_backend.docker import get_docker_client, get_docker_network
 from rb_backend.errors import SourceError, SourceNotFound, DockerError
+from rb_backend.source.source.base import BaseSource
 from rb_backend.utils import formats
 
-class DockerSource(Source):
+class DockerSource(BaseSource):
    """ DockerSource objects represent liquidsoap containers """
 
    _cached_container = None
    _cached_container_exp = datetime.min
 
-   def __init__(self,
-               name,
-               **args):
+   def __init__(self, name, **kwargs):
       """ DockerSource constructor. Refer to rb_backend/channel/source/model.py for arguments.
       """
+      super().__init__(name, **kwargs)
       config = get_config()
-      self.name = name
       self._container_name = config['OBJECTS_NAME_PREFIX'] + 'source_' + self.name
-      self.stream_mountpoint = args.pop('stream_mountpoint', self.name)
 
-   def create(self, force=False, **args):
-      """ Create a source container from given args
+   def create(self, force=False, **kwargs):
+      """ Create a source container from given kwargs
       """
       config = get_config()
       docker_client = get_docker_client()

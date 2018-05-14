@@ -1,32 +1,17 @@
-import abc
+from abc import ABCMeta, abstractmethod
 
 from rb_backend.config import get_config
 from rb_backend.database import Model
 from rb_backend.errors import SourceError, ValidationError, DatabaseError, DatabaseNotFound
-from rb_backend.channel.source.dockerSource import DockerSource
+from rb_backend.source import source as Source
 from rb_backend.utils import formats
 from rb_backend.utils.validations import validate
 
 class Sources(Model):
-   """ Sources.init's model definition """
-   __metaclass__ = abc.ABCMeta
+   """ Source's model definition """
+   __metaclass__ = ABCMeta
 
-   @staticmethod
-   def init(name, **kwargs):
-      config = get_config()
-      source_type = config.get('SOURCE_TYPE', 'docker')
-      if source_type == 'docker':
-         source_class = DockerSource
-      else :
-         raise ValueError('unsupported source type ' + str(source_type))
-      source = source_class(name, **kwargs)
-      source.channel = kwargs.get('channel')
-      return source
-
-
-   @staticmethod
-   def _schema():
-      return {
+   _schema = {
          'name': {
             'required': True,
             'validator': 'slug'
@@ -44,18 +29,18 @@ class Sources(Model):
       }
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def find(cls, **filters):
       """ Returns multiple matching documents from given filters
       """
       collection = Model.get_collection(cls)
-      schema = Sources._schema()
+      schema = Sources._schema.copy()
       filters = validate(filters, schema, mandatories=False)
       source_list = []
       try:
          for document in collection.find(filters):
             name = document.pop('name')
-            source = Sources.init(name, **document)
+            source = Source.init(name, **document)
             source_list.append(source)
       except SourceError:
          raise
@@ -65,12 +50,12 @@ class Sources(Model):
 
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def find_one(cls, **filters):
       """ Returns the first matching document from given filters
       """
       collection = Model.get_collection(cls)
-      schema = Sources._schema()
+      schema = Sources._schema.copy()
       filters = validate(filters, schema, mandatories=False)
       if not filters: raise ValidationError('You must provide at least one filter')
       documents = []
@@ -83,56 +68,57 @@ class Sources(Model):
          raise DatabaseNotFound()
       document = documents.pop()
       name = document.pop('name')
-      return Sources.init(name, **document)
+      return Source.init(name, **document)
 
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def create(cls, **kwargs):
       """ Returns new document from given args
       """
       collection = Model.get_collection(cls)
-      schema = Sources._schema()
+      schema = Sources._schema.copy()
       values = validate(kwargs, schema)
       name = values.pop('name')
       values['status'] = values.get('status', 'stopped')
       for document in collection.find({'name': name}).limit(1):
          if document: raise ValueError("source '" + str(name) + "' already exists.")
-      source = Sources.init(name, **values)
+      source = Source.init(name, **values)
       source.create()
       try:
-         collection.insert_one(source._document())
+         collection.insert_one(source._document)
       except Exception as e:
          DatabaseError(str(e))
       return source
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def update(cls, source, **values):
-      """ Update given source with given values. Sources.init can be source object or source name
+      """ Update given source with given values. Source.init can be source object or source name
       """
       collection = Model.get_collection(cls)
       if isinstance(source, str):
          source = Sources.find_one(**{'name': source})
-      schema = Sources._schema()
+      schema = Sources._schema.copy()
       formats.pop_keys(schema, 'name', 'channel', 'status')
       values = validate(values, schema, mandatories=False)
       vars(source).update(values)
-      try:
-         source.reload()
-      except:
-         pass
+      if values:
+         try:
+            source.reload()
+         except:
+            pass
       try:
          collection.update_one(
             {'name': source.name},
-            {'$set': source._document()}
+            {'$set': source._document}
          )
          return source
       except Exception as e:
          raise DatabaseError(str(e))
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def delete(cls, source, force='false'):
       """ Delete the current document from given collection
       """

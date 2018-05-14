@@ -11,7 +11,7 @@ def docker_source_app():
 
 def test_dockerSource_defaults(docker_source_app):
    with docker_source_app.app_context():
-      test_source = rb_backend.channel.source.model.Sources.init('test-source-docker')
+      test_source = rb_backend.source.source.init('test-source-docker')
       assert test_source.stream_mountpoint == 'test-source-docker'
       assert not test_source._get_container(quiet=True)
       test_source.create()
@@ -36,22 +36,22 @@ def test_dockerSource_defaults(docker_source_app):
 
 def test_source_model(app):
    with app.app_context():
-      assert not rb_backend.channel.source.model.Sources.find()
-      test_source_model = rb_backend.channel.source.model.Sources.create(**{'name': 'test-source-model', 'channel': 'dumb'})
-      assert test_source_model._document() == {
+      assert not rb_backend.source.model.Sources.find()
+      test_source_model = rb_backend.source.model.Sources.create(**{'name': 'test-source-model', 'channel': 'dumb'})
+      assert test_source_model._document == {
          'name': 'test-source-model',
          'channel': 'dumb',
          'status': 'stopped',
          'stream_mountpoint': 'test-source-model'
       }
-      test_source_model = rb_backend.channel.source.model.Sources.find_one(**{'name': 'test-source-model'})
+      test_source_model = rb_backend.source.model.Sources.find_one(**{'name': 'test-source-model'})
       with pytest.raises(rb_backend.errors.SourceError):
          test_source_model.create()
-      test_source_model = rb_backend.channel.source.model.Sources.update(test_source_model)
+      test_source_model = rb_backend.source.model.Sources.update(test_source_model)
       assert test_source_model.status == 'stopped'
-      test_source_model = rb_backend.channel.source.model.Sources.update('test-source-model', **{'stream_mountpoint': 'ladida'})
+      test_source_model = rb_backend.source.model.Sources.update('test-source-model', **{'stream_mountpoint': 'ladida'})
       assert test_source_model.stream_mountpoint == 'ladida'
-      test_source_model = rb_backend.channel.source.model.Sources.delete(test_source_model)
+      test_source_model = rb_backend.source.model.Sources.delete(test_source_model)
       assert test_source_model.status == 'non-existent'
       with pytest.raises(rb_backend.errors.DatabaseNotFound):
-         rb_backend.channel.source.model.Sources.find_one(**{'name': 'test-source-model'})
+         rb_backend.source.model.Sources.find_one(**{'name': 'test-source-model'})
