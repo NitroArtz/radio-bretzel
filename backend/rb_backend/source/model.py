@@ -113,9 +113,9 @@ class Sources(Model):
             {'name': source.name},
             {'$set': source._document}
          )
-         return source
       except Exception as e:
          raise DatabaseError(str(e))
+      return source
 
    @classmethod
    @abstractmethod
@@ -135,6 +135,6 @@ class Sources(Model):
       source.delete(force=force)
       try:
          collection.delete_one({'name': source.name})
-         return source
       except:
          raise DatabaseError(str(e))
+      return source
