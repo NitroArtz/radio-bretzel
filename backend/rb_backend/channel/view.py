@@ -18,9 +18,8 @@ def source_infos(channel):
 
 def many(*channels):
    rv = []
-   if channels:
-      for channel in channels:
-         rv.append(infos(channel))
+   for channel in channels:
+      rv.append(infos(channel))
    return jsonify(rv)
 
 def one(channel):

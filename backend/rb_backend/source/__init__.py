@@ -58,8 +58,9 @@ def routes(app):
 
    @app.route('/source/<string:name>', methods=['DELETE'])
    def delete_source(name):
+      values = request.values
       try:
-         source = Sources.delete(name)
+         source = Sources.delete(name, **values)
       except ValidationError as e:
          return abort(400, str(e))
       except:
