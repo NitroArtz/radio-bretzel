@@ -4,7 +4,7 @@ def infos(source):
    return {
       'name': source.name,
       'channel': source.channel,
-      'status': source.status()
+      'status': source.status
    }
 
 # Views

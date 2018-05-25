@@ -1,4 +1,4 @@
-import abc
+from abc import ABCMeta, abstractmethod
 
 from rb_backend.config import get_config
 from rb_backend.database import Model
@@ -10,7 +10,7 @@ from rb_backend.utils.validations import validate
 
 class Channels(Model):
    """ Channel's model definition """
-   __metaclass__ = abc.ABCMeta
+   __metaclass__ = ABCMeta
 
    _schema = {
          'slug': {
@@ -18,7 +18,8 @@ class Channels(Model):
             'validator': 'slug',
          },
          'name': {
-            'validator': 'text'
+            'type': 'string',
+            'coerce': 'text'
          },
          'active': {
             'validator': 'boolean',
@@ -31,7 +32,8 @@ class Channels(Model):
             'default': False
          },
          'description': {
-            'validator': 'text'
+            'type': 'string',
+            'coerce': 'text'
          },
          'source': {
             'oneof': [
@@ -41,14 +43,14 @@ class Channels(Model):
                },
                {
                   'type': 'dict',
-                  'valueschema': Sources._schema
+                  'schema': Sources._schema
                }
             ]
          }
       }
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def find(cls, **filters):
       """ Returns all matching channels from given filters
       """
@@ -88,13 +90,12 @@ class Channels(Model):
       return channel_list
 
    @classmethod
-   @abc.abstractmethod
-   def find_one(cls, **kwargs):
+   @abstractmethod
+   def find_one(cls, **filters):
       """ Returns the first matching channel from given name
       """
       collection = Model.get_collection(cls)
       schema = Channels._schema.copy()
-      channel = Channels.find_one(**{'slug': channel})
       filters = validate(filters, schema, mandatories=False)
       show_deleted = filters.pop('deleted', False)
       if not show_deleted:
@@ -121,25 +122,28 @@ class Channels(Model):
          },
 
       ]
-      document_list = []
+      documents = []
       try:
          for document in collection.aggregate(pipeline):
-            channel_list.append(document)
+            documents.append(document)
       except SourceError:
          raise
       except Exception as e:
          raise DatabaseError(str(e))
-      document = documents.pop()
+      try:
+         document = documents.pop()
+      except:
+         raise DatabaseNotFound()
       return Channel(**document)
 
    @classmethod
-   @abc.abstractmethod
-   def create(cls, **kwargs):
+   @abstractmethod
+   def create(cls, **values):
       """ Returns the created channel from given arguments
       """
       collection = Model.get_collection(cls)
       schema = Channels._schema.copy()
-      values = validate(kwargs, schema)
+      values = validate(values, schema)
       slug = values.get('slug')
       for document in collection.find({'slug': slug}).limit(1):
          if document: raise ValueError("channel " + str(e) + " already exists.")
@@ -157,7 +161,7 @@ class Channels(Model):
       return channel
 
    @classmethod
-   @abc.abstractmethod
+   @abstractmethod
    def update(cls, channel, values):
       """ Returns the first matching channel with given slug , updated with
       given arguments
@@ -184,31 +188,38 @@ class Channels(Model):
       return channel
 
    @classmethod
-   @abc.abstractmethod
-   def delete(cls, channel, hard_delete='false'):
+   @abstractmethod
+   def delete(cls, channel, **opts):
       collection = Model.get_collection(cls)
       schema = {
          'hard_delete': {
             'validator': 'boolean',
-            'coerce': 'boolean'
+            'coerce': 'boolean',
+            'default': False
          }
       }
-      hard_delete = validate(values, schema).pop('hard_delete')
+      hard_delete = validate(opts, schema).pop('hard_delete')
       if isinstance(channel, str):
-         channel = Channels.find_one(**{'slug': channel})
-      if not hard_delete:
-         channel.source.delete(force=True)
+         channel = Channels.find_one(**{'slug': channel, 'deleted': hard_delete})
+      if hard_delete:
+         if channel.source:
+            try:
+               Sources.delete(channel.source, force=True)
+            except:
+               pass
          try:
-            collection.update_one(
-               {'slug': channel.slug},
-               {'$set': {'deleted': True, 'source': None}}
-            )
+            collection.delete_one({'slug': channel.slug})
          except Exception as e:
             raise DatabaseError(str(e))
       else:
-         Sources.delete(channel.source, force=True)
+         if channel.source:
+            channel.source.delete(force=True)
+         channel.deleted = True
          try:
-            collection.delete_one({'slug': channel.slug})
+            collection.update_one(
+               {'slug': channel.slug},
+               {'$set': channel._document}
+            )
          except Exception as e:
             raise DatabaseError(str(e))
       return channel
@@ -221,7 +232,7 @@ class Channel(object):
       config = get_config()
       self.slug = kwargs.pop('slug')
       self.active = kwargs.pop('active', True)
-      self.soft_deleted = kwargs.pop('soft_deleted', False)
+      self.deleted = kwargs.pop('deleted', False)
       self.name = kwargs.pop('name', formats.id_to_name(self.slug))
       self.description = kwargs.pop('description', "Welcome to " + self.name + " Radio Bretzel Channel")
       source = kwargs.pop('source', None)

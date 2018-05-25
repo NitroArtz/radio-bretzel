@@ -13,7 +13,7 @@ def routes(app):
 
    @app.route('/channel/', methods=['GET'])
    def get_channels():
-      values = request.values
+      values = request.args
       try: channels = Channels.find(**values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -21,7 +21,8 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['GET'])
    def get_channel(slug):
-      values = request.values
+      values = request.args
+      values.update({'slug': slug})
       try: channel = Channels.find_one(**values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -29,7 +30,8 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['POST'])
    def create_channel(slug):
-      values = request.values
+      values = request.form
+      values.update({'slug': slug})
       try: channel = Channels.create(**values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -37,7 +39,7 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['PUT', 'UPDATE'])
    def update_channel(slug):
-      values = request.values
+      values = request.form
       try: updated_channel = Channels.update(slug, values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -45,7 +47,7 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['DELETE'])
    def delete_channel(slug):
-      values = request.values
+      values = request.args
       try: deleted_channel = Channels.delete(slug, **values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -74,7 +76,7 @@ def routes(app):
    #    force                            :  Default to false, override potential
    #                                        existing source
    #    """
-   #    values = request.values
+   #    values = request.form
    #    try:
    #       channel = Channels.find_one(slug)
    #       force = validations.bool(values.get('force', 'false'))
@@ -91,7 +93,7 @@ def routes(app):
    # def delete_channel_source(slug):
    #    """ Delete channel's source and return sourceless channel object
    #    """
-   #    values = request.values
+   #    values = request.form
    #    force = validations.bool(values.get('force', 'false'))
    #    try:
    #       channel = Channels.find_one(slug)
