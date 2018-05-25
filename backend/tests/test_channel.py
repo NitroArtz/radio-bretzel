@@ -26,3 +26,5 @@ def test_Channels_model(app):
          rb_backend.channel.model.Channels.find_one(**{'slug': 'test-channel-model'})
       test_channel = rb_backend.channel.model.Channels.find_one(**{'slug': 'test-channel-model', 'deleted': 'true'})
       rb_backend.channel.model.Channels.delete(test_channel, hard_delete='true')
+      with pytest.raises(rb_backend.errors.DatabaseNotFound) as e:
+         rb_backend.channel.model.Channels.find_one(**{'slug': 'test-channel-model', 'deleted': 'true'})
