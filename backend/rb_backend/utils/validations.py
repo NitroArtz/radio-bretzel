@@ -1,4 +1,4 @@
-import re
+import re, html
 from cerberus import Validator
 
 from rb_backend.errors import ValidationError
@@ -11,6 +11,7 @@ def validate(data, schema, mandatories=True, allow_unknown=False, **kwargs):
    if valids is None:
       raise ValidationError(v.errors)
    return valids
+
 
 class RB_Validator(Validator):
 
