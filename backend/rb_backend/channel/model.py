@@ -201,19 +201,18 @@ class Channels(Model):
       hard_delete = validate(opts, schema).pop('hard_delete')
       if isinstance(channel, str):
          channel = Channels.find_one(**{'slug': channel, 'deleted': hard_delete})
+      if channel.source:
+         try:
+            Sources.delete(channel.source, force=True)
+            channel.source = None
+         except:
+            pass
       if hard_delete:
-         if channel.source:
-            try:
-               Sources.delete(channel.source, force=True)
-            except:
-               pass
          try:
             collection.delete_one({'slug': channel.slug})
          except Exception as e:
             raise DatabaseError(str(e))
       else:
-         if channel.source:
-            channel.source.delete(force=True)
          channel.deleted = True
          try:
             collection.update_one(
