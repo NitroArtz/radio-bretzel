@@ -4,7 +4,8 @@ WORKDIR /usr/src/rb_backend
 
 COPY requirements-dev.txt requirements-dev.txt
 
-RUN pip install --user -r requirements-dev.txt
+# RUN pip install --user -r requirements-dev.txt
+RUN pip install -r requirements-dev.txt
 
 COPY rb_backend rb_backend
 COPY run.py run.py

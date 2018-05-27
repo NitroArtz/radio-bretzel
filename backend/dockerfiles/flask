@@ -4,10 +4,11 @@ RUN addgroup -S rb-backend && adduser -S -g rb-backend rb-backend
 
 RUN pip install --upgrade pip
 
-USER rb-backend
-ENV PATH="/home/rb-backend/.local/bin:${PATH}"
+# USER rb-backend
+# ENV PATH="/home/rb-backend/.local/bin:${PATH}"
 
-RUN pip install --user Flask
+# RUN pip install --user Flask
+RUN pip install Flask
 
 COPY hello.py /hello.py
 

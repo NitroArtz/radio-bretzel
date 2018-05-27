@@ -4,7 +4,8 @@ WORKDIR /usr/src/rb_backend
 
 COPY requirements-test.txt requirements-test.txt
 
-RUN pip install --user -r requirements-test.txt
+# RUN pip install --user -r requirements-test.txt
+RUN pip install -r requirements-test.txt
 
 COPY rb_backend rb_backend
 COPY tests tests
