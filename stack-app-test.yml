@@ -6,10 +6,6 @@ networks:
    tests_sources:
       driver: bridge
 
-volumes:
-   stream_config:
-      driver: local
-
 services:
    tests_backend:
       image: radiobretzel/backend:test
@@ -23,7 +19,6 @@ services:
       volumes:
          - ./backend/:/usr/src/rb_backend
          - /var/run/docker.sock:/var/run/docker.sock
-         # - stream_config:/usr/src/stream_config
       networks:
          tests_main:
             aliases:
@@ -37,6 +32,7 @@ services:
          tests_main:
             aliases:
                - database.tests_main.radiobretzel
+
    tests_streaming:
       image: radiobretzel/stream:test
       build:
@@ -44,8 +40,6 @@ services:
          dockerfile: dockerfiles/test
       ports:
          - 8000:8000
-      volumes:
-         - ./stream:/usr/src/stream_config
       networks:
          tests_sources:
             aliases:
