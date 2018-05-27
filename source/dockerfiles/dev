@@ -2,9 +2,6 @@ FROM radiobretzel/source:liquidsoap
 
 # Reminder : running as liquidsoap user
 
-LABEL docker.image.name="radiobretzel/source:dev"
-LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
-
 COPY fail.mp3 /fail.mp3
 
 WORKDIR /audio/test
@@ -13,13 +10,9 @@ COPY audio-test/ .
 WORKDIR /scripts
 COPY scripts/test.liq test.liq
 
-VOLUME /audio
-VOLUME /scripts
-
 ENV API_HOST="backend.sources.radiobretzel"
 ENV STREAM_HOST="streaming.sources.radiobretzel"
 ENV STREAM_SOURCE_PASSWD="sourcepass"
 ENV STREAM_MOUNTPOINT="test"
 
-ENTRYPOINT ["/usr/bin/liquidsoap"]
 CMD ["./test.liq"]

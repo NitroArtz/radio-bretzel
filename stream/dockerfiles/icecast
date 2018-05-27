@@ -1,8 +1,4 @@
 FROM radiobretzel/stream:base
 
-LABEL project.component="Radio Bretzel Stream server"
-LABEL docker.image.name="radiobretzel/stream:icecast"
-LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
-
 RUN apt-get update && apt-get install -y icecast2
-COPY default.xml /etc/icecast2/default.xml
+COPY configs/default.xml /etc/icecast2/default.xml
