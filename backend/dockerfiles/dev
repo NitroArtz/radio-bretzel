@@ -4,14 +4,13 @@ WORKDIR /usr/src/rb_backend
 
 COPY requirements-dev.txt requirements-dev.txt
 
-RUN pip install --upgrade pip && \
-   pip install -r requirements-dev.txt
+RUN pip install --user -r requirements-dev.txt
 
-VOLUME /usr/src/rb_backend /var/run/docker.sock
+COPY rb_backend rb_backend
+COPY run.py run.py
+
 EXPOSE 5000
 
-ENV RADIO_BRETZEL_ENV development
-
-LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
+ENV RADIO_BRETZEL_ENV="development"
 
 CMD ["./run.py"]

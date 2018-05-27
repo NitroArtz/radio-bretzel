@@ -1,17 +1,14 @@
 FROM radiobretzel/backend:base
 
-LABEL project.component="Radio Bretzel Backend"
-LABEL docker.image.name="radiobretzel/backend:flask"
-LABEL docker.image.version="0.1"
-LABEL docker.image.maintainer="Papy Bretzel <papybretzel@ntymail.com>"
+RUN addgroup -S rb-backend && adduser -S -g rb-backend rb-backend
 
-WORKDIR /usr/src/rb_backend
-COPY hello.py hello.py
+RUN pip install --upgrade pip
 
-RUN pip install --upgrade pip && \
-  pip install Flask
+USER rb-backend
+ENV PATH="/home/rb-backend/.local/bin:${PATH}"
 
-VOLUME /usr/src/rb_backend
+RUN pip install --user Flask
 
-#ENTRYPOINT ["/usr/local/bin/python"]
-CMD ["./hello.py"]
+COPY hello.py /hello.py
+
+CMD ["/hello.py"]
