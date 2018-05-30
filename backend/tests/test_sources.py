@@ -1,5 +1,4 @@
-import pytest, time
-
+import pytest
 import rb_backend
 
 @pytest.fixture
@@ -36,7 +35,8 @@ def test_dockerSource_defaults(docker_source_app):
 
 def test_source_model(app):
    with app.app_context():
-      assert rb_backend.source.model.Sources.find()
+      test_source_models = rb_backend.source.model.Sources.find()
+      assert test_source_models == []
       test_source_model = rb_backend.source.model.Sources.create(**{'name': 'test-source-model', 'channel': 'dumb'})
       assert test_source_model._document == {
          'name': 'test-source-model',
