@@ -29,7 +29,7 @@ class RB_Validator(Validator):
 
    def _validator_boolean(self, field, value):
       if not isinstance(value, bool):
-         self._error(field, "Must be one of True, False, TRUE, FALSE, true or false")
+         self._error(field, "Must be boolean")
 
    def _validator_uuid(self, field, value):
       if not re.match('^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$', value, re.IGNORECASE):
