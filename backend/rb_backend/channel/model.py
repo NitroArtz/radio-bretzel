@@ -51,13 +51,16 @@ class Channels(Model):
 
    @classmethod
    @abstractmethod
-   def find(cls, **filters):
+   def find(cls, **kwargs):
       """ Returns all matching channels from given filters
       """
       collection = Model.get_collection(cls)
       schema = Channels._schema.copy()
-      filters = validate(filters, schema, mandatories=False)
-      show_deleted = filters.pop('deleted', False)
+      filters = validate(kwargs, schema, mandatories=False)
+      show_inactive = filters.pop('active')
+      show_deleted = filters.pop('deleted')
+      if not show_inactive:
+         filters['active'] = True
       if not show_deleted:
          filters['deleted'] = False
       channel_list = []
@@ -91,13 +94,16 @@ class Channels(Model):
 
    @classmethod
    @abstractmethod
-   def find_one(cls, **filters):
+   def find_one(cls, **kwargs):
       """ Returns the first matching channel from given name
       """
       collection = Model.get_collection(cls)
       schema = Channels._schema.copy()
-      filters = validate(filters, schema, mandatories=False)
-      show_deleted = filters.pop('deleted', False)
+      filters = validate(kwargs, schema, mandatories=False)
+      show_inactive = filters.pop('active')
+      show_deleted = filters.pop('deleted')
+      if not show_inactive:
+         filters['active'] = True
       if not show_deleted:
          filters['deleted'] = False
       pipeline = [
@@ -191,6 +197,7 @@ class Channels(Model):
    @abstractmethod
    def delete(cls, channel, **opts):
       collection = Model.get_collection(cls)
+      source_collection = Model.get_collection(Sources)
       schema = {
          'hard_delete': {
             'validator': 'boolean',
@@ -202,13 +209,10 @@ class Channels(Model):
       if isinstance(channel, str):
          channel = Channels.find_one(**{'slug': channel, 'deleted': hard_delete})
       if channel.source:
-         try:
-            Sources.delete(channel.source, force=True)
-            channel.source = None
-         except:
-            pass
+         channel.source.delete(force=True, quiet=True)
       if hard_delete:
          try:
+            source_collection.delete_one({'name': channel.source.name})
             collection.delete_one({'slug': channel.slug})
          except Exception as e:
             raise DatabaseError(str(e))
@@ -244,7 +248,6 @@ class Channel(object):
    def _document(self):
       """ Channel model database schema """
       document = vars(self).copy()
-      document.pop('source', False)
       try:
          document['source'] = self.source.name
       except:
