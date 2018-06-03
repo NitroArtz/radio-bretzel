@@ -28,6 +28,8 @@ services:
                - backend.sources.radiobretzel
    database:
       image: mongo
+      logging:
+         driver: "none"
       networks:
          main:
             aliases:
