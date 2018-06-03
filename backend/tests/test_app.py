@@ -16,14 +16,15 @@ def test_Sources_routes(client):
    assert client.get('/source/test-source-routes/start').status_code == 200
    assert client.get('/source/test-source-routes/stop').status_code == 200
    assert client.delete('/source/test-source-routes').status_code == 200
-   
-# def test_Channels_controller(client):
-#    assert client.get('/channel/').data == b'[]\n'
-#
-#    assert client.get('/channel/test-routes').status_code == 404
-#    assert client.post('/channel/test_routes').status_code == 400
-#    assert client.post('/channel/test-routes').status_code == 200
-#    assert client.get('/channel/test-routes').status_code == 200
+
+def test_Channels_controller(client):
+   assert client.get('/channel/').data == b'[]\n'
+
+   assert client.get('/channel/test-channel-routes').status_code == 404
+   assert client.post('/channel/test_channel-routes').status_code == 400
+   assert client.post('/channel/test-channel-routes').status_code == 200
+   assert client.get('/channel/test-channel-routes').status_code == 200
+   assert client.delete('/channel/test-channel-routes', data={'hard_delete': 'true'}).status_code == 200
 #
 #    assert client.get('/channel/test-routes/source').status_code == 200
 #    assert client.delete('/channel/test-routes/source').status_code == 200
@@ -32,4 +33,3 @@ def test_Sources_routes(client):
 #    assert client.post('/channel/test-routes/source/start').status_code == 200
 #    assert client.post('/channel/test-routes/source/stop').status_code == 200
 #
-#    assert client.delete('/channel/test-routes', data='hard_delete=true').status_code == 200

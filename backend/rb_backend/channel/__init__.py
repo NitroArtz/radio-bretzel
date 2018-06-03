@@ -13,7 +13,7 @@ def routes(app):
 
    @app.route('/channel/', methods=['GET'])
    def get_channels():
-      values = request.args
+      values = request.args.to_dict()
       try: channels = Channels.find(**values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -21,7 +21,7 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['GET'])
    def get_channel(slug):
-      values = request.args
+      values = request.args.to_dict()
       values.update({'slug': slug})
       try: channel = Channels.find_one(**values)
       except ValidationError as e: return abort(400, str(e))
@@ -30,7 +30,7 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['POST'])
    def create_channel(slug):
-      values = request.form
+      values = request.form.to_dict()
       values.update({'slug': slug})
       try: channel = Channels.create(**values)
       except ValidationError as e: return abort(400, str(e))
@@ -39,7 +39,7 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['PUT', 'UPDATE'])
    def update_channel(slug):
-      values = request.form
+      values = request.form.to_dict()
       try: updated_channel = Channels.update(slug, values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
@@ -47,7 +47,7 @@ def routes(app):
 
    @app.route('/channel/<string:slug>', methods=['DELETE'])
    def delete_channel(slug):
-      values = request.args
+      values = request.form.to_dict()
       try: deleted_channel = Channels.delete(slug, **values)
       except ValidationError as e: return abort(400, str(e))
       except DatabaseError: return abort(404)
