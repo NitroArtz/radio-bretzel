@@ -63,7 +63,7 @@ def routes(app):
 
    @app.route('/source/<string:name>', methods=['DELETE'])
    def delete_source(name):
-      values = request.args.to_dict()
+      values = request.form.to_dict()
       try:
          source = Sources.delete(name, **values)
       except ValidationError as e:
