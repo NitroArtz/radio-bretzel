@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 
-from rb_backend import channel, database, docker, source
+from rb_backend import channel, database, docker, errors, source
 from rb_backend.config import Config
 
 def create_app(env=None, local_config_file=None, **config):
@@ -14,6 +14,18 @@ def create_app(env=None, local_config_file=None, **config):
    register_routes(app)
    register_main_routes(app)
    # register_teardown(app)
+
+   @app.errorhandler(errors.DatabaseNotFound)
+   def not_found(error):
+      return "This page doesn't exist", 404
+
+   @app.errorhandler(errors.ValidationError)
+   def validation_error(error):
+      return str(error), 400
+
+   @app.errorhandler(errors.RadioBretzelException)
+   def default_error(error):
+      return str(error), 500
 
    return app
 
