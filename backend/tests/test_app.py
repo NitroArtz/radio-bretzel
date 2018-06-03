@@ -24,12 +24,9 @@ def test_Channels_controller(client):
    assert client.post('/channel/test_channel-routes').status_code == 400
    assert client.post('/channel/test-channel-routes').status_code == 200
    assert client.get('/channel/test-channel-routes').status_code == 200
+
+   assert client.get('/channel/test-channel-routes/source').status_code == 200
+   assert client.get('/channel/test-channel-routes/source/start').status_code == 200
+   assert client.get('/channel/test-channel-routes/source/stop').status_code == 200
+
    assert client.delete('/channel/test-channel-routes', data={'hard_delete': 'true'}).status_code == 200
-#
-#    assert client.get('/channel/test-routes/source').status_code == 200
-#    assert client.delete('/channel/test-routes/source').status_code == 200
-#    assert client.post('/channel/test-routes/source').status_code == 200
-#    assert client.post('/channel/test-routes/source/reset').status_code == 200
-#    assert client.post('/channel/test-routes/source/start').status_code == 200
-#    assert client.post('/channel/test-routes/source/stop').status_code == 200
-#

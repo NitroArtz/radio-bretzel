@@ -5,7 +5,7 @@ from flask import request, abort
 from rb_backend.channel.model import Channel, Channels
 from rb_backend.channel import view
 from rb_backend.errors import DatabaseError, ValidationError
-from rb_backend.source import Sources
+from rb_backend.source import view as source_view
 from rb_backend.utils import formats, validations
 
 def routes(app):
@@ -42,3 +42,26 @@ def routes(app):
       values = request.form.to_dict()
       deleted_channel = Channels.delete(slug, **values)
       return view.one(deleted_channel)
+
+   @app.route('/channel/<string:slug>/source', methods=['GET'])
+   def get_channel_source(slug):
+      values = request.form.to_dict()
+      values.update({'slug': slug})
+      channel = Channels.find_one(**values)
+      return source_view.one(channel.source)
+
+   @app.route('/channel/<string:slug>/source/start')
+   def start_channel_source(slug):
+      values = request.form.to_dict()
+      values.update({'slug': slug})
+      channel = Channels.find_one(**values)
+      channel.source.start()
+      return source_view.one(channel.source)
+
+   @app.route('/channel/<string:slug>/source/stop')
+   def stop_channel_source(slug):
+      values = request.form.to_dict()
+      values.update({'slug': slug})
+      channel = Channels.find_one(**values)
+      channel.source.stop()
+      return source_view.one(channel.source)
