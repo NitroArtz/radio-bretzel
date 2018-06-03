@@ -21,8 +21,8 @@ class DockerSource(BaseSource):
       config = get_config()
       self._container_name = config['OBJECTS_NAME_PREFIX'] + 'source_' + self.name
 
-   def create(self, force=False, **kwargs):
-      """ Create a source container from given kwargs
+   def create(self, force=False):
+      """ Create a source container
       """
       config = get_config()
       docker_client = get_docker_client()
