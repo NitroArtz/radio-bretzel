@@ -51,7 +51,7 @@ class Channels(Model):
 
    @classmethod
    @abstractmethod
-   def find(cls, **filters):
+   def find(cls, **kwargs):
       """ Returns all matching channels from given filters
       """
       collection = Model.get_collection(cls)
@@ -92,7 +92,7 @@ class Channels(Model):
 
    @classmethod
    @abstractmethod
-   def find_one(cls, **filters):
+   def find_one(cls, **kwargs):
       """ Returns the first matching channel from given name
       """
       collection = Model.get_collection(cls)
