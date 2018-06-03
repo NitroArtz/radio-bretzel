@@ -43,3 +43,20 @@ services:
          sources:
             aliases:
                - streaming.sources.radiobretzel
+
+   # Tools
+   db_explorer:
+      image: mongo-express
+      ports:
+         - 8081:8081
+      depends_on:
+         - database
+      logging:
+         driver: "none"
+      environment:
+         - ME_CONFIG_MONGODB_SERVER=database.main.radiobretzel
+         - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      networks:
+         main:
+            aliases:
+               - db-explorer.main.radiobretzel

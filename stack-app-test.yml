@@ -28,6 +28,8 @@ services:
                - backend.tests_sources.radiobretzel
    tests_database:
       image: mongo
+      logging:
+         driver: "none"
       networks:
          tests_main:
             aliases:
@@ -44,3 +46,20 @@ services:
          tests_sources:
             aliases:
                - streaming.tests_sources.radiobretzel
+
+   # Tools
+   tests_db_explorer:
+      image: mongo-express
+      ports:
+         - 8081:8081
+      depends_on:
+         - tests_database
+      logging:
+         driver: "none"
+      environment:
+         - ME_CONFIG_MONGODB_SERVER=database.tests_main.radiobretzel
+         - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      networks:
+         tests_main:
+            aliases:
+               - db-explorer.tests_main.radiobretzel
